@@ -1,0 +1,188 @@
+.aside-css {
+    
+    background-color: #FC4244;
+    box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px, rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
+}
+
+
+body {
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.formulario-produccion-css {
+  margin-top: -20px;
+}
+
+
+.nav-item.activo {
+  background-color: white !important;
+  color: #111 !important;
+  font-weight: 600;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+
+.seccion {
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.seccion.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+
+
+.titulo-handwrite {
+  font-family: "Dancing Script", cursive;
+  font-size: 35px;
+  color: #1f2937; /* slate-800 */
+  font-weight: 600;
+  letter-spacing: 1px;
+}
+
+
+.pagina-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: #d1d5db; /* gris */
+  cursor: pointer;
+  transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+.pagina-dot:hover {
+  transform: scale(1.2);
+}
+
+.pagina-dot.activo {
+  background-color: #214db4; /* slate-900 */
+  transform: scale(1.3);
+}
+
+.estadistica-titulo{
+  margin-top: -20px;
+}
+
+/* Estado base de la card */
+.card-variedad {
+  transition:
+    box-shadow 150ms ease,
+    border-color 150ms ease,
+    transform 150ms ease,
+    background-color 150ms ease;
+}
+
+/* Hover con glow rojo suave */
+.card-variedad:hover {
+  box-shadow: 0 10px 25px rgba(248, 113, 113, 0.35) !important; /* rojo suave */
+  border-color: rgba(248, 113, 113, 0.65);
+}
+
+.div-nuevo-pedido{
+  margin-top: -20px;
+}
+
+.div-merma{
+  margin-top: -20px;
+}
+
+
+@keyframes fadeIn {
+  from { opacity:0; transform: scale(0.95); }
+  to   { opacity:1; transform: scale(1); }
+}
+.animate-fadeIn { animation: fadeIn .18s ease; }
+
+
+
+/* Bloque estilo Google Calendar */
+.turno-card {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: var(--bg);
+  border-left: 6px solid var(--border);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.08);
+  transition: 0.2s ease;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.turno-card:hover {
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  transform: translateY(-1px);
+}
+
+/* Slot vacío estilo calendario */
+.slot-vacio {
+  text-align: center;
+  padding: 18px 0;
+  border: 2px dashed #d7d7d7;
+  border-radius: 12px;
+  color: #c0c0c0;
+  font-size: 12px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.slot-vacio:hover {
+  border-color: #8b8b8b;
+  color: #6a6a6a;
+  background: #fdfdfd;
+}
+
+
+.div-dinamico-semana-horario{
+  margin-top: -20px;
+}
+
+@keyframes fadeSlideUp {
+  0% {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.kpi-anim {
+  animation: fadeSlideUp 0.6s ease-out forwards;
+  opacity: 0;
+}
+
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.animate-fadeIn { animation: fadeIn .18s ease-out; }
+
+.caja-h2{
+  margin-top: -10px;
+}
+
+
+.btn-caja-cerrada {
+  background: linear-gradient(to right, #16a34a, #15803d) !important; /* verde */
+  color: white !important;
+  cursor: not-allowed !important;
+  transform: scale(1.05);
+  transition: all 0.4s ease;
+}
+
+.btn-caja-cerrada:hover {
+  box-shadow: 0 0 12px rgba(22, 163, 74, 0.6);
+}
+
+
+#caja-balance {
+  transition: all 0.3s ease;
+}

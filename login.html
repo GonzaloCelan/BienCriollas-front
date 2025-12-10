@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Ingresar – Bien Criollas</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    /* Fondo degradado animado */
+    body {
+      background-image: radial-gradient(circle, #ff4d4d, #ff7a9f, #ffacda, #f4d9fa, #ffffff);
+      background-size: 400% 400%;
+      animation: gradientBG 12s ease infinite;
+    }
+
+    @keyframes gradientBG {
+      0% {background-position: 0% 50%;}
+      50% {background-position: 100% 50%;}
+      100% {background-position: 0% 50%;}
+    }
+
+    /* Animación fade */
+    .fade-in {
+      animation: fadeIn 1s ease forwards;
+      opacity: 0;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(15px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Glass Effect */
+    .glass {
+      background: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+    }
+  </style>
+</head>
+
+<body class="min-h-screen flex items-center justify-center px-4">
+
+  <div class="glass fade-in p-8 rounded-2xl shadow-2xl w-full max-w-sm text-white">
+
+    <!-- Logo -->
+    <div class="flex flex-col items-center mb-5">
+      <img src="./logoBienCriollas.png" class="h-20 w-20 rounded-full shadow-md border-2 border-white/40" />
+      <h1 class="text-3xl font-bold mt-3 tracking-tight drop-shadow">
+        Bien Criollas
+      </h1>
+      <p class="text-sm text-white/80 mt-1">Acceso al sistema interno</p>
+    </div>
+
+    <!-- Inputs -->
+    <div class="space-y-4 mt-4">
+
+      <div>
+        <label class="text-xs text-white/80">Usuario</label>
+        <input
+          id="login-user"
+          type="text"
+          class="w-full bg-white/20 border border-white/30 text-white placeholder-white/70 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-white/50 outline-none"
+          placeholder="Ingresá tu usuario"
+        >
+      </div>
+
+      <div>
+        <label class="text-xs text-white/80">Contraseña</label>
+        <input
+          id="login-pass"
+          type="password"
+          class="w-full bg-white/20 border border-white/30 text-white placeholder-white/70 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-white/50 outline-none"
+          placeholder="********"
+        >
+      </div>
+
+      <!-- Botón -->
+      <button
+        id="btn-login"
+        class="w-full bg-white text-rose-600 font-semibold py-2 rounded-lg shadow-md hover:bg-rose-50 transition-all active:scale-[0.98]"
+      >
+        Ingresar
+      </button>
+
+      <p id="login-error" class="text-center text-red-300 text-xs hidden mt-2">
+        Usuario o contraseña incorrectos
+      </p>
+    </div>
+
+    <!-- Footer -->
+    <p class="text-center text-[11px] text-white/60 mt-6">
+      Sistema interno • Bien Criollas
+    </p>
+  </div>
+
+  <script src="./pages/login.js"></script>
+</body>
+</html>

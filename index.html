@@ -1,0 +1,1783 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <title>Bien Criollas - Panel</title>
+  <!-- 🔒 PROTECCIÓN DEL PANEL -->
+  <script>
+    if (localStorage.getItem("bc_logueado") !== "SI") {
+      window.location.href = "./login.js";
+    }
+  </script>
+  <link rel="stylesheet" href="./css/style.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+ <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&display=swap" rel="stylesheet">
+ <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+ <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600&family=Pacifico&display=swap" rel="stylesheet">
+ <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&display=swap" rel="stylesheet">
+<link rel="manifest" href="./manifest.json">
+<meta name="theme-color" content="#ef4444">
+<link rel="apple-touch-icon" href="./icons/icon-192.png">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+
+
+
+
+
+
+</head>
+<body class="bg-slate-100 min-h-screen text-slate-800">
+
+  <div class="flex min-h-screen">
+
+    <!-- SIDEBAR -->
+    <aside class="w-64 bg-[#f14141] text-white flex flex-col
+         h-screen sticky top-0 aside-css">
+
+      <div class="px-6 py-5 border-b border-slate-100">
+    <div class="flex flex-col items-center gap-2">
+    <img
+      src="./logoBienCriollas.png"
+      alt="Bien Criollas"
+      class="h-20 w-20 rounded-full object-cover "
+    />
+    <div>
+      <h1 class="text-xl font-semibold tracking-tight">Bien Criollas</h1>
+      <p class="text-xs text-slate-400 mt-1">Gestión de pedidos y stock</p>
+    </div>
+  </div>
+</div>
+
+     <nav class="flex-1 px-3 py-4 space-y-2">
+  <!-- ACTIVO POR DEFECTO -->
+  <button
+  class="nav-item w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium
+         text-slate-100 hover:bg-white hover:text-slate-900 hover:shadow-sm transition"
+  data-section-btn="pedidos">
+  <span>📦</span>
+  <span>Pedidos</span>
+</button>
+
+
+  <button
+    class="nav-item w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium
+           text-white/90 bg-transparent hover:bg-slate-800/80 transition"
+    data-section-btn="stock">
+    <span>🥟</span>
+    <span>Stock</span>
+  </button>
+
+  <button
+    class="nav-item w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium
+           text-white/90 bg-transparent hover:bg-slate-800/80 transition"
+    data-section-btn="caja">
+     <span>💰</span>
+  <span>Caja</span>
+  </button>
+
+  <button
+  class="nav-item w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium
+         text-white/90 bg-transparent hover:bg-slate-800/80 transition"
+  data-section-btn="estadisticas">
+  <span>📊</span>
+  <span>Estadísticas</span>
+</button>
+
+<button 
+  class="nav-item w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium"
+  data-section-btn="horarios"
+>
+  🕒
+  <span>Horarios</span>
+</button>
+</nav>
+
+      <div class="px-4 py-3 border-t border-slate-100 text-xs text-slate-400">
+        v1.0 • Empanadas manager
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="flex-1 flex flex-col">
+
+      <!-- HEADER -->
+      <header class="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-6">
+        <div>
+          <h2 class="text-lg font-semibold" id="titulo-seccion">Pedidos</h2>
+          <p class="text-xs text-slate-500" id="subtitulo-seccion">
+            Listado de pedidos del día
+          </p>
+        </div>
+        <div class="flex items-center gap-3 text-xs text-slate-500">
+  <span>Usuario: admin</span>
+
+  <button
+    onclick="localStorage.removeItem('bc_logueado'); window.location.href='login.html';"
+    class="px-2 py-1 text-[11px] border border-slate-300 rounded-md hover:bg-slate-50"
+  >
+    Cerrar sesión
+  </button>
+</div>
+
+      </header>
+
+     
+
+      <!-- CONTENT -->
+<section class="flex-1 p-6 overflow-y-auto space-y-6">
+
+        <!-- SECCIÓN PEDIDOS -->
+<div data-section="pedidos" class="space-y-5 seccion">
+
+<!-- ============================== -->
+<!-- 🟡 FECHA DEL TÍTULO ANIMADO    -->
+<!-- ============================== -->
+<div class="div-fecha mt-3 mb-10">
+  <h1 id="titulo-fecha" class="titulo-handwrite mb-1"></h1>
+  <p class="text-xs text-slate-500 mb-4">Estás registrando pedidos para esta fecha.</p>
+</div>
+
+
+         <!-- Filtros -->
+<div class="flex flex-wrap items-center gap-3">
+  
+
+  <div class="flex items-center gap-2">
+    <label class="text-xs font-medium text-slate-600">Estado:</label>
+    <select id="selector-estado" class="border rounded-md px-2 py-1 text-xs">
+      <option value="PENDIENTE">Pendientes</option>
+      <option value="ENTREGADO">Entregados</option>
+      <option value="CANCELADO">Cancelados</option>
+    </select>
+  </div>
+
+  <!-- Total de pedidos -->
+  <div class="flex items-center gap-2 text-xs ml-2">
+    <span class="font-medium text-slate-600">Total pedidos:</span>
+    <span id="total-pedidos" class="px-2 py-0.5 rounded-full  text-slate-900 font-semibold text-base">
+      0
+    </span>
+  </div>
+
+  <button
+  id="btn-nuevo-pedido"
+  class="
+    ml-auto
+    inline-flex items-center gap-2
+    rounded-full
+    bg-gradient-to-r from-rose-600 to-rose-500
+    px-4 py-2
+    text-xs font-semibold tracking-tight text-white
+    shadow-sm shadow-rose-500/40
+    hover:shadow-md hover:shadow-rose-500/60
+    hover:-translate-y-0.5
+    active:translate-y-0 active:scale-[0.98]
+    focus-visible:outline-none
+    focus-visible:ring-2 focus-visible:ring-rose-500/80
+    focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900
+    transition-all
+  "
+>
+  <span class="text-base leading-none">＋</span>
+  <span>Nuevo pedido</span>
+</button>
+</div>
+
+          <!-- Tabla -->
+          <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+            <table class="w-full text-xs">
+              <thead class="bg-slate-50 border-b border-slate-200">
+                <tr class="text-left text-slate-500">
+                  
+                  <th class="px-3 py-2">Cliente</th>
+                  <th class="px-3 py-2">Tipo venta</th>
+                  <th class="px-3 py-2">Pago</th>
+                  <th class="px-3 py-2">Número de pedido</th>
+                  <th class="px-3 py-2">Horario</th>
+                  <th class="px-3 py-2">Estado</th>
+                  <th class="px-3 py-2">Detalle</th>
+                  <th class="px-3 py-2 text-right">Total</th>
+                  <th class="px-3 py-2 text-right">Accion</th>
+                </tr>
+              </thead>
+              <tbody id="tbody-pedidos" class="divide-y divide-slate-100">
+                
+              </tbody>
+            </table>
+          </div>
+
+          <div id="paginacion" class="mt-4 flex justify-center items-center gap-2"></div>
+        </div>
+
+
+        
+
+        <!-- SECCIÓN NUEVO PEDIDO -->
+<div data-section="nuevo-pedido" class="space-y-5 hidden seccion">
+  <!-- Header de la sección -->
+  <div class="flex items-center justify-between div-nuevo-pedido">
+    
+    <button type="button"
+            id="btn-volver-pedidos"
+            class="text-xs px-3 py-1.5 rounded-md text-slate-700 hover:bg-slate-50">
+      ← Volver a pedidos
+    </button>
+  </div>
+
+  <!-- Formulario principal -->
+  <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4 space-y-4">
+    <div class="grid md:grid-cols-3 gap-4">
+      <!-- Cliente -->
+      <div class="flex flex-col gap-1">
+        <label class="text-xs font-medium text-slate-700">Cliente</label>
+        <input type="text"
+               class="border rounded-md px-3 py-1.5 text-xs"
+               placeholder="Nombre del cliente">
+      </div>
+
+      <!-- Tipo de venta -->
+      <div class="flex flex-col gap-1">
+        <label class="text-xs font-medium text-slate-700">Tipo de venta</label>
+        <select id="tipo-venta-nuevo-pedido"
+                class="border rounded-md px-3 py-1.5 text-xs">
+          <option value="PARTICULAR">PARTICULAR</option>
+          <option value="PEDIDOS_YA">PEDIDOS_YA</option>
+        </select>
+      </div>
+
+      <!-- Tipo de pago -->
+      <div  class="flex flex-col gap-1">
+        <label class="text-xs font-medium text-slate-700">Tipo de pago</label>
+        <select id="tipo-pago" class="border rounded-md px-3 py-1.5 text-xs">
+          <option value="EFECTIVO">EFECTIVO</option>
+          <option value="TRANSFERENCIA">TRANSFERENCIA</option>
+        </select> 
+      </div>
+    </div>
+
+    <div class="grid md:grid-cols-3 gap-4">
+      <!-- Número de pedido (solo PEDIDOS_YA) -->
+      <div id="campo-numero-pedido" class="flex flex-col gap-1">
+        <label class="text-xs font-medium text-slate-700">
+          Número de pedido (PedidosYa)
+        </label>
+        <input id="numero-pedido"
+               type="text"
+               class="border rounded-md px-3 py-1.5 text-xs"
+               placeholder="#12345">
+      </div>
+
+      <!-- Hora de entrega (solo PARTICULAR) -->
+      <div id="campo-hora-entrega" class="flex flex-col gap-1">
+        <label class="text-xs font-medium text-slate-700">
+          Hora de entrega (particular)
+        </label>
+        <input id="hora-entrega"
+               type="time"
+               class="border rounded-md px-3 py-1.5 text-xs">
+      </div>
+
+      <!-- Total -->
+      <div class="flex flex-col gap-1">
+        <label class="text-xs font-medium text-slate-700">Total del pedido</label>
+        <div class="flex items-center gap-1">
+          <span class="text-xs text-slate-500">$</span>
+          <input type="number"
+                 class="border rounded-md px-3 py-1.5 text-xs w-full"
+                 placeholder="0.00" step="0.01">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Variedades y cantidades -->
+<div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4 space-y-3">
+  <h4 class="text-sm font-semibold text-slate-800 mb-1">Variedades</h4>
+  <p class="text-xs text-slate-500 mb-2">
+    Ingresá la cantidad de empanadas por cada sabor (dejá en 0 las que no se piden).
+  </p>
+
+  <div class="grid grid-cols-1 md:grid-cols-6 gap-2 text-xs">
+    <!-- 1: Carne -->
+    <div class="flex items-center justify-between gap-3 border border-slate-100 rounded-lg px-3 py-2 bg-slate-50/60">
+      <span class="font-medium text-slate-700">Criolla</span>
+      <input id="var-1" type="number" min="0"
+             class="border border-slate-200 rounded-md px-2 py-1 w-20 text-right"
+             placeholder="0">
+    </div>
+
+    <!-- 2: Verdura -->
+    <div class="flex items-center justify-between gap-3 border border-slate-100 rounded-lg px-3 py-2 bg-slate-50/60">
+      <span class="font-medium text-slate-700">Verdura</span>
+      <input id="var-2" type="number" min="0"
+             class="border border-slate-200 rounded-md px-2 py-1 w-20 text-right"
+             placeholder="0">
+    </div>
+
+    <!-- 3: Choclo -->
+    <div class="flex items-center justify-between gap-3 border border-slate-100 rounded-lg px-3 py-2 bg-slate-50/60">
+      <span class="font-medium text-slate-700">Choclo</span>
+      <input id="var-3" type="number" min="0"
+             class="border border-slate-200 rounded-md px-2 py-1 w-20 text-right"
+             placeholder="0">
+    </div>
+
+    <!-- 4: Pollo -->
+    <div class="flex items-center justify-between gap-3 border border-slate-100 rounded-lg px-3 py-2 bg-slate-50/60">
+      <span class="font-medium text-slate-700">Pollo</span>
+      <input id="var-4" type="number" min="0"
+             class="border border-slate-200 rounded-md px-2 py-1 w-20 text-right"
+             placeholder="0">
+    </div>
+
+    <!-- 5: Atún -->
+    <div class="flex items-center justify-between gap-3 border border-slate-100 rounded-lg px-3 py-2 bg-slate-50/60">
+      <span class="font-medium text-slate-700">Atún</span>
+      <input id="var-5" type="number" min="0"
+             class="border border-slate-200 rounded-md px-2 py-1 w-20 text-right"
+             placeholder="0">
+    </div>
+
+    <!-- 6: Caprese -->
+    <div class="flex items-center justify-between gap-3 border border-slate-100 rounded-lg px-3 py-2 bg-slate-50/60">
+      <span class="font-medium text-slate-700">Capresse</span>
+      <input id="var-6" type="number" min="0"
+             class="border border-slate-200 rounded-md px-2 py-1 w-20 text-right"
+             placeholder="0">
+    </div>
+
+    <!-- 7: Fugazza -->
+    <div class="flex items-center justify-between gap-3 border border-slate-100 rounded-lg px-3 py-2 bg-slate-50/60">
+      <span class="font-medium text-slate-700">Fugazza</span>
+      <input id="var-7" type="number" min="0"
+             class="border border-slate-200 rounded-md px-2 py-1 w-20 text-right"
+             placeholder="0">
+    </div>
+
+    <!-- 8: Queso azul -->
+    <div class="flex items-center justify-between gap-3 border border-slate-100 rounded-lg px-3 py-2 bg-slate-50/60">
+      <span class="font-medium text-slate-700">Queso azul</span>
+      <input id="var-8" type="number" min="0"
+             class="border border-slate-200 rounded-md px-2 py-1 w-20 text-right"
+             placeholder="0">
+    </div>
+
+    <!-- 9: Bondiola -->
+    <div class="flex items-center justify-between gap-3 border border-slate-100 rounded-lg px-3 py-2 bg-slate-50/60">
+      <span class="font-medium text-slate-700">Bondiola</span>
+      <input id="var-9" type="number" min="0"
+             class="border border-slate-200 rounded-md px-2 py-1 w-20 text-right"
+             placeholder="0">
+    </div>
+
+    <!-- 10: Vacio -->
+    <div class="flex items-center justify-between gap-3 border border-slate-100 rounded-lg px-3 py-2 bg-slate-50/60">
+      <span class="font-medium text-slate-700">Vacio Desmenuzado</span>
+      <input id="var-10" type="number" min="0"
+             class="border border-slate-200 rounded-md px-2 py-1 w-20 text-right"
+             placeholder="0">
+    </div>
+
+    <!-- 11: Campo -->
+    <div class="flex items-center justify-between gap-3 border border-slate-100 rounded-lg px-3 py-2 bg-slate-50/60">
+      <span class="font-medium text-slate-700">Campo (picante)</span>
+      <input id="var-11" type="number" min="0"
+             class="border border-slate-200 rounded-md px-2 py-1 w-20 text-right"
+             placeholder="0">
+    </div>
+
+    <!-- 12: Jamón y queso -->
+    <div class="flex items-center justify-between gap-3 border border-slate-100 rounded-lg px-3 py-2 bg-slate-50/60">
+      <span class="font-medium text-slate-700">Jamón y queso</span>
+      <input id="var-12" type="number" min="0"
+             class="border border-slate-200 rounded-md px-2 py-1 w-20 text-right"
+             placeholder="0">
+    </div>
+  </div>
+
+  <div class="pt-4 flex justify-end">
+    <button
+  id="btn-crear-pedido"
+  class="
+    inline-flex items-center justify-center gap-2
+    rounded-full
+    bg-gradient-to-r from-rose-600 to-rose-500
+    px-4 py-2
+    text-xs font-semibold tracking-tight text-white
+    shadow-sm shadow-rose-500/40
+    hover:shadow-md hover:shadow-rose-500/60
+    hover:-translate-y-0.5
+    active:translate-y-0 active:scale-[0.98]
+    focus-visible:outline-none
+    focus-visible:ring-2 focus-visible:ring-rose-500/80
+    focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900
+    transition-all
+  "
+>
+  Crear pedido
+</button>
+  </div>
+</div>
+
+</div>
+
+
+        <!-- SECCIÓN STOCK -->
+<div data-section="stock" class="space-y-5 hidden seccion">
+
+  <!-- 🔹 VISTA STOCK NORMAL (LO QUE YA TENÍAS) -->
+  <div id="vista-stock-normal" class="space-y-5">
+
+    <!-- 🔹 FORMULARIO PARA CARGAR PRODUCCIÓN -->
+    <div id="seccion-produccion" class="p-4 space-y-4 formulario-produccion-css">
+      <div class="flex flex-wrap items-center justify-between gap-3 ">
+        <div>
+          <h4 class="text-sm font-semibold text-slate-800">Cargar producción del día</h4>
+          <p class="text-[11px] text-slate-500">
+            Elegí la fecha y la cantidad producida por variedad. Las que queden en 0 se toman como no producidas.
+          </p>
+        </div>
+
+        <div class="flex items-center gap-2 text-xs">
+          <label for="fecha-produccion" class="text-slate-600">Fecha de producción</label>
+          <input
+            id="fecha-produccion"
+            type="date"
+            class="border rounded-md px-2 py-1 text-xs bg-slate-50 border-slate-300
+                   focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-slate-900"
+          />
+          <button type="button"
+                  class="px-3 py-1.5 rounded-md border border-slate-300 text-slate-700 hover:bg-slate-50">
+            Hoy
+          </button>
+        </div>
+      </div>
+
+      <!-- Grid de variedades (PRODUCCIÓN) -->
+      <div class="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-4 gap-3 text-xs">
+        <!-- 1: Criolla -->
+        <div class="card-variedad group flex flex-col justify-between gap-3 rounded-2xl border border-slate-200 bg-slate-50/80 px-3 py-3
+                    hover:bg-white hover:shadow-md hover:-translate-y-0.5 transition-all cursor-pointer"
+             data-variedad-card="1">
+          <div class="flex items-center gap-3">
+            <div class="h-10 w-10 rounded-full overflow-hidden bg-slate-200 flex items-center justify-center">
+              <img src="./variedades/carne.png" alt="Criolla" class="h-full w-full object-cover">
+            </div>
+            <div>
+              <p class="text-sm font-semibold text-slate-800">Criolla</p>
+              <p class="text-[11px] text-slate-400">Carne cortada a cuchillo</p>
+            </div>
+          </div>
+
+          <div class="mt-2 flex items-center justify-between">
+            <span class="text-[11px] text-slate-500">Cantidad</span>
+            <div class="inline-flex items-center gap-1">
+              <input type="number"
+                     min="0"
+                     value="0"
+                     data-variedad-id="1"
+                     class="input-cantidad-variedad w-20 text-right border border-slate-200 rounded-md px-2 py-1 text-[12px] bg-white" />
+            </div>
+          </div>
+        </div>
+
+        <!-- 2: Verdura -->
+        <div class=" card-variedad group flex flex-col justify-between gap-3 rounded-2xl border border-slate-200 bg-slate-50/80 px-3 py-3
+                    hover:bg-white hover:shadow-md hover:-translate-y-0.5 transition-all cursor-pointer"
+             data-variedad-card="2">
+          <div class="flex items-center gap-3">
+            <div class="h-10 w-10 rounded-full overflow-hidden bg-slate-200 flex items-center justify-center">
+              <img src="./variedades/verdura.png" alt="Verdura" class="h-full w-full object-cover">
+            </div>
+            <div>
+              <p class="text-sm font-semibold text-slate-800">Verdura</p>
+              <p class="text-[11px] text-slate-400">Acelga y salsa blanca</p>
+            </div>
+          </div>
+          <div class="mt-2 flex items-center justify-between">
+            <span class="text-[11px] text-slate-500">Cantidad</span>
+            <div class="inline-flex items-center gap-1">
+              <input type="number"
+                     min="0"
+                     value="0"
+                     data-variedad-id="2"
+                     class="input-cantidad-variedad w-20 text-right border border-slate-200 rounded-md px-2 py-1 text-[12px] bg-white" />
+            </div>
+          </div>
+        </div>
+
+        <!-- 3: Choclo -->
+        <div class="card-variedad group flex flex-col justify-between gap-3 rounded-2xl border border-slate-200 bg-slate-50/80 px-3 py-3
+                    hover:bg-white hover:shadow-md hover:-translate-y-0.5 transition-all cursor-pointer"
+             data-variedad-card="3">
+          <div class="flex items-center gap-3">
+            <div class="h-10 w-10 rounded-full overflow-hidden bg-slate-200 flex items-center justify-center">
+              <img src="./variedades/choclo.png" alt="Choclo" class="h-full w-full object-cover">
+            </div>
+            <div>
+              <p class="text-sm font-semibold text-slate-800">Choclo</p>
+              <p class="text-[11px] text-slate-400">Humita cremosa</p>
+            </div>
+          </div>
+          <div class="mt-2 flex items-center justify-between">
+            <span class="text-[11px] text-slate-500">Cantidad</span>
+            <div class="inline-flex items-center gap-1">
+              <input type="number"
+                     min="0"
+                     value="0"
+                     data-variedad-id="3"
+                     class="input-cantidad-variedad w-20 text-right border border-slate-200 rounded-md px-2 py-1 text-[12px] bg-white" />
+            </div>
+          </div>
+        </div>
+
+        <!-- 4: Pollo -->
+        <div class="card-variedad group flex flex-col justify-between gap-3 rounded-2xl border border-slate-200 bg-slate-50/80 px-3 py-3
+                    hover:bg-white hover:shadow-md hover:-translate-y-0.5 transition-all cursor-pointer"
+             data-variedad-card="4">
+          <div class="flex items-center gap-3">
+            <div class="h-10 w-10 rounded-full overflow-hidden bg-slate-200 flex items-center justify-center">
+              <img src="./variedades/pollo.png" alt="Pollo" class="h-full w-full object-cover">
+            </div>
+            <div>
+              <p class="text-sm font-semibold text-slate-800">Pollo</p>
+              <p class="text-[11px] text-slate-400">Pollo desmenuzado</p>
+            </div>
+          </div>
+          <div class="mt-2 flex items-center justify-between">
+            <span class="text-[11px] text-slate-500">Cantidad</span>
+            <div class="inline-flex items-center gap-1">
+              <input type="number"
+                     min="0"
+                     value="0"
+                     data-variedad-id="4"
+                     class="input-cantidad-variedad w-20 text-right border border-slate-200 rounded-md px-2 py-1 text-[12px] bg-white" />
+            </div>
+          </div>
+        </div>
+
+        <!-- 5: Atún -->
+        <div class="card-variedad group flex flex-col justify-between gap-3 rounded-2xl border border-slate-200 bg-slate-50/80 px-3 py-3
+                    hover:bg-white hover:shadow-md hover:-translate-y-0.5 transition-all cursor-pointer"
+             data-variedad-card="5">
+          <div class="flex items-center gap-3">
+            <div class="h-10 w-10 rounded-full overflow-hidden bg-slate-200 flex items-center justify-center">
+              <img src="./variedades/atun.png" alt="Atún" class="h-full w-full object-cover">
+            </div>
+            <div>
+              <p class="text-sm font-semibold text-slate-800">Atún</p>
+              <p class="text-[11px] text-slate-400">Atún y cebolla</p>
+            </div>
+          </div>
+          <div class="mt-2 flex items-center justify-between">
+            <span class="text-[11px] text-slate-500">Cantidad</span>
+            <div class="inline-flex items-center gap-1">
+              <input type="number"
+                     min="0"
+                     value="0"
+                     data-variedad-id="5"
+                     class="input-cantidad-variedad w-20 text-right border border-slate-200 rounded-md px-2 py-1 text-[12px] bg-white" />
+            </div>
+          </div>
+        </div>
+
+        <!-- 6: Capresse -->
+        <div class="card-variedad group flex flex-col justify-between gap-3 rounded-2xl border border-slate-200 bg-slate-50/80 px-3 py-3
+                    hover:bg-white hover:shadow-md hover:-translate-y-0.5 transition-all cursor-pointer"
+             data-variedad-card="6">
+          <div class="flex items-center gap-3">
+            <div class="h-10 w-10 rounded-full overflow-hidden bg-slate-200 flex items-center justify-center">
+              <img src="./variedades/capresse.png" alt="Capresse" class="h-full w-full object-cover">
+            </div>
+            <div>
+              <p class="text-sm font-semibold text-slate-800">Capresse</p>
+              <p class="text-[11px] text-slate-400">Tomate, albahaca y muzza</p>
+            </div>
+          </div>
+          <div class="mt-2 flex items-center justify-between">
+            <span class="text-[11px] text-slate-500">Cantidad</span>
+            <div class="inline-flex items-center gap-1">
+              <input type="number"
+                     min="0"
+                     value="0"
+                     data-variedad-id="6"
+                     class="input-cantidad-variedad w-20 text-right border border-slate-200 rounded-md px-2 py-1 text-[12px] bg-white" />
+            </div>
+          </div>
+        </div>
+
+        <!-- 7: Fugazza -->
+        <div class="card-variedad group flex flex-col justify-between gap-3 rounded-2xl border border-slate-200 bg-slate-50/80 px-3 py-3
+                    hover:bg-white hover:shadow-md hover:-translate-y-0.5 transition-all cursor-pointer"
+             data-variedad-card="7">
+          <div class="flex items-center gap-3">
+            <div class="h-10 w-10 rounded-full overflow-hidden bg-slate-200 flex items-center justify-center">
+              <img src="./variedades/fugazza.png" alt="Fugazza" class="h-full w-full object-cover">
+            </div>
+            <div>
+              <p class="text-sm font-semibold text-slate-800">Fugazza</p>
+              <p class="text-[11px] text-slate-400">Cebolla y queso</p>
+            </div>
+          </div>
+          <div class="mt-2 flex items-center justify-between">
+            <span class="text-[11px] text-slate-500">Cantidad</span>
+            <div class="inline-flex items-center gap-1">
+              <input type="number"
+                     min="0"
+                     value="0"
+                     data-variedad-id="7"
+                     class="input-cantidad-variedad w-20 text-right border border-slate-200 rounded-md px-2 py-1 text-[12px] bg-white" />
+            </div>
+          </div>
+        </div>
+
+        <!-- 8: Queso azul -->
+        <div class="card-variedad group flex flex-col justify-between gap-3 rounded-2xl border border-slate-200 bg-slate-50/80 px-3 py-3
+                    hover:bg-white hover:shadow-md hover:-translate-y-0.5 transition-all cursor-pointer"
+             data-variedad-card="8">
+          <div class="flex items-center gap-3">
+            <div class="h-10 w-10 rounded-full overflow-hidden bg-slate-200 flex items-center justify-center">
+              <img src="./variedades/queso_azul.png" alt="Queso azul" class="h-full w-full object-cover">
+            </div>
+            <div>
+              <p class="text-sm font-semibold text-slate-800">Queso azul</p>
+              <p class="text-[11px] text-slate-400">Queso azul y muzza</p>
+            </div>
+          </div>
+          <div class="mt-2 flex items-center justify-between">
+            <span class="text-[11px] text-slate-500">Cantidad</span>
+            <div class="inline-flex items-center gap-1">
+              <input type="number"
+                     min="0"
+                     value="0"
+                     data-variedad-id="8"
+                     class="input-cantidad-variedad w-20 text-right border border-slate-200 rounded-md px-2 py-1 text-[12px] bg-white" />
+            </div>
+          </div>
+        </div>
+
+        <!-- 9: Bondiola -->
+        <div class="card-variedad group flex flex-col justify-between gap-3 rounded-2xl border border-slate-200 bg-slate-50/80 px-3 py-3
+                    hover:bg-white hover:shadow-md hover:-translate-y-0.5 transition-all cursor-pointer"
+             data-variedad-card="9">
+          <div class="flex items-center gap-3">
+            <div class="h-10 w-10 rounded-full overflow-hidden bg-slate-200 flex items-center justify-center">
+              <img src="./variedades/bondiola.png" alt="Bondiola" class="h-full w-full object-cover">
+            </div>
+            <div>
+              <p class="text-sm font-semibold text-slate-800">Bondiola</p>
+              <p class="text-[11px] text-slate-400">Bondiola braseada</p>
+            </div>
+          </div>
+          <div class="mt-2 flex items-center justify-between">
+            <span class="text-[11px] text-slate-500">Cantidad</span>
+            <div class="inline-flex items-center gap-1">
+              <input type="number"
+                     min="0"
+                     value="0"
+                     data-variedad-id="9"
+                     class="input-cantidad-variedad w-20 text-right border border-slate-200 rounded-md px-2 py-1 text-[12px] bg-white" />
+            </div>
+          </div>
+        </div>
+
+        <!-- 10: Vacío desmenuzado -->
+        <div class="card-variedad group flex flex-col justify-between gap-3 rounded-2xl border border-slate-200 bg-slate-50/80 px-3 py-3
+                    hover:bg-white hover:shadow-md hover:-translate-y-0.5 transition-all cursor-pointer"
+             data-variedad-card="10">
+          <div class="flex items-center gap-3">
+            <div class="h-10 w-10 rounded-full overflow-hidden bg-slate-200 flex items-center justify-center">
+              <img src="./variedades/vacio.png" alt="Vacío desmenuzado" class="h-full w-full object-cover">
+            </div>
+            <div>
+              <p class="text-sm font-semibold text-slate-800">Vacío desmenuzado</p>
+              <p class="text-[11px] text-slate-400">Cocción lenta</p>
+            </div>
+          </div>
+          <div class="mt-2 flex items-center justify-between">
+            <span class="text-[11px] text-slate-500">Cantidad</span>
+            <div class="inline-flex items-center gap-1">
+              <input type="number"
+                     min="0"
+                     value="0"
+                     data-variedad-id="10"
+                     class="input-cantidad-variedad w-20 text-right border border-slate-200 rounded-md px-2 py-1 text-[12px] bg-white" />
+            </div>
+          </div>
+        </div>
+
+        <!-- 11: Campo (picante) -->
+        <div class="card-variedad group flex flex-col justify-between gap-3 rounded-2xl border border-slate-200 bg-slate-50/80 px-3 py-3
+                    hover:bg-white hover:shadow-md hover:-translate-y-0.5 transition-all cursor-pointer"
+             data-variedad-card="11">
+          <div class="flex items-center gap-3">
+            <div class="h-10 w-10 rounded-full overflow-hidden bg-slate-200 flex items-center justify-center">
+              <img src="./variedades/campo.png" alt="Campo picante" class="h-full w-full object-cover">
+            </div>
+            <div>
+              <p class="text-sm font-semibold text-slate-800">Campo (picante)</p>
+              <p class="text-[11px] text-slate-400">Versión picante</p>
+            </div>
+          </div>
+          <div class="mt-2 flex items-center justify-between">
+            <span class="text-[11px] text-slate-500">Cantidad</span>
+            <div class="inline-flex items-center gap-1">
+              <input type="number"
+                     min="0"
+                     value="0"
+                     data-variedad-id="11"
+                     class="input-cantidad-variedad w-20 text-right border border-slate-200 rounded-md px-2 py-1 text-[12px] bg-white" />
+            </div>
+          </div>
+        </div>
+
+        <!-- 12: Jamón y queso -->
+        <div class="card-variedad group flex flex-col justify-between gap-3 rounded-2xl border border-slate-200 bg-slate-50/80 px-3 py-3
+                    hover:bg-white hover:shadow-md hover:-translate-y-0.5 transition-all cursor-pointer"
+             data-variedad-card="12">
+          <div class="flex items-center gap-3">
+            <div class="h-10 w-10 rounded-full overflow-hidden bg-slate-200 flex items-center justify-center">
+              <img src="./variedades/jamon.png" alt="Jamón y queso" class="h-full w-full object-cover">
+            </div>
+            <div>
+              <p class="text-sm font-semibold text-slate-800">Jamón y queso</p>
+              <p class="text-[11px] text-slate-400">Clásica</p>
+            </div>
+          </div>
+          <div class="mt-2 flex items-center justify-between">
+            <span class="text-[11px] text-slate-500">Cantidad</span>
+            <div class="inline-flex items-center gap-1">
+              <input type="number"
+                     min="0"
+                     value="0"
+                     data-variedad-id="12"
+                     class="input-cantidad-variedad w-20 text-right border border-slate-200 rounded-md px-2 py-1 text-[12px] bg-white" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="pt-2 flex gap-3 justify-end">
+        <!-- Botón nuevo para ir a mermas -->
+        <button id="btn-ir-a-mermas"
+                class="inline-flex items-center gap-2
+                       rounded-full border border-slate-300 bg-white
+                       px-4 py-2
+                       text-xs font-semibold tracking-tight text-slate-700
+                       hover:bg-slate-50 hover:border-slate-400
+                       transition-all">
+          Cargar mermas
+        </button>
+
+        <!-- Botón guardar producción (ya lo tenías) -->
+        <button id="btn-guardar-produccion"
+                class="ml-auto
+                       inline-flex items-center gap-2
+                       rounded-full
+                       bg-gradient-to-r from-rose-600 to-rose-500
+                       px-4 py-2
+                       text-xs font-semibold tracking-tight text-white
+                       shadow-sm shadow-rose-500/40
+                       hover:shadow-md hover:shadow-rose-500/60
+                       hover:-translate-y-0.5
+                       active:translate-y-0 active:scale-[0.98]
+                       focus-visible:outline-none
+                       focus-visible:ring-2 focus-visible:ring-rose-500/80
+                       focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900
+                       transition-all">
+                       
+          Guardar producción
+        </button>
+      </div>
+    </div>
+
+    <div class="flex items-center justify-between mb-2 mt-6">
+      <button
+        id="btn-actualizar-tabla"
+        class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-[12px] font-medium
+               border border-slate-300 bg-white text-slate-700
+               hover:bg-slate-50 hover:border-slate-400
+               active:bg-slate-100 transition-colors">
+        <span class="material-symbols-outlined text-[16px]">
+        </span>
+        Actualizar tabla
+      </button>
+    </div>
+
+    <!-- 🔹 TABLA DE STOCK ACTUAL POR VARIEDAD -->
+    <div class="bg-white rounded-xl shadow-sm border border-slate-200 mt-6">
+      <div class="px-4 py-3 border-b border-slate-200">
+        <h4 class="text-sm font-semibold text-slate-800">Stock actual por variedad</h4>
+        <p class="text-xs text-slate-500">Última producción y stock disponible</p>
+      </div>
+
+      <table class="w-full text-xs text-slate-700">
+        <thead class="bg-slate-50 text-[11px] uppercase text-slate-500 border-b border-slate-200">
+          <tr>
+            <th class="px-4 py-2 text-left">Variedad</th>
+            <th class="px-4 py-2 text-left">Fecha elabor.</th>
+            <th class="px-4 py-2 text-right">Stock total</th>
+            <th class="px-4 py-2 text-right">Disponible</th>
+            <th class="px-4 py-2 text-center">Activo</th>
+          </tr>
+        </thead>
+        <tbody id="tbody-stock-actual" class="bg-white"></tbody>
+      </table>
+    </div>
+  </div> <!-- /vista-stock-normal -->
+
+  <!-- 🔹 VISTA MERMAS (NUEVA) -->
+  <div id="vista-mermas" class="p-4 space-y-4 formulario-produccion-css hidden">
+
+    <div class="flex flex-wrap items-center justify-between gap-3 div-merma">
+      <div>
+        <h4 class="text-sm font-semibold text-slate-800">Cargar mermas del día</h4>
+        <p class="text-[11px] text-slate-500">
+          Registra la cantidad perdida por variedad. Las que queden en 0 se toman como sin merma.
+        </p>
+      </div>
+    </div>
+
+    <!-- Grid de variedades (MERMAS, MISMO DISEÑO) -->
+    <div class="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-4 gap-3 text-xs">
+      <!-- 1: Criolla -->
+      <div class="card-variedad group flex flex-col justify-between gap-3 rounded-2xl border border-slate-200 bg-slate-50/80 px-3 py-3
+                  hover:bg-white hover:shadow-md hover:-translate-y-0.5 transition-all cursor-pointer">
+        <div class="flex items-center gap-3">
+          <div class="h-10 w-10 rounded-full overflow-hidden bg-slate-200 flex items-center justify-center">
+            <img src="./variedades/carne.png" alt="Criolla" class="h-full w-full object-cover">
+          </div>
+          <div>
+            <p class="text-sm font-semibold text-slate-800">Criolla</p>
+            <p class="text-[11px] text-slate-400">Carne cortada a cuchillo</p>
+          </div>
+        </div>
+
+        <div class="mt-2 flex items-center justify-between">
+          <span class="text-[11px] text-slate-500">Cantidad perdida</span>
+          <div class="inline-flex items-center gap-1">
+            <input type="number"
+                   min="0"
+                   value="0"
+                   data-perdida-variedad-id="1"
+                   class="w-20 text-right border border-slate-200 rounded-md px-2 py-1 text-[12px] bg-white" />
+          </div>
+        </div>
+      </div>
+
+      <!-- 2: Verdura -->
+      <div class="card-variedad group flex flex-col justify-between gap-3 rounded-2xl border border-slate-200 bg-slate-50/80 px-3 py-3
+                  hover:bg-white hover:shadow-md hover:-translate-y-0.5 transition-all cursor-pointer">
+        <div class="flex items-center gap-3">
+          <div class="h-10 w-10 rounded-full overflow-hidden bg-slate-200 flex items-center justify-center">
+            <img src="./variedades/verdura.png" alt="Verdura" class="h-full w-full object-cover">
+          </div>
+          <div>
+            <p class="text-sm font-semibold text-slate-800">Verdura</p>
+            <p class="text-[11px] text-slate-400">Acelga y salsa blanca</p>
+          </div>
+        </div>
+        <div class="mt-2 flex items-center justify-between">
+          <span class="text-[11px] text-slate-500">Cantidad perdida</span>
+          <div class="inline-flex items-center gap-1">
+            <input type="number"
+                   min="0"
+                   value="0"
+                   data-perdida-variedad-id="2"
+                   class="w-20 text-right border border-slate-200 rounded-md px-2 py-1 text-[12px] bg-white" />
+          </div>
+        </div>
+      </div>
+
+      <!-- 3: Choclo -->
+      <div class="card-variedad group flex flex-col justify-between gap-3 rounded-2xl border border-slate-200 bg-slate-50/80 px-3 py-3
+                  hover:bg-white hover:shadow-md hover:-translate-y-0.5 transition-all cursor-pointer">
+        <div class="flex items-center gap-3">
+          <div class="h-10 w-10 rounded-full overflow-hidden bg-slate-200 flex items-center justify-center">
+            <img src="./variedades/choclo.png" alt="Choclo" class="h-full w-full object-cover">
+          </div>
+          <div>
+            <p class="text-sm font-semibold text-slate-800">Choclo</p>
+            <p class="text-[11px] text-slate-400">Humita cremosa</p>
+          </div>
+        </div>
+        <div class="mt-2 flex items-center justify-between">
+          <span class="text-[11px] text-slate-500">Cantidad perdida</span>
+          <div class="inline-flex items-center gap-1">
+            <input type="number"
+                   min="0"
+                   value="0"
+                   data-perdida-variedad-id="3"
+                   class="w-20 text-right border border-slate-200 rounded-md px-2 py-1 text-[12px] bg-white" />
+          </div>
+        </div>
+      </div>
+
+      <!-- 4: Pollo -->
+      <div class="card-variedad group flex flex-col justify-between gap-3 rounded-2xl border border-slate-200 bg-slate-50/80 px-3 py-3
+                  hover:bg-white hover:shadow-md hover:-translate-y-0.5 transition-all cursor-pointer">
+        <div class="flex items-center gap-3">
+          <div class="h-10 w-10 rounded-full overflow-hidden bg-slate-200 flex items-center justify-center">
+            <img src="./variedades/pollo.png" alt="Pollo" class="h-full w-full object-cover">
+          </div>
+          <div>
+            <p class="text-sm font-semibold text-slate-800">Pollo</p>
+            <p class="text-[11px] text-slate-400">Pollo desmenuzado</p>
+          </div>
+        </div>
+        <div class="mt-2 flex items-center justify-between">
+          <span class="text-[11px] text-slate-500">Cantidad perdida</span>
+          <div class="inline-flex items-center gap-1">
+            <input type="number"
+                   min="0"
+                   value="0"
+                   data-perdida-variedad-id="4"
+                   class="w-20 text-right border border-slate-200 rounded-md px-2 py-1 text-[12px] bg-white" />
+          </div>
+        </div>
+      </div>
+
+      <!-- 5: Atún -->
+      <div class="card-variedad group flex flex-col justify-between gap-3 rounded-2xl border border-slate-200 bg-slate-50/80 px-3 py-3
+                  hover:bg-white hover:shadow-md hover:-translate-y-0.5 transition-all cursor-pointer">
+        <div class="flex items-center gap-3">
+          <div class="h-10 w-10 rounded-full overflow-hidden bg-slate-200 flex items-center justify-center">
+            <img src="./variedades/atun.png" alt="Atún" class="h-full w-full object-cover">
+          </div>
+          <div>
+            <p class="text-sm font-semibold text-slate-800">Atún</p>
+            <p class="text-[11px] text-slate-400">Atún y cebolla</p>
+          </div>
+        </div>
+        <div class="mt-2 flex items-center justify-between">
+          <span class="text-[11px] text-slate-500">Cantidad perdida</span>
+          <div class="inline-flex items-center gap-1">
+            <input type="number"
+                   min="0"
+                   value="0"
+                   data-perdida-variedad-id="5"
+                   class="w-20 text-right border border-slate-200 rounded-md px-2 py-1 text-[12px] bg-white" />
+          </div>
+        </div>
+      </div>
+
+      <!-- 6: Capresse -->
+      <div class="card-variedad group flex flex-col justify-between gap-3 rounded-2xl border border-slate-200 bg-slate-50/80 px-3 py-3
+                  hover:bg-white hover:shadow-md hover:-translate-y-0.5 transition-all cursor-pointer">
+        <div class="flex items-center gap-3">
+          <div class="h-10 w-10 rounded-full overflow-hidden bg-slate-200 flex items-center justify-center">
+            <img src="./variedades/capresse.png" alt="Capresse" class="h-full w-full object-cover">
+          </div>
+          <div>
+            <p class="text-sm font-semibold text-slate-800">Capresse</p>
+            <p class="text-[11px] text-slate-400">Tomate, albahaca y muzza</p>
+          </div>
+        </div>
+        <div class="mt-2 flex items-center justify-between">
+          <span class="text-[11px] text-slate-500">Cantidad perdida</span>
+          <div class="inline-flex items-center gap-1">
+            <input type="number"
+                   min="0"
+                   value="0"
+                   data-perdida-variedad-id="6"
+                   class="w-20 text-right border border-slate-200 rounded-md px-2 py-1 text-[12px] bg-white" />
+          </div>
+        </div>
+      </div>
+
+      <!-- 7: Fugazza -->
+      <div class="card-variedad group flex flex-col justify-between gap-3 rounded-2xl border border-slate-200 bg-slate-50/80 px-3 py-3
+                  hover:bg-white hover:shadow-md hover:-translate-y-0.5 transition-all cursor-pointer">
+        <div class="flex items-center gap-3">
+          <div class="h-10 w-10 rounded-full overflow-hidden bg-slate-200 flex items-center justify-center">
+            <img src="./variedades/fugazza.png" alt="Fugazza" class="h-full w-full object-cover">
+          </div>
+          <div>
+            <p class="text-sm font-semibold text-slate-800">Fugazza</p>
+            <p class="text-[11px] text-slate-400">Cebolla y queso</p>
+          </div>
+        </div>
+        <div class="mt-2 flex items-center justify-between">
+          <span class="text-[11px] text-slate-500">Cantidad perdida</span>
+          <div class="inline-flex items-center gap-1">
+            <input type="number"
+                   min="0"
+                   value="0"
+                   data-perdida-variedad-id="7"
+                   class="w-20 text-right border border-slate-200 rounded-md px-2 py-1 text-[12px] bg-white" />
+          </div>
+        </div>
+      </div>
+
+      <!-- 8: Queso azul -->
+      <div class="card-variedad group flex flex-col justify-between gap-3 rounded-2xl border border-slate-200 bg-slate-50/80 px-3 py-3
+                  hover:bg-white hover:shadow-md hover:-translate-y-0.5 transition-all cursor-pointer">
+        <div class="flex items-center gap-3">
+          <div class="h-10 w-10 rounded-full overflow-hidden bg-slate-200 flex items-center justify-center">
+            <img src="./variedades/queso_azul.png" alt="Queso azul" class="h-full w-full object-cover">
+          </div>
+          <div>
+            <p class="text-sm font-semibold text-slate-800">Queso azul</p>
+            <p class="text-[11px] text-slate-400">Queso azul y muzza</p>
+          </div>
+        </div>
+        <div class="mt-2 flex items-center justify-between">
+          <span class="text-[11px] text-slate-500">Cantidad perdida</span>
+          <div class="inline-flex items-center gap-1">
+            <input type="number"
+                   min="0"
+                   value="0"
+                   data-perdida-variedad-id="8"
+                   class="w-20 text-right border border-slate-200 rounded-md px-2 py-1 text-[12px] bg-white" />
+          </div>
+        </div>
+      </div>
+
+      <!-- 9: Bondiola -->
+      <div class="card-variedad group flex flex-col justify-between gap-3 rounded-2xl border border-slate-200 bg-slate-50/80 px-3 py-3
+                  hover:bg-white hover:shadow-md hover:-translate-y-0.5 transition-all cursor-pointer">
+        <div class="flex items-center gap-3">
+          <div class="h-10 w-10 rounded-full overflow-hidden bg-slate-200 flex items-center justify-center">
+            <img src="./variedades/bondiola.png" alt="Bondiola" class="h-full w-full object-cover">
+          </div>
+          <div>
+            <p class="text-sm font-semibold text-slate-800">Bondiola</p>
+            <p class="text-[11px] text-slate-400">Bondiola braseada</p>
+          </div>
+        </div>
+        <div class="mt-2 flex items-center justify-between">
+          <span class="text-[11px] text-slate-500">Cantidad perdida</span>
+          <div class="inline-flex items-center gap-1">
+            <input type="number"
+                   min="0"
+                   value="0"
+                   data-perdida-variedad-id="9"
+                   class="w-20 text-right border border-slate-200 rounded-md px-2 py-1 text-[12px] bg-white" />
+          </div>
+        </div>
+      </div>
+
+      <!-- 10: Vacío desmenuzado -->
+      <div class="card-variedad group flex flex-col justify-between gap-3 rounded-2xl border border-slate-200 bg-slate-50/80 px-3 py-3
+                  hover:bg-white hover:shadow-md hover:-translate-y-0.5 transition-all cursor-pointer">
+        <div class="flex items-center gap-3">
+          <div class="h-10 w-10 rounded-full overflow-hidden bg-slate-200 flex items-center justify-center">
+            <img src="./variedades/vacio.png" alt="Vacío desmenuzado" class="h-full w-full object-cover">
+          </div>
+          <div>
+            <p class="text-sm font-semibold text-slate-800">Vacío desmenuzado</p>
+            <p class="text-[11px] text-slate-400">Cocción lenta</p>
+          </div>
+        </div>
+        <div class="mt-2 flex items-center justify-between">
+          <span class="text-[11px] text-slate-500">Cantidad perdida</span>
+          <div class="inline-flex items-center gap-1">
+            <input type="number"
+                   min="0"
+                   value="0"
+                   data-perdida-variedad-id="10"
+                   class="w-20 text-right border border-slate-200 rounded-md px-2 py-1 text-[12px] bg-white" />
+          </div>
+        </div>
+      </div>
+
+      <!-- 11: Campo (picante) -->
+      <div class="card-variedad group flex flex-col justify-between gap-3 rounded-2xl border border-slate-200 bg-slate-50/80 px-3 py-3
+                  hover:bg-white hover:shadow-md hover:-translate-y-0.5 transition-all cursor-pointer">
+        <div class="flex items-center gap-3">
+          <div class="h-10 w-10 rounded-full overflow-hidden bg-slate-200 flex items-center justify-center">
+            <img src="./variedades/campo.png" alt="Campo picante" class="h-full w-full object-cover">
+          </div>
+          <div>
+            <p class="text-sm font-semibold text-slate-800">Campo (picante)</p>
+            <p class="text-[11px] text-slate-400">Versión picante</p>
+          </div>
+        </div>
+        <div class="mt-2 flex items-center justify-between">
+          <span class="text-[11px] text-slate-500">Cantidad perdida</span>
+          <div class="inline-flex items-center gap-1">
+            <input type="number"
+                   min="0"
+                   value="0"
+                   data-perdida-variedad-id="11"
+                   class="w-20 text-right border border-slate-200 rounded-md px-2 py-1 text-[12px] bg-white" />
+          </div>
+        </div>
+      </div>
+
+      <!-- 12: Jamón y queso -->
+      <div class="card-variedad group flex flex-col justify-between gap-3 rounded-2xl border border-slate-200 bg-slate-50/80 px-3 py-3
+                  hover:bg-white hover:shadow-md hover:-translate-y-0.5 transition-all cursor-pointer">
+        <div class="flex items-center gap-3">
+          <div class="h-10 w-10 rounded-full overflow-hidden bg-slate-200 flex items-center justify-center">
+            <img src="./variedades/jamon.png" alt="Jamón y queso" class="h-full w-full object-cover">
+          </div>
+          <div>
+            <p class="text-sm font-semibold text-slate-800">Jamón y queso</p>
+            <p class="text-[11px] text-slate-400">Clásica</p>
+          </div>
+        </div>
+        <div class="mt-2 flex items-center justify-between">
+          <span class="text-[11px] text-slate-500">Cantidad perdida</span>
+          <div class="inline-flex items-center gap-1">
+            <input type="number"
+                   min="0"
+                   value="0"
+                   data-perdida-variedad-id="12"
+                   class="w-20 text-right border border-slate-200 rounded-md px-2 py-1 text-[12px] bg-white" />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="pt-2 flex gap-3 justify-end">
+      <button id="btn-cancelar-mermas"
+              class="inline-flex items-center gap-2
+                     rounded-full border border-slate-300 bg-white
+                     px-4 py-2
+                     text-xs font-semibold tracking-tight text-slate-700
+                     hover:bg-slate-50 hover:border-slate-400
+                     transition-all">
+        Volver sin guardar
+      </button>
+
+      <button id="btn-guardar-mermas"
+              class="inline-flex items-center gap-2
+                     rounded-full
+                     bg-gradient-to-r from-rose-600 to-rose-500
+                     px-4 py-2
+                     text-xs font-semibold tracking-tight text-white
+                     shadow-sm shadow-rose-500/40
+                     hover:shadow-md hover:shadow-rose-500/60
+                     hover:-translate-y-0.5
+                     active:translate-y-0 active:scale-[0.98]
+                     focus-visible:outline-none
+                     focus-visible:ring-2 focus-visible:ring-rose-500/80
+                     focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900
+                     transition-all">
+        Guardar mermas
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- 📌 SECCIÓN CAJA -->
+<div data-section="caja" class=" p-6 space-y-6 seccion">
+
+ <!-- TÍTULO DE LA CAJA -->
+<div class="w-full text-center ">
+  <h2 id="caja-dia-actual"
+      class="text-[20px] font-semibold text-slate-700 tracking-tight caja-h2">
+  </h2>
+
+  <p id="caja-modo"
+     class="text-[12px] text-slate-400 mt-1">
+     Mostrando caja del día de hoy (automático)
+  </p>
+</div>
+
+<!-- FILTRO POR FECHA -->
+<div class="flex items-center gap-3 bg-white p-4 rounded-xl border shadow-sm">
+
+  <div class="flex flex-col">
+    <label class="text-[11px] font-medium text-slate-500 mb-1">Buscar caja por fecha</label>
+    <input 
+      type="date" 
+      id="caja-fecha"
+      class="border rounded-md px-2 py-1 text-xs bg-slate-50 border-slate-300
+             focus:ring-1 focus:ring-rose-500 focus:border-rose-500">
+  </div>
+
+  <button
+    id="btn-ver-caja"
+    class="ml-auto inline-flex items-center gap-2 rounded-full
+           bg-gradient-to-r from-rose-600 to-rose-500
+           px-4 py-2 text-xs font-semibold tracking-tight text-white
+           shadow-sm hover:shadow-md hover:shadow-rose-500/60
+           transition-all">
+    Ver caja del día
+  </button>
+</div>
+
+
+  <!-- KPIs -->
+  <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
+
+    <!-- INGRESOS -->
+    <div class="p-5 rounded-xl bg-gradient-to-br from-green-50 to-white border border-green-100 shadow-sm kpi-anim">
+      <p class="text-[12px] text-green-700 font-medium">Ingresos totales (particulares)</p>
+      <h2 id="kpi-ingresos-totales" class="text-3xl font-bold text-green-700 mt-1">$0</h2>
+    </div>
+
+    <!-- PEDIDOS YA -->
+<div class="p-5 rounded-xl bg-gradient-to-br from-purple-50 to-white border border-purple-100 shadow-sm kpi-anim" style="animation-delay: .2s;">
+  <p class="text-[12px] text-purple-700 font-medium">PedidosYa (liquidación)</p>
+  <h2 id="kpi-pedidosya" class="text-3xl font-bold text-purple-700 mt-1">$0</h2>
+</div>
+    <!-- EFECTIVO -->
+    <div class="p-5 rounded-xl bg-gradient-to-br from-blue-50 to-white border border-blue-100 shadow-sm kpi-anim" style="animation-delay: .05s;">
+      <p class="text-[12px] text-blue-700 font-medium">Ingresos en efectivo</p>
+      <h2 id="kpi-ingresos-efectivo" class="text-3xl font-bold text-blue-700 mt-1">$0</h2>
+    </div>
+
+    <!-- TRANSFERENCIA -->
+    <div class="p-5 rounded-xl bg-gradient-to-br from-indigo-50 to-white border border-indigo-100 shadow-sm kpi-anim" style="animation-delay: .1s;">
+      <p class="text-[12px] text-indigo-700 font-medium">Ingresos por transferencia</p>
+      <h2 id="kpi-ingresos-transferencias" class="text-3xl font-bold text-indigo-700 mt-1">$0</h2>
+    </div>
+
+    <!-- MERMAS EN PLATA -->
+    <div class="p-5 rounded-xl bg-gradient-to-br from-red-50 to-white border border-red-100 shadow-sm kpi-anim" style="animation-delay: .15s;">
+      <p class="text-[12px] text-red-700 font-medium">Mermas (plata perdida)</p>
+      <h2 id="kpi-mermas" class="text-3xl font-bold text-red-700 mt-1">$0</h2>
+    </div>
+
+  </div>
+
+  <button 
+  id="btn-pedidosya"
+  class="inline-flex items-center gap-2 text-xs rounded-full bg-purple-600 text-white px-3 py-1.5 hover:bg-purple-500">
+  + PedidosYa
+</button>
+
+  <!-- EGRESOS -->
+  <div class="bg-white rounded-xl border shadow-sm p-5">
+    <div class="flex items-center justify-between mb-3">
+      <div>
+        <h3 class="text-sm font-semibold text-slate-800">Egresos del día</h3>
+        <p class="text-xs text-slate-500">Pagos, sueldos y gastos varios.</p>
+      </div>
+
+      <button id="btn-abrir-egreso"
+    class="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-slate-800 to-slate-900
+             px-6 py-2 text-xs font-semibold tracking-tight text-white shadow-sm hover:shadow-md">
+    + Registrar Egreso
+</button>
+
+
+      
+    </div>
+
+    <table class="w-full text-xs">
+      <thead class="border-b bg-slate-50 text-slate-500">
+        <tr>
+          <th class="py-2 text-left">Descripción</th>
+          <th class="py-2 text-right">Monto</th>
+          <th class="py-2 text-right">Hora</th>
+        </tr>
+      </thead>
+      <tbody id="tabla-egresos-body"></tbody>
+    </table>
+  </div>
+
+  <!-- BALANCE FINAL -->
+<div
+  class="relative overflow-hidden p-6 rounded-2xl shadow-md border bg-white 
+         flex flex-col items-center gap-1
+         before:absolute before:inset-0 before:bg-gradient-to-br before:from-green-50 before:to-slate-50 before:opacity-30"
+>
+    <!-- Icono circular -->
+    <div class="w-12 h-12 flex items-center justify-center rounded-full 
+                bg-green-100 text-green-600 shadow-inner">
+        💰
+    </div>
+
+    <p class="text-[14px] text-slate-600 font-semibold tracking-wide mt-1">
+        Balance final del día
+    </p>
+
+    <h2 id="caja-balance"
+        class="text-5xl font-extrabold mt-1 transition-all duration-300">
+        $0
+    </h2>
+
+    <p class="text-[12px] text-slate-400 mt-1">
+        Ingresos – Egresos
+    </p>
+</div>
+
+
+  <!-- BOTÓN CERRAR CAJA -->
+  <div class="text-right">
+    <button
+      id="btn-cerrar-caja"
+      class="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-slate-800 to-slate-900
+             px-6 py-2 text-xs font-semibold tracking-tight text-white shadow-sm hover:shadow-md">
+      Cerrar caja del día
+    </button>
+  </div>
+
+</div>
+
+
+<!-- 📊 SECCIÓN ESTADÍSTICAS -->
+<div class="p-6 space-y-6 seccion hidden" data-section="estadisticas">
+
+  <!-- 🔸 Filtro de fecha (día / mes) -->
+  <div class="flex items-center justify-between gap-4 estadistica-titulo">
+    <h2 id="estadistica-modo" class="text-[15px] font-semibold text-slate-700 mt-1">
+      Estás viendo: estadísticas del día
+    </h2>
+
+    <div class="flex flex-col md:flex-row md:items-center gap-2 md:gap-3">
+
+      <!-- 👉 Filtro por día -->
+      <div class="flex items-center gap-2">
+        <span class="text-[11px] text-slate-500 hidden md:inline">Ver por día</span>
+        <input type="date" id="estadistica-fecha"
+          class="border border-slate-200 rounded-md px-2 py-1 text-xs text-slate-700
+                 focus:outline-none focus:ring-1 focus:ring-rose-500 focus:border-rose-500" />
+
+        <button id="btn-estadistica-fecha"
+          class="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-rose-600 to-rose-500
+                 px-4 py-2 text-xs font-semibold tracking-tight text-white shadow-sm shadow-rose-500/40
+                 hover:shadow-md hover:shadow-rose-500/60 hover:-translate-y-0.5
+                 active:translate-y-0 active:scale-[0.98]">
+          Ver día
+        </button>
+      </div>
+
+      <!-- 👉 Filtro por mes -->
+      <div class="flex items-center gap-2">
+        <span class="text-[11px] text-slate-500 hidden md:inline">Ver por mes</span>
+
+        <input type="month" id="estadistica-mes"
+          class="border border-slate-200 rounded-md px-2 py-1 text-xs text-slate-700
+                 focus:outline-none focus:ring-1 focus:ring-slate-800 focus:border-slate-800" />
+
+        <button id="btn-estadistica-mes"
+          class="inline-flex items-center gap-2 rounded-full bg-slate-800 px-4 py-2
+                 text-xs font-semibold tracking-tight text-white shadow-sm shadow-slate-800/40
+                 hover:shadow-md hover:shadow-slate-900/60 hover:-translate-y-0.5
+                 active:translate-y-0 active:scale-[0.98]">
+          Ver mes
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 🟦 KPIs PREMIUM (solo 1 vez, arreglado) -->
+  <div class="grid grid-cols-1 md:grid-cols-6 gap-4">
+
+    <div class="p-5 rounded-xl bg-gradient-to-br from-blue-50 to-white border border-blue-100 shadow-sm kpi-anim"
+      style="animation-delay: .0s;">
+      <p class="text-[12px] text-blue-700 font-medium">Empanadas vendidas</p>
+      <h2 id="kpi-empanadas" class="text-3xl font-bold text-blue-800 mt-1">0</h2>
+    </div>
+
+    <div class="p-5 rounded-xl bg-gradient-to-br from-indigo-50 to-white border border-indigo-100 shadow-sm kpi-anim"
+      style="animation-delay: .05s;">
+      <p id="kpi-label-pedidos" class="text-[12px] text-indigo-700 font-medium">Pedidos del día</p>
+      <h2 id="kpi-pedidos" class="text-3xl font-bold text-indigo-800 mt-1">0</h2>
+    </div>
+
+    <div class="p-5 rounded-xl bg-gradient-to-br from-green-50 to-white border border-green-100 shadow-sm kpi-anim"
+      style="animation-delay: .1s;">
+      <p id="kpi-label-ingresos" class="text-[12px] text-green-700 font-medium">Ingresos (diarios)</p>
+      <h2 id="kpi-facturacion" class="text-3xl font-bold text-green-700 mt-1">$0</h2>
+    </div>
+
+    <div class="p-5 rounded-xl bg-gradient-to-br from-yellow-50 to-white border border-yellow-100 shadow-sm kpi-anim"
+      style="animation-delay: .15s;">
+      <p class="text-[12px] text-yellow-700 font-medium">Variedades en bajo stock</p>
+      <h2 id="kpi-bajo-stock" class="text-3xl font-bold text-yellow-700 mt-1">0</h2>
+    </div>
+
+    <div class="p-5 rounded-xl bg-gradient-to-br from-red-50 to-white border border-red-100 shadow-sm kpi-anim"
+      style="animation-delay: .2s;">
+      <p class="text-[12px] text-red-700 font-medium">Mermas (empanadas perdidas)</p>
+      <h2 id="kpi-mermas" class="text-3xl font-bold text-red-700 mt-1">0</h2>
+    </div>
+
+    <div class="p-5 rounded-xl bg-gradient-to-br from-rose-50 to-white border border-rose-100 shadow-sm kpi-anim"
+      style="animation-delay: .25s;">
+      <p id="kpi-label-mermas-dinero" class="text-[12px] text-rose-700 font-medium">Pérdida por mermas (diaria)</p>
+      <h2 id="kpi-mermas-dinero" class="text-3xl font-bold text-rose-700 mt-1">$0</h2>
+    </div>
+
+  </div>
+
+  <!-- 📈 Gráfico de empanadas -->
+  <div class="bg-white rounded-xl border shadow-sm px-4 pt-4 pb-4">
+    <h3 class="font-semibold text-sm">Gráfico — Ventas por variedad</h3>
+    <p class="text-xs text-slate-500 mb-3">Visualización de ventas según sabor</p>
+
+    <div class="mt-2 h-52">
+      <canvas id="graficoVariedades"></canvas>
+    </div>
+  </div>
+
+  <!-- Grilla donas -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+
+    <div class="bg-white rounded-xl border border-slate-200 overflow-hidden">
+      <div class="px-4 py-3 border-b border-slate-100">
+        <h3 class="text-sm font-semibold">Ingresos por medio de pago</h3>
+        <p class="text-[11px] text-slate-500">Distribución entre efectivo y transferencia.</p>
+      </div>
+      <div class="p-4 h-64">
+        <canvas id="graficoIngresosMedios"></canvas>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-xl border border-slate-200 overflow-hidden">
+      <div class="px-4 py-3 border-b border-slate-100">
+        <h3 class="text-sm font-semibold">Mermas por variedad</h3>
+        <p class="text-[11px] text-slate-500">Cantidad desperdiciada por sabor.</p>
+      </div>
+      <div class="p-4 h-64">
+        <canvas id="graficoMermasVariedad"></canvas>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<!-- SECCION HORARIOS EMPLEADOS -->
+<div data-section="horarios" class="hidden p-6 bg-slate-100 min-h-screen overflow-visible">
+
+  <!-- TITULO DINÁMICO DE LA SEMANA -->
+  <div class="flex justify-between items-center div-dinamico-semana-horario">
+    <div>
+      <h1 class="text-[20px] font-bold text-slate-900" id="tituloDinamico">
+        Registrando horarios...
+      </h1>
+      <p class="text-slate-500 text-sm mt-1 mb-5">
+        Configurá turnos y horarios del personal para la semana seleccionada.
+      </p>
+    </div>
+
+    <!-- Selector de semana (Flechas) -->
+    <div class="flex items-center gap-2">
+      <button onclick="semanaAnterior()" 
+              class="px-3 py-1 bg-white border border-slate-300 hover:bg-slate-50 rounded-md text-sm">
+        ←
+      </button>
+
+      <!-- Rango de la semana (lo usa el JS) -->
+      <div id="horSemRango"
+           class="px-4 py-1 bg-white border border-slate-300 rounded-md text-sm font-medium">
+        --
+      </div>
+
+      <button onclick="semanaSiguiente()"
+              class="px-3 py-1 bg-white border border-slate-300 hover:bg-slate-50 rounded-md text-sm">
+        →
+      </button>
+    </div>
+  </div>
+
+  <!-- FILTROS -->
+  <div class="flex items-center gap-4 mb-6">
+    <select id="selectEmpleado" 
+            class="px-4 py-2 bg-white border border-slate-300 rounded-lg text-sm shadow-sm">
+      <option value="0">Todos los empleados</option>
+    </select>
+
+    <!-- Eliminado botón Día/Semana y Agregar turno -->
+  </div>
+
+  <!-- CONTENEDOR PRINCIPAL -->
+  <div class="grid grid-cols-12
+   gap-6">
+
+    <!-- GRID SEMANAL -->
+    <div id="horGrid"
+         class="col-span-9 bg-white rounded-xl shadow-md border border-slate-200 overflow-hidden">
+      <!-- JS llena esto -->
+    </div>
+
+    <!-- PANEL LATERAL DE TOTALES -->
+    <div class="col-span-3 bg-white shadow-md rounded-xl border border-slate-200 p-5">
+
+      <h2 class="text-lg font-semibold text-slate-800 mb-3">Totales de la semana</h2>
+
+      <div id="horTotales" class="space-y-4">
+        <!-- JS rellena -->
+      </div>
+
+      <button id="btnMarcarPagado"
+              onclick="marcarSemanaPagada()"
+              class="w-full mt-6 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md text-sm shadow">
+        Marcar semana como pagada
+      </button>
+    </div>
+
+  </div>
+</div>
+
+
+
+  </div>
+
+
+
+
+
+
+
+
+
+</section>
+
+
+
+<!-- Modal detalle pedido -->
+<div id="modal-detalle"
+     class="fixed inset-0 z-40 flex items-center justify-center bg-black/30 hidden">
+  <div class="bg-white rounded-xl shadow-lg w-full max-w-sm">
+
+    <!-- Header -->
+    <div class="flex items-center justify-between px-4 py-3 border-b border-slate-200">
+      <h3 class="text-sm font-semibold text-slate-800">
+        Detalle del pedido
+      </h3>
+      <button onclick="cerrarModalDetalle()"
+              class="text-slate-400 hover:text-slate-600 text-lg leading-none">
+        ✕
+      </button>
+    </div>
+
+    <!-- Cuerpo -->
+    <div class="p-4 space-y-4">
+      <!-- Cliente -->
+      <div class="text-sm text-slate-600">
+        <span class="font-semibold">Cliente:</span>
+        <span id="detalle-cliente" class="ml-1 text-slate-900"></span>
+      </div>
+
+      <!-- Variedades / Cantidades -->
+      <div>
+
+        <table class="w-full text-xs">
+          <thead class="border-b border-slate-200 text-slate-500">
+            <tr>
+              <th class="text-left py-1.5">Variedad</th>
+              <th class="text-right py-1.5">Cantidad</th>
+            </tr>
+          </thead>
+          <tbody id="tbody-detalle"></tbody>
+        </table>
+      </div>
+
+      <!-- Total del pedido -->
+      <div class="flex justify-end text-sm text-slate-700">
+        <span class="font-semibold mr-1">Total:</span>
+        <span id="detalle-total" class="font-bold text-slate-900"></span>
+      </div>
+
+      <!-- Botones -->
+      <div class="flex justify-end gap-2 pt-2">
+        <button onclick="cerrarModalDetalle()"
+                class="text-xs px-3 py-1.5 rounded-md border border-slate-300 text-slate-600 hover:bg-slate-50">
+          Cerrar
+        </button>
+
+        <button onclick="imprimirTicket()"
+                class="text-xs px-3 py-1.5 rounded-md bg-slate-900 text-white hover:bg-slate-800">
+          Imprimir comanda
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="modalTurno" 
+     class="fixed inset-0 bg-black/30 z-[999] hidden flex items-center justify-center">
+  
+  <div class="bg-white rounded-xl shadow-xl w-full max-w-md p-6 animate-fadeIn">
+    
+    <div class="flex justify-between items-center mb-4">
+      <h2 id="modalTurnoTitulo" class="text-lg font-semibold text-slate-800">
+        Nuevo turno
+      </h2>
+      <button onclick="cerrarModalTurno()" class="text-slate-400 hover:text-slate-600 text-xl">✕</button>
+    </div>
+
+    <div class="space-y-4">
+      
+      <!-- Empleado -->
+      <div>
+        <label class="text-xs text-slate-600 font-medium">Empleado</label>
+        <select id="turnoEmpleado" 
+                class="w-full border rounded-md px-3 py-2 text-sm mt-1">
+        </select>
+      </div>
+
+      <!-- Fecha -->
+      <div>
+        <label class="text-xs text-slate-600 font-medium">Fecha</label>
+        <input id="turnoFecha" type="date"
+               class="w-full border rounded-md px-3 py-2 text-sm mt-1">
+      </div>
+
+      <!-- Hora inicio -->
+      <div>
+        <label class="text-xs text-slate-600 font-medium">Hora inicio</label>
+        <input id="turnoInicio" type="time"
+               class="w-full border rounded-md px-3 py-2 text-sm mt-1">
+      </div>
+
+      <!-- Hora fin -->
+      <div>
+        <label class="text-xs text-slate-600 font-medium">Hora fin</label>
+        <input id="turnoFin" type="time"
+               class="w-full border rounded-md px-3 py-2 text-sm mt-1">
+      </div>
+
+    </div>
+
+    <div class="flex justify-between items-center gap-2 mt-6">
+
+      <button id="btnEliminarTurno"
+              class="hidden px-3 py-2 text-sm rounded-md text-red-600 border border-red-300 hover:bg-red-50">
+        Eliminar
+      </button>
+
+      <div class="ml-auto flex gap-2">
+        <button onclick="cerrarModalTurno()"
+                class="px-4 py-2 text-sm border rounded-md hover:bg-slate-50">
+          Cancelar
+        </button>
+
+        <button id="btnGuardarTurno" onclick="guardarTurno()"
+                class="px-4 py-2 bg-slate-900 text-white rounded-md text-sm hover:bg-slate-800">
+          Guardar
+        </button>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+<!-- Modal PedidosYa -->
+<div id="modal-pedidosya" class="hidden fixed inset-0 bg-black/40 flex items-center justify-center">
+  <div class="bg-white rounded-xl p-5 w-80 shadow-lg">
+
+    <h2 class="text-sm font-semibold text-slate-800 mb-3">Registrar liquidación PedidosYa</h2>
+
+    <label class="text-xs text-slate-600">Fecha recibida:</label>
+    <input id="py-fecha" type="date" class="w-full border rounded px-2 py-1 mt-1 mb-3 text-xs">
+
+    <label class="text-xs text-slate-600">Monto recibido:</label>
+    <input id="py-monto" type="number" min="0" class="w-full border rounded px-2 py-1 mt-1 mb-4 text-xs">
+
+    <div class="flex justify-end gap-2">
+      <button id="py-cancelar" class="text-xs px-3 py-1 rounded bg-slate-300 hover:bg-slate-400">
+        Cancelar
+      </button>
+      <button id="py-guardar" class="text-xs px-3 py-1 rounded bg-purple-600 text-white hover:bg-purple-500">
+        Guardar
+      </button>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- 🔴 MODAL EGRESO -->
+<div id="modal-egreso" 
+     class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center hidden z-50">
+
+  <div class="bg-white w-80 rounded-xl shadow p-4 animate-fadeIn">
+
+    <h2 class="text-sm font-semibold mb-3">Registrar egreso</h2>
+
+    <div class="space-y-3">
+      
+      <div>
+        <label class="text-xs text-slate-600">Descripción</label>
+        <input id="egreso-descripcion"
+               type="text"
+               class="w-full mt-1 px-2 py-1 rounded-md border border-slate-300 text-xs">
+      </div>
+
+      <div>
+        <label class="text-xs text-slate-600">Monto</label>
+        <input id="egreso-monto"
+               type="number"
+               class="w-full mt-1 px-2 py-1 rounded-md border border-slate-300 text-xs">
+      </div>
+
+    </div>
+
+    <div class="flex justify-end gap-2 mt-4">
+      <button id="btn-cerrar-egreso"
+              class="px-3 py-1 text-xs bg-slate-200 rounded-md hover:bg-slate-300">
+        Cancelar
+      </button>
+
+      <button id="btn-guardar-egreso"
+              class="px-3 py-1 text-xs bg-red-600 text-white rounded-md hover:bg-red-700">
+        Guardar
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<!-- 🔔 MODAL CONFIRMAR CIERRE DE CAJA -->
+<div id="modal-confirmar-caja"
+     class="fixed inset-0 bg-black/40 backdrop-blur-sm hidden flex items-center justify-center z-[999]">
+
+  <div class="bg-white w-80 rounded-xl shadow-lg p-5 text-center animate-fadeIn">
+      
+      <h3 class="text-lg font-semibold text-slate-800">¿Cerrar caja del día?</h3>
+      <p class="text-xs text-slate-500 mt-1">
+        Se registrarán ingresos, egresos y se guardará el balance final.
+      </p>
+
+      <div class="mt-4 flex justify-center gap-3">
+        <button id="btn-caja-cancelar"
+          class="px-4 py-2 rounded-lg text-xs font-semibold bg-slate-200 text-slate-700 hover:bg-slate-300 transition">
+          Cancelar
+        </button>
+
+        <button id="btn-caja-confirmar"
+          class="px-4 py-2 rounded-lg text-xs font-semibold bg-rose-600 text-white hover:bg-rose-700 transition">
+          Cerrar caja
+        </button>
+      </div>
+
+  </div>
+</div>
+
+
+
+  
+</div>
+</div>
+
+
+    </main>
+  </div>
+
+<script>
+  // Detectar si estamos en local o en producción
+  const esLocal =
+    window.location.hostname === "127.0.0.1" ||
+    window.location.hostname === "localhost";
+
+  window.API_BASE_URL = esLocal
+    ? "http://localhost:8080"                      // backend local
+    : "https://biencriollas-backend.up.railway.app"; // TU dominio de Railway
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+<script type="module" src="./components/sidebar.js"></script>
+<script type="module" src="./pages/obtenerPedidos.js"></script>
+<script type="module" src="./pages/pedido.init.js"></script>
+<script type="module" src="./components/toast.js"></script>
+<script type="module" src="./pages/estadistica.js"></script>
+<script type="module" src="./pages/stock.js"></script>
+<script type="module" src="./pages/horarios.js"></script>
+
+
+
+</body> 
+</html>
