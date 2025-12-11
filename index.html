@@ -1441,7 +1441,7 @@
   <!-- TITULO DINÁMICO DE LA SEMANA -->
   <div class="flex justify-between items-center div-dinamico-semana-horario">
     <div>
-      <h1 class="text-[20px] font-bold text-slate-900" id="tituloDinamico">
+      <h1 class="text-[18px] font-bold text-slate-900" id="tituloDinamico">
         Registrando horarios...
       </h1>
       <p class="text-slate-500 text-sm mt-1 mb-5">
@@ -1479,33 +1479,37 @@
     <!-- Eliminado botón Día/Semana y Agregar turno -->
   </div>
 
-  <!-- CONTENEDOR PRINCIPAL -->
-  <div class="grid grid-cols-12
-   gap-6">
+<!-- CONTENEDOR PRINCIPAL -->
+<div class="grid grid-cols-12 gap-6 items-start">
 
-    <!-- GRID SEMANAL -->
-    <div id="horGrid"
-         class="col-span-9 bg-white rounded-xl shadow-md border border-slate-200 overflow-hidden">
-      <!-- JS llena esto -->
-    </div>
-
-    <!-- PANEL LATERAL DE TOTALES -->
-    <div class="col-span-3 bg-white shadow-md rounded-xl border border-slate-200 p-5">
-
-      <h2 class="text-lg font-semibold text-slate-800 mb-3">Totales de la semana</h2>
-
-      <div id="horTotales" class="space-y-4">
-        <!-- JS rellena -->
-      </div>
-
-      <button id="btnMarcarPagado"
-              onclick="marcarSemanaPagada()"
-              class="w-full mt-6 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md text-sm shadow">
-        Marcar semana como pagada
-      </button>
-    </div>
-
+  <!-- GRID SEMANAL -->
+  <div id="horGrid"
+       class="col-span-9 bg-white rounded-xl shadow-md border border-slate-200 overflow-hidden p-4 pb-6">
+    <!-- JS llena esto -->
   </div>
+
+  <!-- PANEL LATERAL DE TOTALES (PREMIUM) -->
+  <div class="col-span-3 bg-white/90 backdrop-blur-sm shadow-lg rounded-xl border border-slate-200 p-5 animate-slideFade">
+
+    <h2 class="text-base font-semibold text-slate-700 flex items-center gap-2 mb-4">
+      <span class="text-rose-600 text-xl">💼</span>
+      Totales de la semana
+    </h2>
+
+    <div id="horTotales" class="space-y-3"></div>
+
+    <div id="horTotalSemana" class="mt-6"></div>
+
+    <button id="btnMarcarPagado"
+            onclick="marcarSemanaPagada()"
+            class="w-full mt-5 px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-md 
+                   text-sm shadow flex items-center justify-center gap-2 transition-all">
+        ✓ Marcar semana como pagada
+    </button>
+  </div>
+
+</div>
+
 </div>
 
 

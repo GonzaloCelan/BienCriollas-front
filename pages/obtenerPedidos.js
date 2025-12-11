@@ -1,4 +1,26 @@
 // ==============================
+// 🔊 AVISOS Para stock bajo
+// ==============================
+
+async function obtenerStockActual() {
+  const url = `${window.API_BASE_URL}/stock/obtener-stock-actual`;
+
+  try {
+    const response = await fetch(url);
+    if (!response.ok) throw new Error("Error consultando el stock actual");
+
+    return await response.json(); // 👉 Esto devuelve el array de variedades directamente
+
+  } catch (error) {
+    console.error("Error obteniendo stock actual:", error);
+    return []; // no rompe el front si falla
+  }
+}
+
+
+
+
+// ==============================
 // 🔊 AVISOS POR VOZ DE PEDIDOS
 // ==============================
 
@@ -14,6 +36,46 @@ function hablar(texto) {
   msg.rate = 1;
   window.speechSynthesis.speak(msg);
 }
+
+let ultimaCantidadReportada = 0;
+
+function mostrarAvisoStockBajo(cantidad) {
+
+  // Evita repetir el aviso innecesariamente
+  if (cantidad === ultimaCantidadReportada) return;
+  ultimaCantidadReportada = cantidad;
+
+  // Crear el toast
+  const toast = document.createElement("div");
+  toast.classList.add("toast-alert");
+  toast.textContent = `⚠️ Hay ${cantidad} variedades con stock bajo. Por favor revisar.`;
+  document.body.appendChild(toast);
+
+  // Animación
+  setTimeout(() => toast.classList.add("show"), 10);
+
+  // Sacarlo después de 4 segundos
+  setTimeout(() => {
+    toast.classList.remove("show");
+    setTimeout(() => toast.remove(), 300);
+  }, 4000);
+
+  // ⚠️ Usamos tu función ya existente
+  hablar(`Hay ${cantidad} variedades con stock bajo. Por favor revisar el stock.`);
+}
+
+function chequearStockBajo(variedades) {
+  const MINIMO = 50;
+
+  const bajas = variedades.filter(v => v.stock_disponible <= MINIMO);
+
+  if (bajas.length > 0) {
+    mostrarAvisoStockBajo(bajas.length);
+  }
+}
+
+
+
 
 // Para no repetir avisos del mismo pedido
 const avisosProgramados = new Set();
@@ -129,7 +191,7 @@ let ultimoNombreCliente = "";
 let estadoActual = "PENDIENTE";
 
 async function cargarPedidosPorEstado(estado = estadoActual, page = 0, size = 10) {
-  estadoActual = estado; // guardamos el filtro actual
+  estadoActual = estado;
 
   try {
     const response = await fetch(
@@ -144,21 +206,27 @@ async function cargarPedidosPorEstado(estado = estadoActual, page = 0, size = 10
 
     const data = await response.json();
 
-    // 👉 TOTAL DE PEDIDOS (si existe el span)
+    // 👉 TOTAL
     const totalSpan = document.getElementById("total-pedidos");
     if (totalSpan && typeof data.totalElements === "number") {
       totalSpan.textContent = data.totalElements;
     }
 
-    // 👉 PINTAR TABLA (data.content contiene la página actual)
+    // 👉 TABLA
     const pedidos = data.content || [];
     pintarPedidosEnTabla(pedidos);
 
-    // 🔊 Programar avisos de voz para los pedidos pendientes
+    // 🔊 Avisos de voz para pendientes
     if (estado === "PENDIENTE") {
-       pedidos.forEach(pedido => {
-    programarAvisoVozParaPedido(pedido);
-  });
+      pedidos.forEach(pedido => programarAvisoVozParaPedido(pedido));
+    }
+
+    // 👉 🔥 AVISO DE STOCK BAJO (nuevo)
+    try {
+      const variedades = await obtenerStockActual();   // trae solo los datos
+      chequearStockBajo(variedades);                   // dispara toast + voz
+    } catch (e) {
+      console.warn("No se pudo verificar stock bajo", e);
     }
 
     // 👉 PAGINACIÓN
@@ -169,6 +237,7 @@ async function cargarPedidosPorEstado(estado = estadoActual, page = 0, size = 10
     alert("No se pudieron cargar los pedidos");
   }
 }
+
 
 
 // -------------------------

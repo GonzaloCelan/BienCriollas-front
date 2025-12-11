@@ -219,7 +219,6 @@ function pintarGrilla(empleados, turnos, lunes) {
 // ============================================================================
 //  TOTALES SEMANALES
 // ============================================================================
-
 async function cargarTotalesSemana(lun, dom) {
 
     const panel = document.getElementById("horTotales");
@@ -235,21 +234,54 @@ async function cargarTotalesSemana(lun, dom) {
 
         totalGeneral += t.pagoTotal;
 
+        const horas = Math.round(t.horasTotales * 100) / 100;
+        const pago = t.pagoTotal.toLocaleString("es-AR");
+
         panel.innerHTML += `
-            <div class="mb-4">
-                <h3 class="font-medium text-slate-700">${t.empleado}</h3>
-                <p class="text-sm text-slate-500">Horas: ${t.horasTotales}</p>
-                <p class="text-sm text-slate-700">
-                    Pago: <span class="font-semibold">$${t.pagoTotal}</span>
-                </p>
+            <div class="border border-slate-300 border-l-4 border-indigo-400 rounded-lg p-4 bg-white shadow-sm 
+                        hover:shadow-md hover:border-indigo-500 transition-all duration-150 animate-slideFade">
+                
+                <div class="font-semibold text-slate-800 text-sm mb-2">
+                    ${t.empleado}
+                </div>
+
+                <div class="flex items-center justify-between text-xs text-slate-600">
+
+                    <!-- HORAS -->
+                    <div class="flex items-center gap-1">
+                        <span class="text-indigo-500 text-sm">🕒</span>
+                        <span>${horas} hs</span>
+                    </div>
+
+                    <!-- PAGO -->
+                    <div class="flex items-center gap-1">
+                        <span class="text-emerald-600 text-sm">💵</span>
+                        <span class="font-medium">$${pago}</span>
+                    </div>
+                </div>
+
+                <!-- Barra de progreso opcional (horas trabajadas del máximo 48h por ej.) -->
+                <div class="h-1.5 bg-slate-200 rounded-full overflow-hidden mt-3">
+                    <div class="h-full bg-indigo-500" style="width: ${Math.min((horas / 48) * 100, 100)}%"></div>
+                </div>
+
             </div>
         `;
     });
 
-    panel.innerHTML += `
-        <hr class="my-3">
-        <div class="text-lg font-semibold text-slate-800">
-            Total semana: $${totalGeneral.toLocaleString("es-AR")}
+    // TOTAL SEMANAL PREMIUM
+    const totalDiv = document.getElementById("horTotalSemana");
+
+    totalDiv.innerHTML = `
+        <div class="bg-slate-50 border border-slate-300 rounded-lg p-4 shadow-sm animate-slideFade">
+            <div class="flex items-center gap-2 mb-1">
+                <span class="text-blue-600 text-xl">📘</span>
+                <span class="font-medium text-slate-700">Total de la semana</span>
+            </div>
+
+            <div class="text-2xl font-bold text-slate-900">
+                $${totalGeneral.toLocaleString("es-AR")}
+            </div>
         </div>
     `;
 }

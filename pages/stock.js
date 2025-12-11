@@ -1,4 +1,6 @@
 
+
+
   const NOMBRES_VARIEDAD = {
     1: "Criolla",
     2: "Verdura",
