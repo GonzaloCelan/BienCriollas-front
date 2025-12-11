@@ -43,7 +43,7 @@ export async function cargarStockActual() {
     }
   }
 
-const UMBRAL_STOCK_BAJO = 100; // acá definís qué es "bajo"
+const UMBRAL_STOCK_BAJO = 50; // acá definís qué es "bajo"
 
 function pintarTablaStock(datos) {
   const tbody = document.getElementById("tbody-stock-actual");
