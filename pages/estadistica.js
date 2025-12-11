@@ -18,8 +18,12 @@ export function initEstadisticas() {
   const btnMes = document.getElementById("btn-estadistica-mes");
 
   const hoy = new Date();
-  const hoyISO = hoy.toISOString().slice(0, 10); // YYYY-MM-DD
-  const mesActual = hoy.toISOString().slice(0, 7); // YYYY-MM
+  const yyyy = hoy.getFullYear();
+  const mm = String(hoy.getMonth() + 1).padStart(2, "0");
+  const dd = String(hoy.getDate()).padStart(2, "0");
+
+  const hoyISO = `${yyyy}-${mm}-${dd}`;   // YYYY-MM-DD local
+  const mesActual = `${yyyy}-${mm}`;      // YYYY-MM local
 
   // setear fecha de hoy por defecto
   if (inputFecha) {
@@ -426,12 +430,8 @@ function actualizarTituloModo(tipo, valor) {
     el.textContent = `Estás viendo: estadísticas del mes (${formatoMes})`;
   } else {
     // tipo "dia" – valor viene como "YYYY-MM-DD"
-    const fecha = new Date(valor);
-    const formatoDia = new Intl.DateTimeFormat("es-AR", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-    }).format(fecha);
+    const [anio, mes, dia] = valor.split("-"); // "2025-12-11"
+    const formatoDia = `${dia}/${mes}/${anio}`;
 
     el.textContent = `Estás viendo: estadísticas del día (${formatoDia})`;
   }

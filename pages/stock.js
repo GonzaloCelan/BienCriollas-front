@@ -39,7 +39,7 @@ export async function cargarStockActual() {
 
     } catch (error) {
       console.error("Error en fetch de stock:", error);
-      alert("No se pudo obtener el stock actual");
+      alert("No se pudo obtener el stock actual del dia");
     }
   }
 
