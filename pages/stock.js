@@ -164,6 +164,33 @@ function mostrarToast(mensaje, tipo = "success") {
   }, 2800);
 }
 
+//RESETA LOS INPUNTS Y LAS CARDS DESPUES DE GUARDAR
+
+// 👉 Guarda cómo era cada card al inicio
+function inicializarCardsProduccion() {
+  const cards = document.querySelectorAll("[data-variedad-card]");
+  cards.forEach(card => {
+    // guardamos las clases originales en un data-atributo
+    card.dataset.baseClasses = card.className;
+  });
+}
+function resetUIProduccion() {
+  // 1) Dejar todas las cantidades en 0
+  const inputs = document.querySelectorAll(".input-cantidad-variedad");
+  inputs.forEach(input => {
+    input.value = "0";
+  });
+
+  // 2) Devolver las cards a su estilo original
+  const cards = document.querySelectorAll("[data-variedad-card]");
+  cards.forEach(card => {
+    if (card.dataset.baseClasses) {
+      card.className = card.dataset.baseClasses; // 🔙 vuelve al diseño original sin borde rojo
+    }
+  });
+}
+
+
 
 
 
@@ -216,8 +243,7 @@ export async function guardarProduccion() {
 
     mostrarToast("Stock actualizado ✅", "success");
 
-    // resetear inputs
-    inputs.forEach(input => (input.value = "0"));
+    resetUIProduccion()
 
     // refrescar tabla
     await cargarStockActual();
@@ -354,3 +380,5 @@ document.addEventListener("DOMContentLoaded", () => {
     btnGuardar.addEventListener("click", guardarProduccion);
   }
 });
+
+inicializarCardsProduccion();
