@@ -290,134 +290,397 @@
     </div>
   </div>
 
-  <!-- Variedades y cantidades -->
+<!-- Variedades y cantidades -->
 <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4 space-y-3">
   <h4 class="text-sm font-semibold text-slate-800 mb-1">Variedades</h4>
   <p class="text-xs text-slate-500 mb-2">
     Ingresá la cantidad de empanadas por cada sabor (dejá en 0 las que no se piden).
   </p>
 
-  <div class="grid grid-cols-1 md:grid-cols-6 gap-2 text-xs">
-    <!-- 1: Carne -->
-    <div class="flex items-center justify-between gap-3 border border-slate-100 rounded-lg px-3 py-2 bg-slate-50/60">
-      <span class="font-medium text-slate-700">Criolla</span>
-      <input id="var-1" type="number" min="0"
-             class="border border-slate-200 rounded-md px-2 py-1 w-20 text-right"
-             placeholder="0">
+  <div class="grid grid-cols-1 md:grid-cols-6 gap-3 text-xs">
+    <!-- 1: Criolla -->
+    <div
+      class="group relative flex flex-col justify-between rounded-xl border border-slate-100 bg-gradient-to-br from-slate-50 to-slate-100/80 px-3 py-2.5 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all"
+      data-variedad-card
+      data-variedad-id="1"
+    >
+      <div class="flex items-start justify-between gap-2">
+        <div class="flex flex-col gap-0.5">
+          <span class="font-semibold text-slate-800">Criolla</span>
+          <span class="text-[10px] text-slate-400">Clásica de carne</span>
+        </div>
+        <span
+          data-badge-stock
+          class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200"
+        >
+          Stock: 120
+        </span>
+      </div>
+
+      <div class="mt-2 flex items-center justify-between gap-1">
+        <button
+          type="button"
+          data-step="-1"
+          data-target="var-1"
+          class="h-7 w-7 inline-flex items-center justify-center rounded-full border border-slate-200 bg-white text-[14px] font-semibold text-slate-600 hover:bg-slate-50 active:scale-95 transition"
+        >
+          –
+        </button>
+        <input
+          id="var-1"
+          type="number"
+          min="0"
+          value="0"
+          class="w-14 text-right border border-slate-200 rounded-md px-2 py-1 text-[12px] bg-white group-focus-within:border-rose-400"
+          placeholder="0"
+        />
+        <button
+          type="button"
+          data-step="1"
+          data-target="var-1"
+          class="h-7 w-7 inline-flex items-center justify-center rounded-full bg-rose-500 text-white text-[14px] font-semibold shadow-sm hover:bg-rose-600 active:scale-95 transition"
+        >
+          +
+        </button>
+      </div>
     </div>
 
     <!-- 2: Verdura -->
-    <div class="flex items-center justify-between gap-3 border border-slate-100 rounded-lg px-3 py-2 bg-slate-50/60">
-      <span class="font-medium text-slate-700">Verdura</span>
-      <input id="var-2" type="number" min="0"
-             class="border border-slate-200 rounded-md px-2 py-1 w-20 text-right"
-             placeholder="0">
+    <div
+      class="group relative flex flex-col justify-between rounded-xl border border-slate-100 bg-gradient-to-br from-slate-50 to-slate-100/80 px-3 py-2.5 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all"
+      data-variedad-card
+      data-variedad-id="2"
+    >
+      <div class="flex items-start justify-between gap-2">
+        <div class="flex flex-col gap-0.5">
+          <span class="font-semibold text-slate-800">Verdura</span>
+          <span class="text-[10px] text-slate-400">Espinaca y salsa blanca</span>
+        </div>
+        <span
+          data-badge-stock
+          class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-amber-50 text-amber-700 border border-amber-200"
+        >
+          Bajo stock (quedan 18)
+        </span>
+      </div>
+
+      <div class="mt-2 flex items-center justify-between gap-1">
+        <button type="button" data-step="-1" data-target="var-2"
+          class="h-7 w-7 inline-flex items-center justify-center rounded-full border border-slate-200 bg-white text-[14px] font-semibold text-slate-600 hover:bg-slate-50 active:scale-95 transition">–</button>
+        <input id="var-2" type="number" min="0" value="0"
+          class="w-14 text-right border border-slate-200 rounded-md px-2 py-1 text-[12px] bg-white group-focus-within:border-rose-400"
+          placeholder="0" />
+        <button type="button" data-step="1" data-target="var-2"
+          class="h-7 w-7 inline-flex items-center justify-center rounded-full bg-rose-500 text-white text-[14px] font-semibold shadow-sm hover:bg-rose-600 active:scale-95 transition">+</button>
+      </div>
     </div>
 
     <!-- 3: Choclo -->
-    <div class="flex items-center justify-between gap-3 border border-slate-100 rounded-lg px-3 py-2 bg-slate-50/60">
-      <span class="font-medium text-slate-700">Choclo</span>
-      <input id="var-3" type="number" min="0"
-             class="border border-slate-200 rounded-md px-2 py-1 w-20 text-right"
-             placeholder="0">
+    <div
+      class="group relative flex flex-col justify-between rounded-xl border border-slate-100 bg-gradient-to-br from-slate-50 to-slate-100/80 px-3 py-2.5 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all"
+      data-variedad-card
+      data-variedad-id="3"
+    >
+      <div class="flex items-start justify-between gap-2">
+        <div class="flex flex-col gap-0.5">
+          <span class="font-semibold text-slate-800">Choclo</span>
+          <span class="text-[10px] text-slate-400">Choclo cremoso</span>
+        </div>
+        <span
+          data-badge-stock
+          class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200"
+        >
+          Stock: 80
+        </span>
+      </div>
+
+      <div class="mt-2 flex items-center justify-between gap-1">
+        <button type="button" data-step="-1" data-target="var-3" class="h-7 w-7 inline-flex items-center justify-center rounded-full border border-slate-200 bg-white text-[14px] font-semibold text-slate-600 hover:bg-slate-50 active:scale-95 transition">–</button>
+        <input id="var-3" type="number" min="0" value="0"
+          class="w-14 text-right border border-slate-200 rounded-md px-2 py-1 text-[12px] bg-white group-focus-within:border-rose-400"
+          placeholder="0" />
+        <button type="button" data-step="1" data-target="var-3" class="h-7 w-7 inline-flex items-center justify-center rounded-full bg-rose-500 text-white text-[14px] font-semibold shadow-sm hover:bg-rose-600 active:scale-95 transition">+</button>
+      </div>
     </div>
 
     <!-- 4: Pollo -->
-    <div class="flex items-center justify-between gap-3 border border-slate-100 rounded-lg px-3 py-2 bg-slate-50/60">
-      <span class="font-medium text-slate-700">Pollo</span>
-      <input id="var-4" type="number" min="0"
-             class="border border-slate-200 rounded-md px-2 py-1 w-20 text-right"
-             placeholder="0">
+    <div
+      class="group relative flex flex-col justify-between rounded-xl border border-slate-100 bg-gradient-to-br from-slate-50 to-slate-100/80 px-3 py-2.5 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all"
+      data-variedad-card
+      data-variedad-id="4"
+    >
+      <div class="flex items-start justify-between gap-2">
+        <div class="flex flex-col gap-0.5">
+          <span class="font-semibold text-slate-800">Pollo</span>
+          <span class="text-[10px] text-slate-400">Pollo desmenuzado</span>
+        </div>
+        <span
+          data-badge-stock
+          class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-rose-50 text-rose-700 border border-rose-200"
+        >
+          Sin stock
+        </span>
+      </div>
+
+      <div class="mt-2 flex items-center justify-between gap-1">
+        <button type="button" data-step="-1" data-target="var-4" class="h-7 w-7 inline-flex items-center justify-center rounded-full border border-slate-200 bg-white text-[14px] font-semibold text-slate-600 hover:bg-slate-50 active:scale-95 transition">–</button>
+        <input id="var-4" type="number" min="0" value="0"
+          class="w-14 text-right border border-slate-200 rounded-md px-2 py-1 text-[12px] bg-white group-focus-within:border-rose-400"
+          placeholder="0" />
+        <button type="button" data-step="1" data-target="var-4" class="h-7 w-7 inline-flex items-center justify-center rounded-full bg-rose-500 text-white text-[14px] font-semibold shadow-sm hover:bg-rose-600 active:scale-95 transition">+</button>
+      </div>
     </div>
 
     <!-- 5: Atún -->
-    <div class="flex items-center justify-between gap-3 border border-slate-100 rounded-lg px-3 py-2 bg-slate-50/60">
-      <span class="font-medium text-slate-700">Atún</span>
-      <input id="var-5" type="number" min="0"
-             class="border border-slate-200 rounded-md px-2 py-1 w-20 text-right"
-             placeholder="0">
+    <div
+      class="group relative flex flex-col justify-between rounded-xl border border-slate-100 bg-gradient-to-br from-slate-50 to-slate-100/80 px-3 py-2.5 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all"
+      data-variedad-card
+      data-variedad-id="5"
+    >
+      <div class="flex items-start justify-between gap-2">
+        <div class="flex flex-col gap-0.5">
+          <span class="font-semibold text-slate-800">Atún</span>
+          <span class="text-[10px] text-slate-400">Atún y cebolla</span>
+        </div>
+        <span
+          data-badge-stock
+          class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-amber-50 text-amber-700 border border-amber-200"
+        >
+          Bajo stock (quedan 8)
+        </span>
+      </div>
+
+      <div class="mt-2 flex items-center justify-between gap-1">
+        <button type="button" data-step="-1" data-target="var-5" class="h-7 w-7 inline-flex items-center justify-center rounded-full border border-slate-200 bg-white text-[14px] font-semibold text-slate-600 hover:bg-slate-50 active:scale-95 transition">–</button>
+        <input id="var-5" type="number" min="0" value="0"
+          class="w-14 text-right border border-slate-200 rounded-md px-2 py-1 text-[12px] bg-white group-focus-within:border-rose-400"
+          placeholder="0" />
+        <button type="button" data-step="1" data-target="var-5" class="h-7 w-7 inline-flex items-center justify-center rounded-full bg-rose-500 text-white text-[14px] font-semibold shadow-sm hover:bg-rose-600 active:scale-95 transition">+</button>
+      </div>
     </div>
 
-    <!-- 6: Caprese -->
-    <div class="flex items-center justify-between gap-3 border border-slate-100 rounded-lg px-3 py-2 bg-slate-50/60">
-      <span class="font-medium text-slate-700">Capresse</span>
-      <input id="var-6" type="number" min="0"
-             class="border border-slate-200 rounded-md px-2 py-1 w-20 text-right"
-             placeholder="0">
+    <!-- 6: Capresse -->
+    <div
+      class="group relative flex flex-col justify-between rounded-xl border border-slate-100 bg-gradient-to-br from-slate-50 to-slate-100/80 px-3 py-2.5 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all"
+      data-variedad-card
+      data-variedad-id="6"
+    >
+      <div class="flex items-start justify-between gap-2">
+        <div class="flex flex-col gap-0.5">
+          <span class="font-semibold text-slate-800">Capresse</span>
+          <span class="text-[10px] text-slate-400">Tomate, albahaca y mozzarella</span>
+        </div>
+        <span
+          data-badge-stock
+          class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200"
+        >
+          Stock: 60
+        </span>
+      </div>
+
+      <div class="mt-2 flex items-center justify-between gap-1">
+        <button type="button" data-step="-1" data-target="var-6" class="h-7 w-7 inline-flex items-center justify-center rounded-full border border-slate-200 bg-white text-[14px] font-semibold text-slate-600 hover:bg-slate-50 active:scale-95 transition">–</button>
+        <input id="var-6" type="number" min="0" value="0"
+          class="w-14 text-right border border-slate-200 rounded-md px-2 py-1 text-[12px] bg-white group-focus-within:border-rose-400"
+          placeholder="0" />
+        <button type="button" data-step="1" data-target="var-6" class="h-7 w-7 inline-flex items-center justify-center rounded-full bg-rose-500 text-white text-[14px] font-semibold shadow-sm hover:bg-rose-600 active:scale-95 transition">+</button>
+      </div>
     </div>
 
     <!-- 7: Fugazza -->
-    <div class="flex items-center justify-between gap-3 border border-slate-100 rounded-lg px-3 py-2 bg-slate-50/60">
-      <span class="font-medium text-slate-700">Fugazza</span>
-      <input id="var-7" type="number" min="0"
-             class="border border-slate-200 rounded-md px-2 py-1 w-20 text-right"
-             placeholder="0">
+    <div
+      class="group relative flex flex-col justify-between rounded-xl border border-slate-100 bg-gradient-to-br from-slate-50 to-slate-100/80 px-3 py-2.5 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all"
+      data-variedad-card
+      data-variedad-id="7"
+    >
+      <div class="flex items-start justify-between gap-2">
+        <div class="flex flex-col gap-0.5">
+          <span class="font-semibold text-slate-800">Fugazza</span>
+          <span class="text-[10px] text-slate-400">Cebolla caramelizada y queso</span>
+        </div>
+        <span
+          data-badge-stock
+          class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200"
+        >
+          Stock: 95
+        </span>
+      </div>
+
+      <div class="mt-2 flex items-center justify-between gap-1">
+        <button type="button" data-step="-1" data-target="var-7" class="h-7 w-7 inline-flex items-center justify-center rounded-full border border-slate-200 bg-white text-[14px] font-semibold text-slate-600 hover:bg-slate-50 active:scale-95 transition">–</button>
+        <input id="var-7" type="number" min="0" value="0"
+          class="w-14 text-right border border-slate-200 rounded-md px-2 py-1 text-[12px] bg-white group-focus-within:border-rose-400"
+          placeholder="0" />
+        <button type="button" data-step="1" data-target="var-7" class="h-7 w-7 inline-flex items-center justify-center rounded-full bg-rose-500 text-white text-[14px] font-semibold shadow-sm hover:bg-rose-600 active:scale-95 transition">+</button>
+      </div>
     </div>
 
     <!-- 8: Queso azul -->
-    <div class="flex items-center justify-between gap-3 border border-slate-100 rounded-lg px-3 py-2 bg-slate-50/60">
-      <span class="font-medium text-slate-700">Queso azul</span>
-      <input id="var-8" type="number" min="0"
-             class="border border-slate-200 rounded-md px-2 py-1 w-20 text-right"
-             placeholder="0">
+    <div
+      class="group relative flex flex-col justify-between rounded-xl border border-slate-100 bg-gradient-to-br from-slate-50 to-slate-100/80 px-3 py-2.5 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all"
+      data-variedad-card
+      data-variedad-id="8"
+    >
+      <div class="flex items-start justify-between gap-2">
+        <div class="flex flex-col gap-0.5">
+          <span class="font-semibold text-slate-800">Queso azul</span>
+          <span class="text-[10px] text-slate-400">Queso azul y nuez</span>
+        </div>
+        <span
+          data-badge-stock
+          class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-amber-50 text-amber-700 border border-amber-200"
+        >
+          Bajo stock (quedan 22)
+        </span>
+      </div>
+
+      <div class="mt-2 flex items-center justify-between gap-1">
+        <button type="button" data-step="-1" data-target="var-8" class="h-7 w-7 inline-flex items-center justify-center rounded-full border border-slate-200 bg-white text-[14px] font-semibold text-slate-600 hover:bg-slate-50 active:scale-95 transition">–</button>
+        <input id="var-8" type="number" min="0" value="0"
+          class="w-14 text-right border border-slate-200 rounded-md px-2 py-1 text-[12px] bg-white group-focus-within:border-rose-400"
+          placeholder="0" />
+        <button type="button" data-step="1" data-target="var-8" class="h-7 w-7 inline-flex items-center justify-center rounded-full bg-rose-500 text-white text-[14px] font-semibold shadow-sm hover:bg-rose-600 active:scale-95 transition">+</button>
+      </div>
     </div>
 
     <!-- 9: Bondiola -->
-    <div class="flex items-center justify-between gap-3 border border-slate-100 rounded-lg px-3 py-2 bg-slate-50/60">
-      <span class="font-medium text-slate-700">Bondiola</span>
-      <input id="var-9" type="number" min="0"
-             class="border border-slate-200 rounded-md px-2 py-1 w-20 text-right"
-             placeholder="0">
+    <div
+      class="group relative flex flex-col justify-between rounded-xl border border-slate-100 bg-gradient-to-br from-slate-50 to-slate-100/80 px-3 py-2.5 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all"
+      data-variedad-card
+      data-variedad-id="9"
+    >
+      <div class="flex items-start justify-between gap-2">
+        <div class="flex flex-col gap-0.5">
+          <span class="font-semibold text-slate-800">Bondiola</span>
+          <span class="text-[10px] text-slate-400">Bondiola braseada</span>
+        </div>
+        <span
+          data-badge-stock
+          class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200"
+        >
+          Stock: 130
+        </span>
+      </div>
+
+      <div class="mt-2 flex items-center justify-between gap-1">
+        <button type="button" data-step="-1" data-target="var-9" class="h-7 w-7 inline-flex items-center justify-center rounded-full border border-slate-200 bg-white text-[14px] font-semibold text-slate-600 hover:bg-slate-50 active:scale-95 transition">–</button>
+        <input id="var-9" type="number" min="0" value="0"
+          class="w-14 text-right border border-slate-200 rounded-md px-2 py-1 text-[12px] bg-white group-focus-within:border-rose-400"
+          placeholder="0" />
+        <button type="button" data-step="1" data-target="var-9" class="h-7 w-7 inline-flex items-center justify-center rounded-full bg-rose-500 text-white text-[14px] font-semibold shadow-sm hover:bg-rose-600 active:scale-95 transition">+</button>
+      </div>
     </div>
 
-    <!-- 10: Vacio -->
-    <div class="flex items-center justify-between gap-3 border border-slate-100 rounded-lg px-3 py-2 bg-slate-50/60">
-      <span class="font-medium text-slate-700">Vacio Desmenuzado</span>
-      <input id="var-10" type="number" min="0"
-             class="border border-slate-200 rounded-md px-2 py-1 w-20 text-right"
-             placeholder="0">
+    <!-- 10: Vacio Desmenuzado -->
+    <div
+      class="group relative flex flex-col justify-between rounded-xl border border-slate-100 bg-gradient-to-br from-slate-50 to-slate-100/80 px-3 py-2.5 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all"
+      data-variedad-card
+      data-variedad-id="10"
+    >
+      <div class="flex items-start justify-between gap-2">
+        <div class="flex flex-col gap-0.5">
+          <span class="font-semibold text-slate-800">Vacio Desmenuzado</span>
+          <span class="text-[10px] text-slate-400">Vacío a la cerveza</span>
+        </div>
+        <span
+          data-badge-stock
+          class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-amber-50 text-amber-700 border border-amber-200"
+        >
+          Bajo stock (quedan 15)
+        </span>
+      </div>
+
+      <div class="mt-2 flex items-center justify-between gap-1">
+        <button type="button" data-step="-1" data-target="var-10" class="h-7 w-7 inline-flex items-center justify-center rounded-full border border-slate-200 bg-white text-[14px] font-semibold text-slate-600 hover:bg-slate-50 active:scale-95 transition">–</button>
+        <input id="var-10" type="number" min="0" value="0"
+          class="w-14 text-right border border-slate-200 rounded-md px-2 py-1 text-[12px] bg-white group-focus-within:border-rose-400"
+          placeholder="0" />
+        <button type="button" data-step="1" data-target="var-10" class="h-7 w-7 inline-flex items-center justify-center rounded-full bg-rose-500 text-white text-[14px] font-semibold shadow-sm hover:bg-rose-600 active:scale-95 transition">+</button>
+      </div>
     </div>
 
-    <!-- 11: Campo -->
-    <div class="flex items-center justify-between gap-3 border border-slate-100 rounded-lg px-3 py-2 bg-slate-50/60">
-      <span class="font-medium text-slate-700">Campo (picante)</span>
-      <input id="var-11" type="number" min="0"
-             class="border border-slate-200 rounded-md px-2 py-1 w-20 text-right"
-             placeholder="0">
+    <!-- 11: Campo (picante) -->
+    <div
+      class="group relative flex flex-col justify-between rounded-xl border border-slate-100 bg-gradient-to-br from-slate-50 to-slate-100/80 px-3 py-2.5 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all"
+      data-variedad-card
+      data-variedad-id="11"
+    >
+      <div class="flex items-start justify-between gap-2">
+        <div class="flex flex-col gap-0.5">
+          <span class="font-semibold text-slate-800">Campo (picante)</span>
+          <span class="text-[10px] text-slate-400">Chorizo, morrón y picante</span>
+        </div>
+        <span
+          data-badge-stock
+          class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-rose-50 text-rose-700 border border-rose-200"
+        >
+          Sin stock
+        </span>
+      </div>
+
+      <div class="mt-2 flex items-center justify-between gap-1">
+        <button type="button" data-step="-1" data-target="var-11" class="h-7 w-7 inline-flex items-center justify-center rounded-full border border-slate-200 bg-white text-[14px] font-semibold text-slate-600 hover:bg-slate-50 active:scale-95 transition">–</button>
+        <input id="var-11" type="number" min="0" value="0"
+          class="w-14 text-right border border-slate-200 rounded-md px-2 py-1 text-[12px] bg-white group-focus-within:border-rose-400"
+          placeholder="0" />
+        <button type="button" data-step="1" data-target="var-11" class="h-7 w-7 inline-flex items-center justify-center rounded-full bg-rose-500 text-white text-[14px] font-semibold shadow-sm hover:bg-rose-600 active:scale-95 transition">+</button>
+      </div>
     </div>
 
     <!-- 12: Jamón y queso -->
-    <div class="flex items-center justify-between gap-3 border border-slate-100 rounded-lg px-3 py-2 bg-slate-50/60">
-      <span class="font-medium text-slate-700">Jamón y queso</span>
-      <input id="var-12" type="number" min="0"
-             class="border border-slate-200 rounded-md px-2 py-1 w-20 text-right"
-             placeholder="0">
+    <div
+      class="group relative flex flex-col justify-between rounded-xl border border-slate-100 bg-gradient-to-br from-slate-50 to-slate-100/80 px-3 py-2.5 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all"
+      data-variedad-card
+      data-variedad-id="12"
+    >
+      <div class="flex items-start justify-between gap-2">
+        <div class="flex flex-col gap-0.5">
+          <span class="font-semibold text-slate-800">Jamón y queso</span>
+          <span class="text-[10px] text-slate-400">Clásica jamón cocido y queso</span>
+        </div>
+        <span
+        data-badge-stock
+          class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-amber-50 text-amber-700 border border-amber-200"
+        >
+          Bajo stock (quedan 30)
+        </span>
+      </div>
+
+      <div class="mt-2 flex items-center justify-between gap-1">
+        <button type="button" data-step="-1" data-target="var-12" class="h-7 w-7 inline-flex items-center justify-center rounded-full border border-slate-200 bg-white text-[14px] font-semibold text-slate-600 hover:bg-slate-50 active:scale-95 transition">–</button>
+        <input id="var-12" type="number" min="0" value="0"
+          class="w-14 text-right border border-slate-200 rounded-md px-2 py-1 text-[12px] bg-white group-focus-within:border-rose-400"
+          placeholder="0" />
+        <button type="button" data-step="1" data-target="var-12" class="h-7 w-7 inline-flex items-center justify-center rounded-full bg-rose-500 text-white text-[14px] font-semibold shadow-sm hover:bg-rose-600 active:scale-95 transition">+</button>
+      </div>
     </div>
   </div>
 
   <div class="pt-4 flex justify-end">
     <button
-  id="btn-crear-pedido"
-  class="
-    inline-flex items-center justify-center gap-2
-    rounded-full
-    bg-gradient-to-r from-rose-600 to-rose-500
-    px-4 py-2
-    text-xs font-semibold tracking-tight text-white
-    shadow-sm shadow-rose-500/40
-    hover:shadow-md hover:shadow-rose-500/60
-    hover:-translate-y-0.5
-    active:translate-y-0 active:scale-[0.98]
-    focus-visible:outline-none
-    focus-visible:ring-2 focus-visible:ring-rose-500/80
-    focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900
-    transition-all
-  "
->
-  Crear pedido
-</button>
+      id="btn-crear-pedido"
+      class="
+        inline-flex items-center justify-center gap-2
+        rounded-full
+        bg-gradient-to-r from-rose-600 to-rose-500
+        px-4 py-2
+        text-xs font-semibold tracking-tight text-white
+        shadow-sm shadow-rose-500/40
+        hover:shadow-md hover:shadow-rose-500/60
+        hover:-translate-y-0.5
+        active:translate-y-0 active:scale-[0.98]
+        focus-visible:outline-none
+        focus-visible:ring-2 focus-visible:ring-rose-500/80
+        focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900
+        transition-all
+      "
+    >
+      Crear pedido
+    </button>
   </div>
 </div>
+
+
 
 </div>
 

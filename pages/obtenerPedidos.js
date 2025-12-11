@@ -18,8 +18,6 @@ async function obtenerStockActual() {
 }
 
 
-
-
 // ==============================
 // 🔊 AVISOS POR VOZ DE PEDIDOS
 // ==============================
@@ -75,7 +73,65 @@ function chequearStockBajo(variedades) {
 }
 
 
+// ==============================
+// 🔹 BADGES DINÁMICOS EN VARIEDADES
+// ==============================
 
+const UMBRAL_STOCK_BAJO_PEDIDOS = 50;
+let stockPorVariedad = {};
+
+// Usa el mismo endpoint de obtenerStockActual()
+async function cargarStockParaPedidos() {
+  try {
+    const variedades = await obtenerStockActual(); // ya devuelve array
+
+    stockPorVariedad = {};
+    variedades.forEach(v => {
+      if (v.id_variedad != null) {
+        stockPorVariedad[Number(v.id_variedad)] = v.stock_disponible;
+      }
+    });
+
+    actualizarBadgesDeStockEnVariedades();
+  } catch (error) {
+    console.error("No se pudo cargar el stock para pedidos:", error);
+  }
+}
+
+function actualizarBadgesDeStockEnVariedades() {
+  const cards = document.querySelectorAll("[data-variedad-card]");
+
+  cards.forEach(card => {
+    const idVar = Number(card.dataset.variedadId);
+    const badge = card.querySelector("[data-badge-stock]");
+    if (!badge || !idVar) return;
+
+    const stock = stockPorVariedad[idVar];
+
+    let baseClasses =
+      "inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold border ";
+
+    if (stock == null) {
+      badge.textContent = "Sin datos de stock";
+      badge.className = baseClasses + "bg-slate-100 text-slate-500 border-slate-200";
+    } else if (stock === 0) {
+      badge.textContent = "Sin stock";
+      badge.className = baseClasses + "bg-rose-50 text-rose-700 border-rose-200";
+    } else if (stock <= UMBRAL_STOCK_BAJO_PEDIDOS) {
+      badge.textContent = `Bajo stock (${stock})`;
+      badge.className = baseClasses + "bg-amber-50 text-amber-700 border-amber-200";
+    } else {
+      badge.textContent = `Stock: ${stock}`;
+      badge.className = baseClasses + "bg-emerald-50 text-emerald-700 border-emerald-200";
+    }
+  });
+}
+
+
+
+// ==============================
+// 🔊 AVISOS POR VOZ DE PEDIDOS (continuación)
+// ==============================
 
 // Para no repetir avisos del mismo pedido
 const avisosProgramados = new Set();
@@ -159,9 +215,6 @@ function programarAvisoVozParaPedido(pedido) {
     anunciarPedido(pedido, minutosRestantes);
   }, msHastaAviso);
 }
-
-
-
 
 
 
@@ -439,7 +492,6 @@ function pintarPedidosEnTabla(pedidos) {
 
 
 
-
 // -------------------------
 //   VER DETALLE + MODAL
 // -------------------------
@@ -493,7 +545,6 @@ async function verDetalle(idPedido) {
 
 
 
-
 // -------------------------
 function cerrarModalDetalle() {
   document.getElementById("modal-detalle").classList.add("hidden");
@@ -534,7 +585,6 @@ async function actualizarEstadoPedido(id, estado) {
     alert("No se pudo actualizar el estado del pedido");
   }
 }
-
 
 
 
@@ -712,9 +762,6 @@ async function crearPedido() {
 
 
 
-
-
-
 function generarPaginacion(data) {
   const cont = document.getElementById("paginacion");
   cont.innerHTML = "";
@@ -792,6 +839,55 @@ function aplicarSinStockDesdeError(mensaje) {
 }
 
 
+// ==============================
+//  INTERACCIÓN DE CARDS + STOCK
+// ==============================
+document.addEventListener("DOMContentLoaded", () => {
+  const cards = document.querySelectorAll("[data-variedad-card]");
+
+  cards.forEach(card => {
+    const input = card.querySelector("input[type='number']");
+    const btnMenos = card.querySelector("[data-step='-1']");
+    const btnMas = card.querySelector("[data-step='1']");
+
+    const actualizarEstadoCard = () => {
+      const valor = parseInt(input.value || "0", 10);
+      if (valor > 0) {
+        card.classList.add("ring-1", "ring-rose-400/70", "bg-white");
+      } else {
+        card.classList.remove("ring-1", "ring-rose-400/70", "bg-white");
+      }
+    };
+
+    btnMenos?.addEventListener("click", (e) => {
+      e.preventDefault();
+      let valor = parseInt(input.value || "0", 10);
+      if (isNaN(valor)) valor = 0;
+      valor = Math.max(0, valor - 1);
+      input.value = valor;
+      input.dispatchEvent(new Event("input"));
+      actualizarEstadoCard();
+    });
+
+    btnMas?.addEventListener("click", (e) => {
+      e.preventDefault();
+      let valor = parseInt(input.value || "0", 10);
+      if (isNaN(valor)) valor = 0;
+      valor = valor + 1;
+      input.value = valor;
+      input.dispatchEvent(new Event("input"));
+      actualizarEstadoCard();
+    });
+
+    input.addEventListener("input", actualizarEstadoCard);
+
+    // estado inicial
+    actualizarEstadoCard();
+  });
+
+  // 👇 acá cargamos el stock y pintamos los badges al iniciar
+  cargarStockParaPedidos();
+});
 
 
 // 🔚 AL FINAL DEL ARCHIVO:
