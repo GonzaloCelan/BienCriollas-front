@@ -227,6 +227,19 @@ export async function guardarProduccion() {
   }
 }
 
+document.addEventListener("DOMContentLoaded", () => {
+  // Si ya tenés una función que carga el stock al inicio, la podés llamar acá:
+  // cargarStockActual();
+
+  const btnActualizar = document.getElementById("btn-actualizar-tabla");
+
+  if (btnActualizar) {
+    btnActualizar.addEventListener("click", async () => {
+      cargarStockActual();
+    });
+  }
+});
+
 
  
 
