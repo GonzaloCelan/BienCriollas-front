@@ -48,49 +48,28 @@
   </div>
 </div>
 
-     <nav class="flex-1 px-3 py-4 space-y-2">
-  <!-- ACTIVO POR DEFECTO -->
-  <button
-  class="nav-item w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium
-         text-slate-100 hover:bg-white hover:text-slate-900 hover:shadow-sm transition"
-  data-section-btn="pedidos">
-  <span>📦</span>
-  <span>Pedidos</span>
-</button>
-
-
-  <button
-    class="nav-item w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium
-           text-white/90 bg-transparent hover:bg-slate-800/80 transition"
-    data-section-btn="stock">
-    <span>🥟</span>
-    <span>Stock</span>
+  <nav class="flex-1 px-3 py-4 space-y-2">
+  <button class="nav-item " data-section-btn="pedidos">
+    <span>📦</span><span>Pedidos</span>
   </button>
 
-  <button
-    class="nav-item w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium
-           text-white/90 bg-transparent hover:bg-slate-800/80 transition"
-    data-section-btn="caja">
-     <span>💰</span>
-  <span>Caja</span>
+  <button class="nav-item" data-section-btn="stock">
+    <span>🥟</span><span>Stock</span>
   </button>
 
-  <button
-  class="nav-item w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium
-         text-white/90 bg-transparent hover:bg-slate-800/80 transition"
-  data-section-btn="estadisticas">
-  <span>📊</span>
-  <span>Estadísticas</span>
-</button>
+  <button class="nav-item" data-section-btn="caja">
+    <span>💰</span><span>Caja</span>
+  </button>
 
-<button 
-  class="nav-item w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium"
-  data-section-btn="horarios"
->
-  🕒
-  <span>Horarios</span>
-</button>
+  <button class="nav-item" data-section-btn="estadisticas">
+    <span>📊</span><span>Estadísticas</span>
+  </button>
+
+  <button class="nav-item" data-section-btn="horarios">
+    <span>🕒</span><span>Horarios</span>
+  </button>
 </nav>
+
 
       <div class="px-4 py-3 border-t border-slate-100 text-xs text-slate-400">
         v1.0 • Empanadas manager
@@ -1558,7 +1537,7 @@
 <div data-section="caja" class=" p-6 space-y-6 seccion">
 
  <!-- TÍTULO DE LA CAJA -->
-<div class="w-full text-center ">
+<div class="w-full flex flex-col items-start gap-1 text-left">
   <h2 id="caja-dia-actual"
       class="text-[20px] font-semibold text-slate-700 tracking-tight caja-h2">
   </h2>
@@ -1567,46 +1546,56 @@
      class="text-[12px] text-slate-400 mt-1">
      Mostrando caja del día de hoy (automático)
   </p>
-</div>
 
-<!-- FILTRO POR FECHA -->
-<div class="flex items-center gap-3 bg-white p-4 rounded-xl border shadow-sm">
+  <!-- FILTRO POR FECHA (MÁS COMPACTO) -->
+<div class="inline-flex">
+  <div class="flex flex-col gap-1.5">
+    <label class="text-[11px] font-semibold text-slate-600">
+      Fecha de caja
+    </label>
 
-  <div class="flex flex-col">
-    <label class="text-[11px] font-medium text-slate-500 mb-1">Buscar caja por fecha</label>
-    <input 
-      type="date" 
-      id="caja-fecha"
-      class="border rounded-md px-2 py-1 text-xs bg-slate-50 border-slate-300
-             focus:ring-1 focus:ring-rose-500 focus:border-rose-500">
+    <div class="flex items-center gap-2">
+      <input 
+        type="date" 
+        id="caja-fecha"
+        class="h-9 w-44 border border-slate-200 rounded-lg px-2.5 text-xs bg-slate-50
+               focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 outline-none">
+
+      <button
+        id="btn-ver-caja"
+        class="h-9 inline-flex items-center justify-center gap-2
+               rounded-full
+               bg-gradient-to-r from-rose-600 to-rose-500
+               px-4 text-xs font-semibold text-white
+               shadow-sm hover:shadow-md hover:shadow-rose-500/40
+               hover:-translate-y-0.5 active:translate-y-0
+               transition-all">
+        🔎 Ver caja
+      </button>
+    </div>
+
+    <p class="text-[11px] text-slate-500">
+      Elegí una fecha y tocá <b>Ver caja</b>.
+    </p>
   </div>
-
-  <button
-    id="btn-ver-caja"
-    class="ml-auto inline-flex items-center gap-2 rounded-full
-           bg-gradient-to-r from-rose-600 to-rose-500
-           px-4 py-2 text-xs font-semibold tracking-tight text-white
-           shadow-sm hover:shadow-md hover:shadow-rose-500/60
-           transition-all">
-    Ver caja del día
-  </button>
 </div>
+</div>
+
+
+
+
+
 
 
   <!-- KPIs -->
-  <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
+  <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
 
     <!-- INGRESOS -->
     <div class="p-5 rounded-xl bg-gradient-to-br from-green-50 to-white border border-green-100 shadow-sm kpi-anim">
-      <p class="text-[12px] text-green-700 font-medium">Ingresos totales (particulares)</p>
+      <p class="text-[12px] text-green-700 font-medium">Ingresos totales (pedidos particulares)</p>
       <h2 id="kpi-ingresos-totales" class="text-3xl font-bold text-green-700 mt-1">$0</h2>
     </div>
 
-    <!-- PEDIDOS YA -->
-<div class="p-5 rounded-xl bg-gradient-to-br from-purple-50 to-white border border-purple-100 shadow-sm kpi-anim" style="animation-delay: .2s;">
-  <p class="text-[12px] text-purple-700 font-medium">PedidosYa (liquidación)</p>
-  <h2 id="kpi-pedidosya" class="text-3xl font-bold text-purple-700 mt-1">$0</h2>
-</div>
     <!-- EFECTIVO -->
     <div class="p-5 rounded-xl bg-gradient-to-br from-blue-50 to-white border border-blue-100 shadow-sm kpi-anim" style="animation-delay: .05s;">
       <p class="text-[12px] text-blue-700 font-medium">Ingresos en efectivo</p>
@@ -1615,7 +1604,7 @@
 
     <!-- TRANSFERENCIA -->
     <div class="p-5 rounded-xl bg-gradient-to-br from-indigo-50 to-white border border-indigo-100 shadow-sm kpi-anim" style="animation-delay: .1s;">
-      <p class="text-[12px] text-indigo-700 font-medium">Ingresos por transferencia</p>
+      <p class="text-[12px] text-indigo-700 font-medium">Ingresos por transferencia (particular y pedidos ya)</p>
       <h2 id="kpi-ingresos-transferencias" class="text-3xl font-bold text-indigo-700 mt-1">$0</h2>
     </div>
 
@@ -1629,9 +1618,22 @@
 
   <button 
   id="btn-pedidosya"
-  class="inline-flex items-center gap-2 text-xs rounded-full bg-purple-600 text-white px-3 py-1.5 hover:bg-purple-500">
-  + PedidosYa
+  class="relative group inline-flex items-center gap-2
+         text-sm font-semibold rounded-xl
+         bg-white text-red-600 border-2 border-red-600
+         px-5 py-3 shadow-sm
+         hover:bg-red-600 hover:text-white
+         hover:shadow-md hover:-translate-y-0.5
+         active:translate-y-0 active:shadow-sm
+         transition-all duration-200
+         animate-pulse">
+  <span class="text-lg leading-none group-hover:scale-110 transition-transform">🛵</span>
+  <span>+ Cargar PedidosYa</span>
+  <span class="pointer-events-none absolute opacity-0 group-hover:opacity-100 transition-opacity duration-200
+               inset-0 rounded-xl
+               bg-gradient-to-r from-transparent via-white/30 to-transparent"></span>
 </button>
+
 
   <!-- EGRESOS -->
   <div class="bg-white rounded-xl border shadow-sm p-5">
@@ -1693,12 +1695,41 @@
   <!-- BOTÓN CERRAR CAJA -->
   <div class="text-right">
     <button
-      id="btn-cerrar-caja"
-      class="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-slate-800 to-slate-900
-             px-6 py-2 text-xs font-semibold tracking-tight text-white shadow-sm hover:shadow-md">
-      Cerrar caja del día
-    </button>
+  id="btn-cerrar-caja"
+  class="relative group inline-flex items-center justify-center gap-2
+         rounded-2xl
+         px-6 py-3
+         text-sm font-semibold tracking-tight
+         text-white
+         bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900
+         border border-white/10
+         shadow-[0_10px_24px_rgba(0,0,0,.25)]
+         hover:shadow-[0_16px_34px_rgba(0,0,0,.35)]
+         hover:-translate-y-0.5
+         active:translate-y-0 active:shadow-[0_10px_24px_rgba(0,0,0,.25)]
+         transition-all duration-200
+         focus:outline-none focus-visible:ring-4 focus-visible:ring-sky-500/30">
+
+  <!-- Icono (opcional pero ayuda a “entender” la acción) -->
+  <span class="text-base group-hover:scale-110 transition-transform">🔒</span>
+
+  <span>Cerrar caja </span>
+
+  <!-- Glow suave -->
+  <span class="pointer-events-none absolute -inset-0.5 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity
+               blur-md bg-white/10"></span>
+
+  <!-- Shine al hover -->
+  <span class="pointer-events-none absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-200
+               bg-gradient-to-r from-transparent via-white/20 to-transparent"></span>
+
+  <!-- Puntito “importante” -->
+  <span class="ml-1 h-2 w-2 rounded-full bg-emerald-400 shadow-[0_0_12px_rgba(52,211,153,.8)]"></span>
+</button>
+
   </div>
+
+
 
 </div>
 

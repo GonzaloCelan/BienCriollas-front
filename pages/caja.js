@@ -1,426 +1,561 @@
 // ============================================================================
-// ⭐ ANIMAR NÚMEROS (para balance final)
+// ✅ CAJA.JS (corregido + limpio)
+// - Fecha "hoy" en horario local (sin UTC / sin toISOString)
+// - Bloqueo coherente:
+//    * Futuro: no permite operar
+//    * Pasado: solo lectura
+//    * Hoy: habilitado si NO está cerrada
+// - Al cerrar: bloquea PedidosYa + Egresos + Cerrar caja
+// - Al refrescar: mantiene estado "cerrada" (localStorage por fecha)
 // ============================================================================
+
+// -------------------------------
+// Helpers DOM
+// -------------------------------
+function $(id) {
+  return document.getElementById(id);
+}
+function on(id, event, handler) {
+  const el = $(id);
+  if (el) el.addEventListener(event, handler);
+  return el;
+}
+function setDisabled(el, disabled) {
+  if (!el) return;
+  el.disabled = disabled;
+  el.classList.toggle("opacity-40", disabled);
+  el.classList.toggle("cursor-not-allowed", disabled);
+}
+
+// -------------------------------
+// Fecha (LOCAL, sin UTC)
+// -------------------------------
+function obtenerFechaHoy() {
+  const d = new Date();
+  const yyyy = d.getFullYear();
+  const mm = String(d.getMonth() + 1).padStart(2, "0");
+  const dd = String(d.getDate()).padStart(2, "0");
+  return `${yyyy}-${mm}-${dd}`; // ISO local
+}
+function esHoy(fechaISO) {
+  return fechaISO === obtenerFechaHoy();
+}
+function esFechaFutura(fechaISO) {
+  // Comparación segura porque es YYYY-MM-DD
+  return fechaISO > obtenerFechaHoy();
+}
+function formatearFechaVisual(fechaISO) {
+  return fechaISO.split("-").reverse().join("/");
+}
+function getFechaVista() {
+  return $("caja-fecha")?.value || obtenerFechaHoy();
+}
+
+// -------------------------------
+// Persistencia local de "caja cerrada"
+// (sin backend extra)
+// -------------------------------
+const LS_CAJA_CERRADA_PREFIX = "bc_caja_cerrada_";
+
+function estaCerradaLocal(fechaISO) {
+  return localStorage.getItem(LS_CAJA_CERRADA_PREFIX + fechaISO) === "1";
+}
+function marcarCerradaLocal(fechaISO, cerrada) {
+  localStorage.setItem(LS_CAJA_CERRADA_PREFIX + fechaISO, cerrada ? "1" : "0");
+}
+
+// -------------------------------
+// UI: aplicar estado según fecha + cerrada
+// -------------------------------
+function aplicarEstadoUI(fechaISO) {
+  const btnCerrar = $("btn-cerrar-caja");
+  const btnEgreso = $("btn-abrir-egreso");
+  const btnPy = $("btn-pedidosya");
+
+  // FUTURO: no operar
+  if (esFechaFutura(fechaISO)) {
+    setDisabled(btnCerrar, true);
+    setDisabled(btnEgreso, true);
+    setDisabled(btnPy, true);
+
+    if (btnCerrar) {
+      btnCerrar.textContent = "🚫 Fecha futura";
+      btnCerrar.classList.remove("btn-caja-cerrada");
+    }
+    return;
+  }
+
+  const hoy = esHoy(fechaISO);
+  const cerrada = estaCerradaLocal(fechaISO);
+
+  // PASADO: solo lectura
+  if (!hoy) {
+    setDisabled(btnCerrar, true);
+    setDisabled(btnEgreso, true);
+    setDisabled(btnPy, true);
+
+    if (btnCerrar) {
+      btnCerrar.textContent = cerrada ? "✔ Caja cerrada" : "🔒 Solo lectura";
+      btnCerrar.classList.toggle("btn-caja-cerrada", cerrada);
+    }
+    return;
+  }
+
+  // HOY: si cerrada => bloquear todo
+  if (cerrada) {
+    setDisabled(btnCerrar, true);
+    setDisabled(btnEgreso, true);
+    setDisabled(btnPy, true);
+
+    if (btnCerrar) {
+      btnCerrar.textContent = "✔ Caja cerrada";
+      btnCerrar.classList.add("btn-caja-cerrada");
+    }
+    return;
+  }
+
+  // HOY ABIERTA: habilitar todo
+  setDisabled(btnCerrar, false);
+  setDisabled(btnEgreso, false);
+  setDisabled(btnPy, false);
+
+  if (btnCerrar) {
+    btnCerrar.textContent = "Cerrar caja del día";
+    btnCerrar.classList.remove("btn-caja-cerrada");
+  }
+}
+
+// -------------------------------
+// Animación / UI balance
+// -------------------------------
 function animarNumero(elemento, valorFinal, duracion = 800) {
-    let inicio = 0;
-    let rango = valorFinal - inicio;
-    let tiempoInicial = null;
+  if (!elemento) return;
 
-    function animar(timestamp) {
-        if (!tiempoInicial) tiempoInicial = timestamp;
-        let progreso = timestamp - tiempoInicial;
+  let inicio = 0;
+  let rango = valorFinal - inicio;
+  let tiempoInicial = null;
 
-        let porcentaje = Math.min(progreso / duracion, 1);
-        let valorActual = Math.floor(porcentaje * rango);
+  function animar(timestamp) {
+    if (!tiempoInicial) tiempoInicial = timestamp;
+    let progreso = timestamp - tiempoInicial;
 
-        elemento.textContent = `$${valorActual.toLocaleString("es-AR")}`;
+    let porcentaje = Math.min(progreso / duracion, 1);
+    let valorActual = Math.floor(porcentaje * rango);
 
-        if (porcentaje < 1) requestAnimationFrame(animar);
-    }
+    elemento.textContent = `$${valorActual.toLocaleString("es-AR")}`;
 
-    requestAnimationFrame(animar);
+    if (porcentaje < 1) requestAnimationFrame(animar);
+  }
+
+  requestAnimationFrame(animar);
 }
-
-function esHoy(fechaStr) {
-    const hoy = new Date().toISOString().split("T")[0];
-    return fechaStr === hoy;
-}
-
-function actualizarBotonesSegunFecha(fecha) {
-    const esDiaActual = esHoy(fecha);
-
-    const btnCerrar = document.getElementById("btn-cerrar-caja");
-    const btnEgreso = document.getElementById("btn-abrir-egreso");
-    const btnPy = document.getElementById("btn-pedidosya");
-
-    if (esDiaActual) {
-        // HABILITAR TODO
-        btnCerrar.disabled = false;
-        btnEgreso.disabled = false;
-        btnPy.disabled = false;
-
-        btnCerrar.classList.remove("opacity-40", "cursor-not-allowed");
-        btnEgreso.classList.remove("opacity-40", "cursor-not-allowed");
-        btnPy.classList.remove("opacity-40", "cursor-not-allowed");
-
-    } else {
-        // DESHABILITAR TODO
-        btnCerrar.disabled = true;
-        btnEgreso.disabled = true;
-        btnPy.disabled = true;
-
-        btnCerrar.classList.add("opacity-40", "cursor-not-allowed");
-        btnEgreso.classList.add("opacity-40", "cursor-not-allowed");
-        btnPy.classList.add("opacity-40", "cursor-not-allowed");
-    }
-}
-
 
 function pintarColorBalance(balance) {
-    const el = document.getElementById("caja-balance");
+  const el = $("caja-balance");
+  if (!el) return;
 
-    // Limpia colores anteriores
-    el.classList.remove(
-        "text-red-600", "text-green-600",
-        "bg-gradient-to-r", "from-green-600", "to-emerald-500",
-        "from-red-600", "to-red-400"
-    );
+  el.classList.remove(
+    "text-red-600",
+    "text-green-600",
+    "bg-gradient-to-r",
+    "from-green-600",
+    "to-emerald-500",
+    "from-red-600",
+    "to-red-400"
+  );
 
-    if (balance >= 0) {
-        // Texto verde fuerte
-        el.classList.add("text-green-600");
-    } else {
-        // Texto rojo fuerte
-        el.classList.add("text-red-600");
-    }
+  if (balance >= 0) el.classList.add("text-green-600");
+  else el.classList.add("text-red-600");
 }
 
-
-// ============================================================================
-// ⭐ FECHA UTILIDADES
-// ============================================================================
-function obtenerFechaHoy() {
-    return new Date().toISOString().split("T")[0];
+// -------------------------------
+// Toastify
+// -------------------------------
+function toastOk(msg) {
+  if (typeof Toastify === "undefined") return alert(msg);
+  Toastify({
+    text: msg,
+    duration: 2500,
+    gravity: "top",
+    position: "right",
+    style: { background: "#10B981" }
+  }).showToast();
 }
 
-function formatearFechaVisual(fechaISO) {
-    return fechaISO.split("-").reverse().join("/");
+function toastError(msg) {
+  if (typeof Toastify === "undefined") return alert(msg);
+  Toastify({
+    text: msg,
+    duration: 2500,
+    gravity: "top",
+    position: "right",
+    style: { background: "#EF4444" }
+  }).showToast();
+}
+
+function mostrarToastCajaCerrada() {
+  const t = $("toast-caja");
+  if (!t) return;
+
+  t.classList.remove("hidden");
+
+  setTimeout(() => (t.style.opacity = "0"), 2000);
+  setTimeout(() => {
+    t.classList.add("hidden");
+    t.style.opacity = "1";
+  }, 2800);
 }
 
 // ============================================================================
 // ⭐ FILTRO PRINCIPAL DE FECHA
 // ============================================================================
-document.getElementById("btn-ver-caja").addEventListener("click", cargarCajaPorFecha);
+on("btn-ver-caja", "click", cargarCajaPorFecha);
 
 async function cargarCajaPorFecha() {
-    const fecha = document.getElementById("caja-fecha").value;
-    document.getElementById("caja-modo").textContent =
-    "Mostrando resultados filtrados por fecha seleccionada";
+  const fecha = $("caja-fecha")?.value;
 
-    if (!fecha) {
-        toastError("Seleccioná una fecha para buscar la caja.");
-        return;
-    }
+  if ($("caja-modo")) {
+    $("caja-modo").textContent = "Mostrando resultados filtrados por fecha seleccionada";
+  }
 
-    document.getElementById("caja-dia-actual").textContent =
-        `Caja del día: ${formatearFechaVisual(fecha)}`;
+  if (!fecha) {
+    toastError("Seleccioná una fecha para buscar la caja.");
+    return;
+  }
 
-    actualizarBotonesSegunFecha(fecha)
-    cargarIngresos(fecha);
-    cargarEgresos(fecha);
-    cargarBalance(fecha);
+  if (esFechaFutura(fecha)) {
+    toastError("No podés buscar una fecha futura.");
+    aplicarEstadoUI(fecha);
+    return;
+  }
+
+  if ($("caja-dia-actual")) {
+    $("caja-dia-actual").textContent = `Caja del día: ${formatearFechaVisual(fecha)}`;
+  }
+
+  aplicarEstadoUI(fecha);
+
+  await Promise.allSettled([cargarIngresos(fecha), cargarEgresos(fecha), cargarBalance(fecha)]);
 }
 
 // ============================================================================
 // ⭐ MOSTRAR FECHA ACTUAL AL INICIAR
 // ============================================================================
 function pintarFechaActual() {
-    const hoyISO = obtenerFechaHoy();
-    document.getElementById("caja-dia-actual").textContent =
-        `Caja del día: ${formatearFechaVisual(hoyISO)}`;
+  const hoyISO = obtenerFechaHoy();
+  if ($("caja-dia-actual")) {
+    $("caja-dia-actual").textContent = `Caja del día: ${formatearFechaVisual(hoyISO)}`;
+  }
 }
 
 // ============================================================================
 // ⭐ CARGAR INGRESOS POR FECHA
 // ============================================================================
 async function cargarIngresos(fecha) {
-    try {
-        const response = await fetch(`${window.API_BASE_URL}/api/caja/ingresos?fecha=${fecha}`);
-        if (!response.ok) throw new Error("Error consultando ingresos");
+  try {
+    const response = await fetch(`${window.API_BASE_URL}/api/caja/ingresos?fecha=${fecha}`);
+    if (!response.ok) throw new Error("Error consultando ingresos");
 
-        const data = await response.json();
+    const data = await response.json();
 
-        document.getElementById("kpi-ingresos-totales").textContent =
-            `$${Number(data.ingresosTotales).toLocaleString("es-AR")}`;
+    const ingresosTotales = Number(data.ingresosTotales ?? 0);
+    const efectivo = Number(data.ingresosEfectivo ?? 0);
+    const transferBase = Number(data.ingresosTransferencias ?? 0);
 
-        document.getElementById("kpi-ingresos-efectivo").textContent =
-            `$${Number(data.ingresosEfectivo).toLocaleString("es-AR")}`;
+    // Si tu backend devuelve totalPedidosYa separado (como en tu DTO),
+    // lo sumamos acá para que "Transferencias" represente (particular + pedidosya).
+    const totalPedidosYa = data.totalPedidosYa == null ? 0 : Number(data.totalPedidosYa);
 
-        document.getElementById("kpi-ingresos-transferencias").textContent =
-            `$${Number(data.ingresosTransferencias).toLocaleString("es-AR")}`;
+    const transferMostrar = transferBase + totalPedidosYa;
 
-        document.getElementById("kpi-mermas").textContent =
-            `$${Number(data.totalMermas).toLocaleString("es-AR")}`;
-
-        const py = data.pedidosYaLiquidacion;
-        document.getElementById("kpi-pedidosya").textContent =
-            py ? `$${Number(py).toLocaleString("es-AR")}` : "$0";
-
-    } catch (err) {
-        console.error("Error ingresos:", err);
+    if ($("kpi-ingresos-totales")) {
+      $("kpi-ingresos-totales").textContent = `$${ingresosTotales.toLocaleString("es-AR")}`;
     }
+    if ($("kpi-ingresos-efectivo")) {
+      $("kpi-ingresos-efectivo").textContent = `$${efectivo.toLocaleString("es-AR")}`;
+    }
+    if ($("kpi-ingresos-transferencias")) {
+      $("kpi-ingresos-transferencias").textContent = `$${transferMostrar.toLocaleString("es-AR")}`;
+    }
+    if ($("kpi-mermas")) {
+      $("kpi-mermas").textContent = `$${Number(data.totalMermas ?? 0).toLocaleString("es-AR")}`;
+    }
+  } catch (err) {
+    console.error("Error ingresos:", err);
+  }
 }
 
 // ============================================================================
 // ⭐ CARGAR EGRESOS POR FECHA
 // ============================================================================
 async function cargarEgresos(fecha) {
-    try {
-        const response = await fetch(`${window.API_BASE_URL}/api/caja/egresos?fecha=${fecha}`);
-        const data = await response.json();
+  try {
+    const response = await fetch(`${window.API_BASE_URL}/api/caja/egresos?fecha=${fecha}`);
+    if (!response.ok) throw new Error("Error consultando egresos");
 
-        const tbody = document.getElementById("tabla-egresos-body");
-        tbody.innerHTML = "";
+    const data = await response.json();
 
-        data.forEach(e => {
-            const monto = Number(e.monto);
+    const tbody = $("tabla-egresos-body");
+    if (!tbody) return;
 
-            const tr = document.createElement("tr");
-            tr.className =
-                "border-b border-slate-200 hover:bg-slate-50 transition-colors";
+    tbody.innerHTML = "";
 
-            tr.innerHTML = `
-                <td class="px-4 py-3 text-slate-700 flex items-center gap-2">
-                    <span class="text-red-500 text-sm">💸</span>
-                    <span>${e.descripcion}</span>
-                </td>
+    (data || []).forEach((e) => {
+      const monto = Number(e.monto ?? 0);
 
-                <td class="px-4 py-3 text-right">
-                    <span class="text-red-600 font-semibold bg-red-50 px-2 py-1 rounded-lg">
-                        -$${monto.toLocaleString("es-AR")}
-                    </span>
-                </td>
+      const tr = document.createElement("tr");
+      tr.className = "border-b border-slate-200 hover:bg-slate-50 transition-colors";
 
-                <td class="px-4 py-3 text-right text-slate-500">
-                    ${e.hora}
-                </td>
-            `;
-            tbody.appendChild(tr);
-        });
+      tr.innerHTML = `
+        <td class="px-4 py-3 text-slate-700 flex items-center gap-2">
+          <span class="text-red-500 text-sm">💸</span>
+          <span>${e.descripcion ?? ""}</span>
+        </td>
 
-    } catch (err) {
-        console.error("Error cargando egresos:", err);
-    }
+        <td class="px-4 py-3 text-right">
+          <span class="text-red-600 font-semibold bg-red-50 px-2 py-1 rounded-lg">
+            -$${monto.toLocaleString("es-AR")}
+          </span>
+        </td>
+
+        <td class="px-4 py-3 text-right text-slate-500">
+          ${e.hora ?? ""}
+        </td>
+      `;
+
+      tbody.appendChild(tr);
+    });
+  } catch (err) {
+    console.error("Error cargando egresos:", err);
+  }
 }
-
 
 // ============================================================================
 // ⭐ CARGAR BALANCE POR FECHA
 // ============================================================================
 async function cargarBalance(fecha) {
+  try {
+    const response = await fetch(`${window.API_BASE_URL}/api/caja/balance?fecha=${fecha}`);
+    if (!response.ok) throw new Error("Error obteniendo balance");
 
-    try {
-        const response = await fetch(`${window.API_BASE_URL}/api/caja/balance?fecha=${fecha}`);
-        if (!response.ok) throw new Error("Error obteniendo balance");
+    const data = await response.json();
+    const balance = Number(data.balance ?? 0);
 
-        const data = await response.json();
-
-        const balance = Number(data.balance);
-        const balanceEl = document.getElementById("caja-balance");
-
-        animarNumero(balanceEl, balance);
-        pintarColorBalance(balance);
-
-        // ⭐ COLOR DINÁMICO (positivo = verde, negativo = rojo)
-        if (balance >= 0) {
-            balanceEl.classList.remove("text-red-600");
-            balanceEl.classList.add("text-green-600");
-        } else {
-            balanceEl.classList.remove("text-green-600");
-            balanceEl.classList.add("text-red-600");
-        }
-
-    } catch (error) {
-        console.error("Error cargando balance:", error);
-    }
+    const balanceEl = $("caja-balance");
+    animarNumero(balanceEl, balance);
+    pintarColorBalance(balance);
+  } catch (error) {
+    console.error("Error cargando balance:", error);
+  }
 }
 
 // ============================================================================
-// ⭐ MODAL EGRESOS (el mismo)
+// ⭐ MODAL EGRESOS
 // ============================================================================
-const modalEgreso = document.getElementById("modal-egreso");
-const btnAbrirEgreso = document.getElementById("btn-abrir-egreso");
-const btnCerrarEgreso = document.getElementById("btn-cerrar-egreso");
+const modalEgreso = $("modal-egreso");
 
-btnAbrirEgreso.addEventListener("click", () => modalEgreso.classList.remove("hidden"));
-btnCerrarEgreso.addEventListener("click", cerrarModalEgreso);
+on("btn-abrir-egreso", "click", () => {
+  const fecha = getFechaVista();
+  if (esFechaFutura(fecha)) return toastError("No podés operar una fecha futura.");
+  if (!esHoy(fecha)) return toastError("Solo podés registrar egresos en el día de hoy.");
+  if (estaCerradaLocal(fecha)) return toastError("La caja de hoy está cerrada.");
+
+  modalEgreso?.classList.remove("hidden");
+});
+
+on("btn-cerrar-egreso", "click", cerrarModalEgreso);
 
 function cerrarModalEgreso() {
-    modalEgreso.classList.add("hidden");
-    document.getElementById("egreso-descripcion").value = "";
-    document.getElementById("egreso-monto").value = "";
+  modalEgreso?.classList.add("hidden");
+  if ($("egreso-descripcion")) $("egreso-descripcion").value = "";
+  if ($("egreso-monto")) $("egreso-monto").value = "";
 }
 
 // ============================================================================
 // ⭐ REGISTRAR EGRESO
 // ============================================================================
-document.getElementById("btn-guardar-egreso")
-    .addEventListener("click", registrarEgreso);
+on("btn-guardar-egreso", "click", registrarEgreso);
 
 async function registrarEgreso() {
-    const descripcion = document.getElementById("egreso-descripcion").value.trim();
-    const monto = Number(document.getElementById("egreso-monto").value);
-    const fecha = document.getElementById("caja-fecha").value || obtenerFechaHoy();
+  const fecha = getFechaVista();
 
-    if (!descripcion || !monto || monto <= 0) {
-        toastError("Completá todos los datos del egreso");
-        return;
-    }
+  if (esFechaFutura(fecha)) return toastError("No podés operar una fecha futura.");
+  if (!esHoy(fecha)) return toastError("Solo podés registrar egresos en el día de hoy.");
+  if (estaCerradaLocal(fecha)) return toastError("La caja de hoy está cerrada.");
 
-    const payload = { descripcion, monto, fecha };
+  const descripcion = $("egreso-descripcion")?.value?.trim() ?? "";
+  const monto = Number($("egreso-monto")?.value ?? 0);
 
-    try {
-        const response = await fetch(`${window.API_BASE_URL}/api/caja/registrar`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload)
-        });
+  if (!descripcion || !monto || monto <= 0) {
+    toastError("Completá todos los datos del egreso");
+    return;
+  }
 
-        if (!response.ok) throw new Error();
+  const payload = { descripcion, monto, fecha };
 
-        cerrarModalEgreso();
-        cargarEgresos(fecha);
-        cargarBalance(fecha);
+  try {
+    const response = await fetch(`${window.API_BASE_URL}/api/caja/registrar`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
 
-        toastOk("Egreso registrado");
+    if (!response.ok) throw new Error();
 
-    } catch (err) {
-        toastError("No se pudo registrar el egreso");
-    }
+    cerrarModalEgreso();
+    await Promise.allSettled([cargarEgresos(fecha), cargarBalance(fecha)]);
+
+    toastOk("Egreso registrado");
+  } catch (err) {
+    toastError("No se pudo registrar el egreso");
+  }
 }
 
 // ============================================================================
 // ⭐ MODAL PEDIDOS YA
 // ============================================================================
-document.getElementById("btn-pedidosya")
-    .addEventListener("click", () => {
-        document.getElementById("modal-pedidosya").classList.remove("hidden");
-    });
+on("btn-pedidosya", "click", () => {
+  const fechaVista = getFechaVista();
 
-document.getElementById("py-cancelar").addEventListener("click", cerrarModalPY);
+  if (esFechaFutura(fechaVista)) return toastError("No podés operar una fecha futura.");
+  if (!esHoy(fechaVista)) return toastError("Solo podés cargar PedidosYa en el día de hoy.");
+  if (estaCerradaLocal(fechaVista)) return toastError("La caja de hoy está cerrada.");
+
+  // Prellenar fecha del modal con la fecha vista (más claro)
+  const pyFecha = $("py-fecha");
+  if (pyFecha && !pyFecha.value) pyFecha.value = fechaVista;
+
+  $("modal-pedidosya")?.classList.remove("hidden");
+});
+
+on("py-cancelar", "click", cerrarModalPY);
 
 function cerrarModalPY() {
-    document.getElementById("modal-pedidosya").classList.add("hidden");
-    document.getElementById("py-fecha").value = "";
-    document.getElementById("py-monto").value = "";
+  $("modal-pedidosya")?.classList.add("hidden");
+  if ($("py-fecha")) $("py-fecha").value = "";
+  if ($("py-monto")) $("py-monto").value = "";
 }
 
-document.getElementById("py-guardar").addEventListener("click", registrarPedidosYa);
+on("py-guardar", "click", registrarPedidosYa);
 
 async function registrarPedidosYa() {
-    const fecha = document.getElementById("py-fecha").value;
-    const monto = Number(document.getElementById("py-monto").value);
+  const fechaVista = getFechaVista();
 
-    if (!fecha || monto <= 0) {
-        toastError("Completá la fecha y el monto");
-        return;
-    }
+  if (esFechaFutura(fechaVista)) return toastError("No podés operar una fecha futura.");
+  if (!esHoy(fechaVista)) return toastError("Solo podés cargar PedidosYa en el día de hoy.");
+  if (estaCerradaLocal(fechaVista)) return toastError("La caja de hoy está cerrada.");
 
-    const payload = { fecha, monto };
+  const fecha = $("py-fecha")?.value;
+  const monto = Number($("py-monto")?.value ?? 0);
 
-    try {
-        const response = await fetch(`${window.API_BASE_URL}/api/caja/registrar-py`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload)
-        });
+  if (!fecha || monto <= 0) {
+    toastError("Completá la fecha y el monto");
+    return;
+  }
 
-        if (!response.ok) throw new Error();
+  if (esFechaFutura(fecha)) {
+    toastError("No podés cargar PedidosYa en una fecha futura.");
+    return;
+  }
 
-        cerrarModalPY();
-        toastOk("PedidosYa registrado");
+  const payload = { fecha, monto };
 
-        cargarIngresos(fecha);
-        cargarBalance(fecha);
+  try {
+    const response = await fetch(`${window.API_BASE_URL}/api/caja/registrar-py`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
 
-    } catch (err) {
-        toastError("No se pudo registrar PedidosYa");
-    }
+    if (!response.ok) throw new Error();
+
+    cerrarModalPY();
+    toastOk("PedidosYa registrado");
+
+    await Promise.allSettled([cargarIngresos(fecha), cargarBalance(fecha)]);
+  } catch (err) {
+    toastError("No se pudo registrar PedidosYa");
+  }
 }
 
 // ============================================================================
-// ⭐ TOASTIFY
+// ⭐ CERRAR CAJA (modal confirmación)
 // ============================================================================
-function toastOk(msg) {
-    Toastify({
-        text: msg,
-        duration: 2500,
-        gravity: "top",
-        position: "right",
-        style: { background: "#10B981" }
-    }).showToast();
-}
+const modalConfirmar = $("modal-confirmar-caja");
 
-function toastError(msg) {
-    Toastify({
-        text: msg,
-        duration: 2500,
-        gravity: "top",
-        position: "right",
-        style: { background: "#EF4444" }
-    }).showToast();
-}
+on("btn-cerrar-caja", "click", () => {
+  const fecha = getFechaVista();
 
-// ============================================================================
-// ⭐ CERRAR CAJA POR FECHA
-// ============================================================================
-const modalConfirmar = document.getElementById("modal-confirmar-caja");
-const btnCerrarCaja = document.getElementById("btn-cerrar-caja");
-const btnCancelar = document.getElementById("btn-caja-cancelar");
-const btnConfirmar = document.getElementById("btn-caja-confirmar");
+  // Si está bloqueado por lógica, no abrir modal
+  if (esFechaFutura(fecha)) return toastError("No podés cerrar una fecha futura.");
+  if (!esHoy(fecha)) return toastError("Solo podés cerrar la caja del día de hoy.");
+  if (estaCerradaLocal(fecha)) return toastError("La caja ya está cerrada.");
 
-btnCerrarCaja.addEventListener("click", () => {
-    modalConfirmar.classList.remove("hidden");
+  modalConfirmar?.classList.remove("hidden");
 });
 
-btnCancelar.addEventListener("click", () => {
-    modalConfirmar.classList.add("hidden");
-});
-
-btnConfirmar.addEventListener("click", cerrarCajaDiaria);
+on("btn-caja-cancelar", "click", () => modalConfirmar?.classList.add("hidden"));
+on("btn-caja-confirmar", "click", cerrarCajaDiaria);
 
 async function cerrarCajaDiaria() {
-    modalConfirmar.classList.add("hidden");
+  modalConfirmar?.classList.add("hidden");
 
-    const fecha = document.getElementById("caja-fecha").value || obtenerFechaHoy();
+  const fecha = getFechaVista();
 
-    try {
-        const response = await fetch(`${window.API_BASE_URL}/api/caja/cierre?fecha=${fecha}`, {
-            method: "POST"
-        });
+  if (esFechaFutura(fecha)) return toastError("No podés cerrar una fecha futura.");
+  if (!esHoy(fecha)) return toastError("Solo podés cerrar la caja del día de hoy.");
+  if (estaCerradaLocal(fecha)) {
+    aplicarEstadoUI(fecha);
+    return toastOk("La caja ya estaba cerrada.");
+  }
 
-        if (!response.ok) throw new Error();
+  try {
+    const response = await fetch(`${window.API_BASE_URL}/api/caja/cierre?fecha=${fecha}`, {
+      method: "POST"
+    });
 
-        const data = await response.json();
+    if (!response.ok) throw new Error();
 
-        animarNumero(document.getElementById("caja-balance"), Number(data.balanceFinal));
+    const data = await response.json();
 
-        btnCerrarCaja.textContent = "✔ Caja cerrada";
-        btnCerrarCaja.classList.add("btn-caja-cerrada");
-        btnCerrarCaja.disabled = true;
-
-        mostrarToastCajaCerrada();
-
-    } catch (err) {
-        toastError("No se pudo cerrar la caja");
+    // Si tu backend devuelve balanceFinal:
+    if (data?.balanceFinal != null) {
+      animarNumero($("caja-balance"), Number(data.balanceFinal));
+      pintarColorBalance(Number(data.balanceFinal));
+    } else {
+      // Por las dudas, recalcular
+      await cargarBalance(fecha);
     }
+
+    // ✅ persistir cierre + bloquear todo
+    marcarCerradaLocal(fecha, true);
+    aplicarEstadoUI(fecha);
+
+    mostrarToastCajaCerrada();
+  } catch (err) {
+    toastError("No se pudo cerrar la caja");
+  }
 }
-
-function mostrarToastCajaCerrada() {
-    const t = document.getElementById("toast-caja");
-    t.classList.remove("hidden");
-
-    setTimeout(() => (t.style.opacity = "0"), 2000);
-    setTimeout(() => {
-        t.classList.add("hidden");
-        t.style.opacity = "1";
-    }, 2800);
-}
-
-
 
 // ============================================================================
 // ⭐ INICIALIZACIÓN
 // ============================================================================
 export function initCaja() {
-    document.getElementById("caja-modo").textContent =
-    "Mostrando caja del día de hoy (automático)";
-    pintarFechaActual();
+  if ($("caja-modo")) {
+    $("caja-modo").textContent = "Mostrando caja del día de hoy (automático)";
+  }
 
-    const hoy = obtenerFechaHoy();
+  pintarFechaActual();
 
-    cargarIngresos(hoy);
-    cargarEgresos(hoy);
-    cargarBalance(hoy);
-    actualizarBotonesSegunFecha(hoy)
+  const hoy = obtenerFechaHoy();
+
+  // ✅ No permitir fecha futura desde el input
+  const input = $("caja-fecha");
+  if (input) input.max = hoy;
+
+  aplicarEstadoUI(hoy);
+
+  cargarIngresos(hoy);
+  cargarEgresos(hoy);
+  cargarBalance(hoy);
 }
