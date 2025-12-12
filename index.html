@@ -224,7 +224,7 @@
     </button>
   </div>
 
-  <!-- Formulario principal -->
+  
     <!-- Formulario principal -->
   <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4 space-y-4">
 
@@ -347,6 +347,75 @@
 
   </div>
 
+    <!-- 👇 PEGÁ EL SCRIPT ACÁ MISMO -->
+  <script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const tipoPago   = document.getElementById("tipo-pago");
+    const bloque     = document.getElementById("bloque-detalle-pago");
+    const totalInp   = document.getElementById("total-pedido");
+    const efecInp    = document.getElementById("monto-efectivo");
+    const transfInp  = document.getElementById("monto-transferencia");
+
+    if (!tipoPago || !bloque) return;
+
+    function num(el) {
+      if (!el) return 0;
+      const v = parseFloat((el.value || "").replace(",", "."));
+      return isNaN(v) ? 0 : v;
+    }
+
+    function toggleBloque() {
+      if (tipoPago.value === "COMBINADO") {
+        bloque.classList.remove("hidden");
+      } else {
+        bloque.classList.add("hidden");
+        if (efecInp)   efecInp.value   = "";
+        if (transfInp) transfInp.value = "";
+      }
+    }
+
+    function actualizarDesdeEfectivo() {
+      if (tipoPago.value !== "COMBINADO") return;
+      const total = num(totalInp);
+      if (!total || !efecInp || !transfInp) return;
+
+      let ef = num(efecInp);
+      if (ef < 0) ef = 0;
+      if (ef > total) ef = total;
+
+      efecInp.value = ef;
+      transfInp.value = (total - ef).toFixed(2);
+    }
+
+    function actualizarDesdeTransfer() {
+      if (tipoPago.value !== "COMBINADO") return;
+      const total = num(totalInp);
+      if (!total || !efecInp || !transfInp) return;
+
+      let tr = num(transfInp);
+      if (tr < 0) tr = 0;
+      if (tr > total) tr = total;
+
+      transfInp.value = tr;
+      efecInp.value = (total - tr).toFixed(2);
+    }
+
+    tipoPago.addEventListener("change", toggleBloque);
+    if (efecInp)   efecInp.addEventListener("input", actualizarDesdeEfectivo);
+    if (transfInp) transfInp.addEventListener("input", actualizarDesdeTransfer);
+
+    if (totalInp) {
+      totalInp.addEventListener("input", function () {
+        if (tipoPago.value === "COMBINADO") {
+          actualizarDesdeEfectivo();
+        }
+      });
+    }
+
+    // Estado inicial
+    toggleBloque();
+  });
+  </script>
   
 
 
