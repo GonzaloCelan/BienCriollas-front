@@ -1,12 +1,12 @@
 // ============================================================================
-// ✅ CAJA.JS (corregido + limpio)
-// - Fecha "hoy" en horario local (sin UTC / sin toISOString)
-// - Bloqueo coherente:
+// ✅ CAJA.JS (adaptado a backend)
+// - Fecha "hoy" local (sin UTC / sin toISOString)
+// - Bloqueo coherente (basado en backend):
 //    * Futuro: no permite operar
 //    * Pasado: solo lectura
-//    * Hoy: habilitado si NO está cerrada
-// - Al cerrar: bloquea PedidosYa + Egresos + Cerrar caja
-// - Al refrescar: mantiene estado "cerrada" (localStorage por fecha)
+//    * Hoy: habilitado si estado != CERRADA
+// - Al cerrar: bloquea PedidosYa + Egresos + Cerrar caja (por estado backend)
+// - Al refrescar: mantiene estado (ya no usa localStorage)
 // ============================================================================
 
 // -------------------------------
@@ -52,22 +52,61 @@ function getFechaVista() {
 }
 
 // -------------------------------
-// Persistencia local de "caja cerrada"
-// (sin backend extra)
+// Estado de caja (BACKEND)
 // -------------------------------
-const LS_CAJA_CERRADA_PREFIX = "bc_caja_cerrada_";
+const CAJA_META_CACHE = new Map(); // fechaISO -> { estado, cerradaEn }
+const ESTADO = {
+  ABIERTA: "ABIERTA",
+  CERRADA: "CERRADA"
+};
 
-function estaCerradaLocal(fechaISO) {
-  return localStorage.getItem(LS_CAJA_CERRADA_PREFIX + fechaISO) === "1";
+async function fetchCajaMeta(fechaISO) {
+  const base = window.API_BASE_URL;
+
+  // 1) Endpoint recomendado: meta/estado
+  try {
+    const r1 = await fetch(`${base}/api/caja/meta?fecha=${fechaISO}`);
+    if (r1.ok) {
+      const d = await r1.json();
+      return {
+        estado: d?.estado ?? null,
+        cerradaEn: d?.cerradaEn ?? d?.cerradoEn ?? null
+      };
+    }
+  } catch (_) {}
+
+  // 2) Fallback: intentar leer "estado" desde ingresos (si lo devolvés ahí)
+  try {
+    const r2 = await fetch(`${base}/api/caja/ingresos?fecha=${fechaISO}`);
+    if (r2.ok) {
+      const d = await r2.json();
+      return {
+        estado: d?.estado ?? null,
+        cerradaEn: d?.cerradaEn ?? d?.cerradoEn ?? null
+      };
+    }
+  } catch (_) {}
+
+  // 3) Si no hay forma de saber el estado, devolvemos null
+  return { estado: null, cerradaEn: null };
 }
-function marcarCerradaLocal(fechaISO, cerrada) {
-  localStorage.setItem(LS_CAJA_CERRADA_PREFIX + fechaISO, cerrada ? "1" : "0");
+
+async function getCajaMeta(fechaISO, { force = false } = {}) {
+  if (!force && CAJA_META_CACHE.has(fechaISO)) return CAJA_META_CACHE.get(fechaISO);
+  const meta = await fetchCajaMeta(fechaISO);
+  CAJA_META_CACHE.set(fechaISO, meta);
+  return meta;
+}
+
+async function estaCerradaBackend(fechaISO) {
+  const meta = await getCajaMeta(fechaISO);
+  return meta?.estado === ESTADO.CERRADA;
 }
 
 // -------------------------------
-// UI: aplicar estado según fecha + cerrada
+// UI: aplicar estado según fecha + estado backend
 // -------------------------------
-function aplicarEstadoUI(fechaISO) {
+async function aplicarEstadoUI(fechaISO) {
   const btnCerrar = $("btn-cerrar-caja");
   const btnEgreso = $("btn-abrir-egreso");
   const btnPy = $("btn-pedidosya");
@@ -86,23 +125,28 @@ function aplicarEstadoUI(fechaISO) {
   }
 
   const hoy = esHoy(fechaISO);
-  const cerrada = estaCerradaLocal(fechaISO);
+  const { estado } = await getCajaMeta(fechaISO);
 
-  // PASADO: solo lectura
+  // PASADO: solo lectura (independiente de estado)
   if (!hoy) {
     setDisabled(btnCerrar, true);
     setDisabled(btnEgreso, true);
     setDisabled(btnPy, true);
 
     if (btnCerrar) {
-      btnCerrar.textContent = cerrada ? "✔ Caja cerrada" : "🔒 Solo lectura";
-      btnCerrar.classList.toggle("btn-caja-cerrada", cerrada);
+      if (estado === ESTADO.CERRADA) {
+        btnCerrar.textContent = "✔ Caja cerrada";
+        btnCerrar.classList.add("btn-caja-cerrada");
+      } else {
+        btnCerrar.textContent = "🔒 Solo lectura";
+        btnCerrar.classList.remove("btn-caja-cerrada");
+      }
     }
     return;
   }
 
-  // HOY: si cerrada => bloquear todo
-  if (cerrada) {
+  // HOY: si CERRADA => bloquear todo
+  if (estado === ESTADO.CERRADA) {
     setDisabled(btnCerrar, true);
     setDisabled(btnEgreso, true);
     setDisabled(btnPy, true);
@@ -114,7 +158,7 @@ function aplicarEstadoUI(fechaISO) {
     return;
   }
 
-  // HOY ABIERTA: habilitar todo
+  // HOY ABIERTA (o sin estado detectable): habilitar todo
   setDisabled(btnCerrar, false);
   setDisabled(btnEgreso, false);
   setDisabled(btnPy, false);
@@ -225,7 +269,7 @@ async function cargarCajaPorFecha() {
 
   if (esFechaFutura(fecha)) {
     toastError("No podés buscar una fecha futura.");
-    aplicarEstadoUI(fecha);
+    await aplicarEstadoUI(fecha);
     return;
   }
 
@@ -233,7 +277,9 @@ async function cargarCajaPorFecha() {
     $("caja-dia-actual").textContent = `Caja del día: ${formatearFechaVisual(fecha)}`;
   }
 
-  aplicarEstadoUI(fecha);
+  // refrescar estado desde backend cada vez que cambias de fecha
+  await getCajaMeta(fecha, { force: true });
+  await aplicarEstadoUI(fecha);
 
   await Promise.allSettled([cargarIngresos(fecha), cargarEgresos(fecha), cargarBalance(fecha)]);
 }
@@ -258,15 +304,12 @@ async function cargarIngresos(fecha) {
 
     const data = await response.json();
 
+    // ✅ con los cambios nuevos, "transferencia" YA debería incluir PedidosYa
     const ingresosTotales = Number(data.ingresosTotales ?? 0);
     const efectivo = Number(data.ingresosEfectivo ?? 0);
-    const transferBase = Number(data.ingresosTransferencias ?? 0);
-
-    // Si tu backend devuelve totalPedidosYa separado (como en tu DTO),
-    // lo sumamos acá para que "Transferencias" represente (particular + pedidosya).
-    const totalPedidosYa = data.totalPedidosYa == null ? 0 : Number(data.totalPedidosYa);
-
-    const transferMostrar = transferBase + totalPedidosYa;
+    const transferencia = Number(
+      data.ingresosTransferencia ?? data.ingresosTransferencias ?? 0
+    );
 
     if ($("kpi-ingresos-totales")) {
       $("kpi-ingresos-totales").textContent = `$${ingresosTotales.toLocaleString("es-AR")}`;
@@ -275,10 +318,18 @@ async function cargarIngresos(fecha) {
       $("kpi-ingresos-efectivo").textContent = `$${efectivo.toLocaleString("es-AR")}`;
     }
     if ($("kpi-ingresos-transferencias")) {
-      $("kpi-ingresos-transferencias").textContent = `$${transferMostrar.toLocaleString("es-AR")}`;
+      $("kpi-ingresos-transferencias").textContent = `$${transferencia.toLocaleString("es-AR")}`;
     }
     if ($("kpi-mermas")) {
-      $("kpi-mermas").textContent = `$${Number(data.totalMermas ?? 0).toLocaleString("es-AR")}`;
+      $("kpi-mermas").textContent = `$${Number(data.totalMermas ?? data.mermas ?? 0).toLocaleString("es-AR")}`;
+    }
+
+    // Si tu backend devuelve estado acá, cachealo (así no hace falta otro fetch)
+    if (data?.estado) {
+      CAJA_META_CACHE.set(fecha, {
+        estado: data.estado,
+        cerradaEn: data?.cerradaEn ?? data?.cerradoEn ?? null
+      });
     }
   } catch (err) {
     console.error("Error ingresos:", err);
@@ -339,7 +390,7 @@ async function cargarBalance(fecha) {
     if (!response.ok) throw new Error("Error obteniendo balance");
 
     const data = await response.json();
-    const balance = Number(data.balance ?? 0);
+    const balance = Number(data.balance ?? data.balanceFinal ?? 0);
 
     const balanceEl = $("caja-balance");
     animarNumero(balanceEl, balance);
@@ -354,11 +405,13 @@ async function cargarBalance(fecha) {
 // ============================================================================
 const modalEgreso = $("modal-egreso");
 
-on("btn-abrir-egreso", "click", () => {
+on("btn-abrir-egreso", "click", async () => {
   const fecha = getFechaVista();
   if (esFechaFutura(fecha)) return toastError("No podés operar una fecha futura.");
   if (!esHoy(fecha)) return toastError("Solo podés registrar egresos en el día de hoy.");
-  if (estaCerradaLocal(fecha)) return toastError("La caja de hoy está cerrada.");
+
+  await getCajaMeta(fecha, { force: true });
+  if (await estaCerradaBackend(fecha)) return toastError("La caja de hoy está cerrada.");
 
   modalEgreso?.classList.remove("hidden");
 });
@@ -381,7 +434,9 @@ async function registrarEgreso() {
 
   if (esFechaFutura(fecha)) return toastError("No podés operar una fecha futura.");
   if (!esHoy(fecha)) return toastError("Solo podés registrar egresos en el día de hoy.");
-  if (estaCerradaLocal(fecha)) return toastError("La caja de hoy está cerrada.");
+
+  await getCajaMeta(fecha, { force: true });
+  if (await estaCerradaBackend(fecha)) return toastError("La caja de hoy está cerrada.");
 
   const descripcion = $("egreso-descripcion")?.value?.trim() ?? "";
   const monto = Number($("egreso-monto")?.value ?? 0);
@@ -403,8 +458,8 @@ async function registrarEgreso() {
     if (!response.ok) throw new Error();
 
     cerrarModalEgreso();
-    await Promise.allSettled([cargarEgresos(fecha), cargarBalance(fecha)]);
 
+    await Promise.allSettled([cargarEgresos(fecha), cargarBalance(fecha)]);
     toastOk("Egreso registrado");
   } catch (err) {
     toastError("No se pudo registrar el egreso");
@@ -414,14 +469,15 @@ async function registrarEgreso() {
 // ============================================================================
 // ⭐ MODAL PEDIDOS YA
 // ============================================================================
-on("btn-pedidosya", "click", () => {
+on("btn-pedidosya", "click", async () => {
   const fechaVista = getFechaVista();
 
   if (esFechaFutura(fechaVista)) return toastError("No podés operar una fecha futura.");
   if (!esHoy(fechaVista)) return toastError("Solo podés cargar PedidosYa en el día de hoy.");
-  if (estaCerradaLocal(fechaVista)) return toastError("La caja de hoy está cerrada.");
 
-  // Prellenar fecha del modal con la fecha vista (más claro)
+  await getCajaMeta(fechaVista, { force: true });
+  if (await estaCerradaBackend(fechaVista)) return toastError("La caja de hoy está cerrada.");
+
   const pyFecha = $("py-fecha");
   if (pyFecha && !pyFecha.value) pyFecha.value = fechaVista;
 
@@ -443,7 +499,9 @@ async function registrarPedidosYa() {
 
   if (esFechaFutura(fechaVista)) return toastError("No podés operar una fecha futura.");
   if (!esHoy(fechaVista)) return toastError("Solo podés cargar PedidosYa en el día de hoy.");
-  if (estaCerradaLocal(fechaVista)) return toastError("La caja de hoy está cerrada.");
+
+  await getCajaMeta(fechaVista, { force: true });
+  if (await estaCerradaBackend(fechaVista)) return toastError("La caja de hoy está cerrada.");
 
   const fecha = $("py-fecha")?.value;
   const monto = Number($("py-monto")?.value ?? 0);
@@ -483,13 +541,14 @@ async function registrarPedidosYa() {
 // ============================================================================
 const modalConfirmar = $("modal-confirmar-caja");
 
-on("btn-cerrar-caja", "click", () => {
+on("btn-cerrar-caja", "click", async () => {
   const fecha = getFechaVista();
 
-  // Si está bloqueado por lógica, no abrir modal
   if (esFechaFutura(fecha)) return toastError("No podés cerrar una fecha futura.");
   if (!esHoy(fecha)) return toastError("Solo podés cerrar la caja del día de hoy.");
-  if (estaCerradaLocal(fecha)) return toastError("La caja ya está cerrada.");
+
+  await getCajaMeta(fecha, { force: true });
+  if (await estaCerradaBackend(fecha)) return toastError("La caja ya está cerrada.");
 
   modalConfirmar?.classList.remove("hidden");
 });
@@ -504,8 +563,10 @@ async function cerrarCajaDiaria() {
 
   if (esFechaFutura(fecha)) return toastError("No podés cerrar una fecha futura.");
   if (!esHoy(fecha)) return toastError("Solo podés cerrar la caja del día de hoy.");
-  if (estaCerradaLocal(fecha)) {
-    aplicarEstadoUI(fecha);
+
+  await getCajaMeta(fecha, { force: true });
+  if (await estaCerradaBackend(fecha)) {
+    await aplicarEstadoUI(fecha);
     return toastOk("La caja ya estaba cerrada.");
   }
 
@@ -518,19 +579,25 @@ async function cerrarCajaDiaria() {
 
     const data = await response.json();
 
-    // Si tu backend devuelve balanceFinal:
+    // cachear estado cerrado si viene, o forzar refresco de meta
+    if (data?.estado) {
+      CAJA_META_CACHE.set(fecha, {
+        estado: data.estado,
+        cerradaEn: data?.cerradaEn ?? data?.cerradoEn ?? null
+      });
+    } else {
+      await getCajaMeta(fecha, { force: true });
+    }
+
+    // balance
     if (data?.balanceFinal != null) {
       animarNumero($("caja-balance"), Number(data.balanceFinal));
       pintarColorBalance(Number(data.balanceFinal));
     } else {
-      // Por las dudas, recalcular
       await cargarBalance(fecha);
     }
 
-    // ✅ persistir cierre + bloquear todo
-    marcarCerradaLocal(fecha, true);
-    aplicarEstadoUI(fecha);
-
+    await aplicarEstadoUI(fecha);
     mostrarToastCajaCerrada();
   } catch (err) {
     toastError("No se pudo cerrar la caja");
@@ -553,7 +620,8 @@ export function initCaja() {
   const input = $("caja-fecha");
   if (input) input.max = hoy;
 
-  aplicarEstadoUI(hoy);
+  // Cargar estado + aplicar UI (sin depender de localStorage)
+  getCajaMeta(hoy, { force: true }).finally(() => aplicarEstadoUI(hoy));
 
   cargarIngresos(hoy);
   cargarEgresos(hoy);
