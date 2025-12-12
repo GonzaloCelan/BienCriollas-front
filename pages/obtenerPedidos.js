@@ -671,19 +671,23 @@ function imprimirTicket() {
 
 
 export function resetFormularioPedido() {
-  const inputCliente = document.querySelector('input[placeholder="Nombre del cliente"]');
-  const inputTotal   = document.querySelector('input[placeholder="0.00"]');
-  const selTipoVenta = document.getElementById('tipo-venta');
-  const selTipoPago  = document.getElementById('tipo-pago');
-  const numPedidoPY  = document.getElementById('numero-pedido');
-  const horaEntrega  = document.getElementById('hora-entrega');
+  const inputCliente       = document.querySelector('input[placeholder="Nombre del cliente"]');
+  const inputTotal         = document.getElementById('total-pedido') || document.querySelector('input[placeholder="0.00"]');
+  const selTipoVenta       = document.getElementById('tipo-venta-nuevo-pedido') || document.getElementById('tipo-venta');
+  const selTipoPago        = document.getElementById('tipo-pago');
+  const numPedidoPY        = document.getElementById('numero-pedido');
+  const horaEntrega        = document.getElementById('hora-entrega');
+  const montoEfectivoInput = document.getElementById('monto-efectivo');
+  const montoTransfInput   = document.getElementById('monto-transferencia');
 
-  if (inputCliente) inputCliente.value = "";
-  if (inputTotal)   inputTotal.value   = "";
-  if (selTipoVenta) selTipoVenta.value = "PARTICULAR";
-  if (selTipoPago)  selTipoPago.value  = "EFECTIVO";
-  if (numPedidoPY)  numPedidoPY.value  = "";
-  if (horaEntrega)  horaEntrega.value = "";
+  if (inputCliente)       inputCliente.value       = "";
+  if (inputTotal)         inputTotal.value         = "";
+  if (selTipoVenta)       selTipoVenta.value       = "PARTICULAR";
+  if (selTipoPago)        selTipoPago.value        = "EFECTIVO";
+  if (numPedidoPY)        numPedidoPY.value        = "";
+  if (horaEntrega)        horaEntrega.value        = "";
+  if (montoEfectivoInput) montoEfectivoInput.value = "";
+  if (montoTransfInput)   montoTransfInput.value   = "";
 
   for (let i = 1; i <= 12; i++) {
     const input = document.getElementById(`var-${i}`);
@@ -696,12 +700,13 @@ export function resetFormularioPedido() {
 async function crearPedido() {
 
   // 1) Datos principales del pedido
-  const cliente = document.querySelector('input[placeholder="Nombre del cliente"]').value;
-  const tipoVenta = document.querySelector('#tipo-venta-nuevo-pedido').value;
-  const tipoPago = document.getElementById("tipo-pago").value;
-  const numeroPedidoPedidosYa = document.querySelector('#numero-pedido').value || null;
-  const horaEntrega = document.querySelector('#hora-entrega').value || null;
-  const totalPedido = Number(document.querySelector('input[placeholder="0.00"]').value);
+  const cliente    = document.querySelector('input[placeholder="Nombre del cliente"]')?.value || "";
+  const tipoVenta  = document.querySelector('#tipo-venta-nuevo-pedido')?.value || "PARTICULAR";
+  const tipoPago   = document.getElementById("tipo-pago")?.value || "EFECTIVO";
+  const numeroPedidoPedidosYa = document.querySelector('#numero-pedido')?.value || null;
+  const horaEntrega           = document.querySelector('#hora-entrega')?.value || null;
+  const totalInput            = document.getElementById('total-pedido') || document.querySelector('input[placeholder="0.00"]');
+  const totalPedido           = Number(totalInput?.value || 0);
 
   // 2) Variedades (1 al 12)
   const detalles = [];
@@ -717,6 +722,18 @@ async function crearPedido() {
     }
   }
 
+  // 3) Montos de pago (solo se envían para COMBINADO)
+  let montoEfectivo = null;
+  let montoTransferencia = null;
+
+  if (tipoPago === "COMBINADO") {
+    const montoEfectivoInput   = document.getElementById('monto-efectivo');
+    const montoTransfInput     = document.getElementById('monto-transferencia');
+
+    montoEfectivo      = montoEfectivoInput ? Number(montoEfectivoInput.value || 0) : 0;
+    montoTransferencia = montoTransfInput   ? Number(montoTransfInput.value   || 0) : 0;
+  }
+
   const body = {
     cliente,
     tipoVenta,
@@ -726,6 +743,11 @@ async function crearPedido() {
     totalPedido,
     detalles
   };
+
+  if (tipoPago === "COMBINADO") {
+    body.montoEfectivo = montoEfectivo;
+    body.montoTransferencia = montoTransferencia;
+  }
 
   try {
     const response = await fetch(`${window.API_BASE_URL}/pedido/crear`, {
@@ -840,6 +862,153 @@ function aplicarSinStockDesdeError(mensaje) {
 
 
 // ==============================
+//  PAGO COMBINADO (EFECTIVO + TRANSFERENCIA)
+// ==============================
+function initPagoCombinado() {
+  const tipoPagoSelect     = document.getElementById("tipo-pago");
+  const bloqueDetallePago  = document.getElementById("bloque-detalle-pago");
+  const totalInput         = document.getElementById("total-pedido") || document.querySelector('input[placeholder="0.00"]');
+  const montoEfectivoInput = document.getElementById("monto-efectivo");
+  const montoTransfInput   = document.getElementById("monto-transferencia");
+  const ayudaDetallePago   = document.getElementById("ayuda-detalle-pago");
+
+  // Si no está el formulario de nuevo pedido, salimos sin romper nada
+  if (!tipoPagoSelect || !totalInput) {
+    return;
+  }
+
+  // Helper para leer número de un input
+  function leerNumero(input) {
+    if (!input) return 0;
+    const val = parseFloat((input.value || "").replace(",", "."));
+    return isNaN(val) ? 0 : val;
+  }
+
+  function actualizarMensajeAyuda() {
+    if (!ayudaDetallePago) return;
+
+    const total  = leerNumero(totalInput);
+    const efec   = leerNumero(montoEfectivoInput);
+    const transf = leerNumero(montoTransfInput);
+    const suma   = efec + transf;
+
+    if (total <= 0) {
+      ayudaDetallePago.textContent = "Cargá primero el total del pedido.";
+      ayudaDetallePago.classList.remove("text-red-500");
+      ayudaDetallePago.classList.add("text-slate-500");
+      return;
+    }
+
+    if (suma === total) {
+      ayudaDetallePago.textContent = "OK, la suma de efectivo + transferencia coincide con el total.";
+      ayudaDetallePago.classList.remove("text-red-500");
+      ayudaDetallePago.classList.add("text-slate-500");
+    } else if (suma < total) {
+      ayudaDetallePago.textContent = `Faltan $ ${total - suma} para llegar al total.`;
+      ayudaDetallePago.classList.remove("text-slate-500");
+      ayudaDetallePago.classList.add("text-red-500");
+    } else {
+      ayudaDetallePago.textContent = `Te pasaste por $ ${suma - total}. Revisá los montos.`;
+      ayudaDetallePago.classList.remove("text-slate-500");
+      ayudaDetallePago.classList.add("text-red-500");
+    }
+  }
+
+  function onCambioTipoPago() {
+    const valor = tipoPagoSelect.value;
+
+    if (!bloqueDetallePago) return;
+
+    if (valor === "COMBINADO") {
+      bloqueDetallePago.classList.remove("hidden");
+    } else {
+      bloqueDetallePago.classList.add("hidden");
+      if (montoEfectivoInput) montoEfectivoInput.value = "";
+      if (montoTransfInput)   montoTransfInput.value   = "";
+      if (ayudaDetallePago) {
+        ayudaDetallePago.textContent =
+          "La suma de efectivo + transferencia debe coincidir con el total del pedido.";
+        ayudaDetallePago.classList.remove("text-red-500");
+        ayudaDetallePago.classList.add("text-slate-500");
+      }
+    }
+  }
+
+  tipoPagoSelect.addEventListener("change", onCambioTipoPago);
+
+  // Cuando escriben EFECTIVO → calcular TRANSFERENCIA
+  if (montoEfectivoInput) {
+    montoEfectivoInput.addEventListener("input", () => {
+      if (tipoPagoSelect.value !== "COMBINADO") return;
+
+      const total = leerNumero(totalInput);
+      if (total <= 0) {
+        if (montoTransfInput) montoTransfInput.value = "";
+        actualizarMensajeAyuda();
+        return;
+      }
+
+      let efectivo = leerNumero(montoEfectivoInput);
+      if (efectivo < 0) efectivo = 0;
+      if (efectivo > total) efectivo = total;
+
+      montoEfectivoInput.value = efectivo;
+
+      if (montoTransfInput) {
+        const transferencia = total - efectivo;
+        montoTransfInput.value = transferencia.toFixed(2);
+      }
+
+      actualizarMensajeAyuda();
+    });
+  }
+
+  // Cuando escriben TRANSFERENCIA → calcular EFECTIVO
+  if (montoTransfInput) {
+    montoTransfInput.addEventListener("input", () => {
+      if (tipoPagoSelect.value !== "COMBINADO") return;
+
+      const total = leerNumero(totalInput);
+      if (total <= 0) {
+        if (montoEfectivoInput) montoEfectivoInput.value = "";
+        actualizarMensajeAyuda();
+        return;
+      }
+
+      let transf = leerNumero(montoTransfInput);
+      if (transf < 0) transf = 0;
+      if (transf > total) transf = total;
+
+      montoTransfInput.value = transf;
+
+      if (montoEfectivoInput) {
+        const efectivo = total - transf;
+        montoEfectivoInput.value = efectivo.toFixed(2);
+      }
+
+      actualizarMensajeAyuda();
+    });
+  }
+
+  // Si cambia el total, recomputar
+  totalInput.addEventListener("input", () => {
+    if (tipoPagoSelect.value === "COMBINADO") {
+      if (montoEfectivoInput) {
+        montoEfectivoInput.dispatchEvent(new Event("input"));
+      } else {
+        actualizarMensajeAyuda();
+      }
+    } else {
+      actualizarMensajeAyuda();
+    }
+  });
+
+  // Estado inicial
+  onCambioTipoPago();
+}
+
+
+// ==============================
 //  INTERACCIÓN DE CARDS + STOCK
 // ==============================
 document.addEventListener("DOMContentLoaded", () => {
@@ -887,6 +1056,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // 👇 acá cargamos el stock y pintamos los badges al iniciar
   cargarStockParaPedidos();
+
+  // Inicializar comportamiento de pago combinado (efectivo + transferencia)
+  initPagoCombinado();
 });
 
 

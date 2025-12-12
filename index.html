@@ -225,12 +225,16 @@
   </div>
 
   <!-- Formulario principal -->
+    <!-- Formulario principal -->
   <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4 space-y-4">
+
+    <!-- Fila 1: cliente / tipo venta / tipo pago -->
     <div class="grid md:grid-cols-3 gap-4">
       <!-- Cliente -->
       <div class="flex flex-col gap-1">
         <label class="text-xs font-medium text-slate-700">Cliente</label>
         <input type="text"
+               id="cliente-nuevo-pedido"
                class="border rounded-md px-3 py-1.5 text-xs"
                placeholder="Nombre del cliente">
       </div>
@@ -246,15 +250,17 @@
       </div>
 
       <!-- Tipo de pago -->
-      <div  class="flex flex-col gap-1">
+      <div class="flex flex-col gap-1">
         <label class="text-xs font-medium text-slate-700">Tipo de pago</label>
         <select id="tipo-pago" class="border rounded-md px-3 py-1.5 text-xs">
           <option value="EFECTIVO">EFECTIVO</option>
           <option value="TRANSFERENCIA">TRANSFERENCIA</option>
-        </select> 
+          <option value="COMBINADO">COMBINADO (efectivo + transferencia)</option>
+        </select>
       </div>
     </div>
 
+    <!-- Fila 2: nro pedido / hora entrega / total -->
     <div class="grid md:grid-cols-3 gap-4">
       <!-- Número de pedido (solo PEDIDOS_YA) -->
       <div id="campo-numero-pedido" class="flex flex-col gap-1">
@@ -282,13 +288,67 @@
         <label class="text-xs font-medium text-slate-700">Total del pedido</label>
         <div class="flex items-center gap-1">
           <span class="text-xs text-slate-500">$</span>
-          <input type="number"
+          <input id="total-pedido"
+                 type="number"
                  class="border rounded-md px-3 py-1.5 text-xs w-full"
-                 placeholder="0.00" step="0.01">
+                 placeholder="0.00"
+                 step="0.01"
+                 min="0">
         </div>
       </div>
     </div>
+
+    <!-- Detalle de pago (solo cuando tipo de pago = COMBINADO) -->
+    <div id="bloque-detalle-pago" class="grid md:grid-cols-2 gap-4 pt-2 border-t border-slate-100 hidden">
+      <!-- Monto en efectivo -->
+      <div class="flex flex-col gap-1">
+        <label class="text-xs font-medium text-slate-700">
+          Monto en efectivo
+        </label>
+        <div class="flex items-center gap-1">
+          <span class="text-xs text-slate-500">$</span>
+          <input id="monto-efectivo"
+                 type="number"
+                 class="border rounded-md px-3 py-1.5 text-xs w-full"
+                 placeholder="0.00"
+                 step="0.01"
+                 min="0">
+        </div>
+        <p class="text-[11px] text-slate-500">
+          Lo que el cliente paga en billete.
+        </p>
+      </div>
+
+      <!-- Monto en transferencia -->
+      <div class="flex flex-col gap-1">
+        <label class="text-xs font-medium text-slate-700">
+          Monto en transferencia
+        </label>
+        <div class="flex items-center gap-1">
+          <span class="text-xs text-slate-500">$</span>
+          <input id="monto-transferencia"
+                 type="number"
+                 class="border rounded-md px-3 py-1.5 text-xs w-full"
+                 placeholder="0.00"
+                 step="0.01"
+                 min="0">
+        </div>
+        <p class="text-[11px] text-slate-500">
+          Lo que el cliente paga por transferencia / QR.
+        </p>
+      </div>
+
+      <!-- Mensaje de ayuda / validación -->
+      <p id="ayuda-detalle-pago"
+         class="md:col-span-2 text-[11px] text-slate-500">
+        La suma de efectivo + transferencia debe coincidir con el total del pedido.
+      </p>
+    </div>
+
   </div>
+
+  
+
 
 <!-- Variedades y cantidades -->
 <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4 space-y-3">
@@ -721,7 +781,8 @@
         <!-- 1: Criolla -->
         <div class="card-variedad group flex flex-col justify-between gap-3 rounded-2xl border border-slate-200 bg-slate-50/80 px-3 py-3
                     hover:bg-white hover:shadow-md hover:-translate-y-0.5 transition-all cursor-pointer"
-             data-variedad-card="1">
+             data-variedad-card="1"
+          >
           <div class="flex items-center gap-3">
             <div class="h-10 w-10 rounded-full overflow-hidden bg-slate-200 flex items-center justify-center">
               <img src="./variedades/carne.png" alt="Criolla" class="h-full w-full object-cover">
