@@ -303,3 +303,51 @@ body {
 .nav-item:focus-visible{
   box-shadow: 0 0 0 3px rgba(59,130,246,.35), 0 12px 22px rgba(0,0,0,.18);
 }
+
+
+/* =========================
+   ✨ Shine premium (KPIs)
+   Pegalo 1 vez en tu CSS global
+   ========================= */
+
+@keyframes shine {
+  0% {
+    transform: translateX(-140%) skewX(-20deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(240%) skewX(-20deg);
+    opacity: 0.9;
+  }
+}
+
+/* Si querés usarlo sin Tailwind animate[] */
+.shine-on-hover {
+  position: relative;
+  overflow: hidden;
+}
+
+.shine-on-hover::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -60%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(
+    to right,
+    transparent,
+    rgba(255, 255, 255, 0.55),
+    transparent
+  );
+  transform: skewX(-20deg);
+  opacity: 0;
+}
+
+.shine-on-hover:hover::after {
+  opacity: 1;
+  animation: shine 1.2s ease-in-out 1;
+}

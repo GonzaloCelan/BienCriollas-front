@@ -45,6 +45,12 @@ export function cambiarSeccion(target) {
       titulo: "Estadísticas",
       sub: "Resumen de ventas y actividad del negocio"
     },
+    
+  // 🆕 NUEVA SECCIÓN RESUMEN HISTÓRICO
+    "resumen-historico": {
+    titulo: "Resumen histórico",
+    sub: "Acumulado general de cajas cerradas: efectivo, transferencias, PedidosYa, egresos y total."
+    },
 
     // 🆕 NUEVA SECCIÓN HORARIOS
     horarios: {
@@ -136,6 +142,13 @@ document.addEventListener("DOMContentLoaded", () => {
           mod.initEstadisticas();
         });
       }
+
+      if (target === "resumen-historico") {
+  import("../pages/resumenHistorico.js").then(mod => {
+    mod.cargarResumenHistorico();
+  });
+}
+
 
       // ======================
       // 🆕 📌 SECCION: HORARIOS
