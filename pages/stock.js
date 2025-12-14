@@ -56,7 +56,8 @@ export async function cargarStockActual() {
   }
 }
 
-const UMBRAL_STOCK_BAJO = 50; // acá definís qué es "bajo"
+const UMBRAL_AMARILLO = 100; // 100 o menos => amarillo
+const UMBRAL_ROJO = 50;      // 50 o menos  => rojo
 
 function pintarTablaStock(datos) {
   const tbody = document.getElementById("tbody-stock-actual");
@@ -74,37 +75,56 @@ function pintarTablaStock(datos) {
   }
 
   // ordenar de menor a mayor stock disponible
-  datos.sort((a, b) => a.stock_disponible - b.stock_disponible);
+  datos.sort((a, b) => (Number(a.stock_disponible) || 0) - (Number(b.stock_disponible) || 0));
 
   datos.forEach(item => {
     const tr = document.createElement("tr");
 
-    const esStockBajo = item.stock_disponible <= UMBRAL_STOCK_BAJO;
+    const stock = Number(item.stock_disponible) || 0;
+
+    // ✅ reglas nuevas:
+    // stock <= 50  => rojo
+    // stock <= 100 => amarillo
+    // stock > 100  => verde
+    const esRojo = stock <= UMBRAL_ROJO;
+    const esAmarillo = stock > UMBRAL_ROJO && stock <= UMBRAL_AMARILLO;
+
     const nombreVariedad =
       NOMBRES_VARIEDAD[item.id_variedad] || `Variedad #${item.id_variedad}`;
     const fecha = formatearFecha(item.fecha_elaboracion);
 
     // indicador de nivel de stock (color del chip / punto)
     const nivelClase =
-      item.stock_disponible === 0
+      esRojo
         ? "bg-rose-100 text-rose-700 border-rose-200"
-        : item.stock_disponible <= UMBRAL_STOCK_BAJO
+        : esAmarillo
         ? "bg-amber-50 text-amber-700 border-amber-200"
         : "bg-emerald-50 text-emerald-700 border-emerald-200";
 
     const puntoClase =
-      item.stock_disponible === 0
+      esRojo
         ? "bg-rose-500"
-        : item.stock_disponible <= UMBRAL_STOCK_BAJO
+        : esAmarillo
         ? "bg-amber-500"
         : "bg-emerald-500";
 
-    // fila con hover suave y fondo distinto si es bajo stock
-    tr.className =
-      "group border-b border-slate-100 last:border-b-0 transition-colors " +
-      (esStockBajo
-        ? "bg-rose-50/60 hover:bg-rose-100/80"
-        : "hover:bg-slate-50/80");
+    // fila con hover suave y fondo distinto según nivel
+  tr.className =
+  "group border-b border-slate-100 last:border-b-0 " +
+  "transition-all duration-200 will-change-transform " +
+  "hover:-translate-y-[1px] hover:shadow-md " +
+  (esRojo
+    ? "bg-gradient-to-r from-rose-100 via-rose-50 to-white " +
+      "border-l-4 border-rose-500 " +
+      "hover:from-rose-200 hover:via-rose-100 hover:ring-1 hover:ring-rose-200"
+    : esAmarillo
+    ? "bg-gradient-to-r from-amber-100 via-amber-50 to-white " +
+      "border-l-4 border-amber-500 " +
+      "hover:from-amber-200 hover:via-amber-100 hover:ring-1 hover:ring-amber-200"
+    : "bg-gradient-to-r from-emerald-50 via-white to-white " +
+      "border-l-4 border-emerald-400/70 " +
+      "hover:from-emerald-100 hover:ring-1 hover:ring-emerald-200");
+
 
     tr.innerHTML = `
       <!-- Variedad -->
@@ -130,7 +150,7 @@ function pintarTablaStock(datos) {
       <!-- Stock disponible (chip) -->
       <td class="px-4 py-2.5 text-right text-[13px]">
         <span class="inline-flex items-center justify-end min-w-[3rem] px-2 py-0.5 rounded-md border ${nivelClase} text-[12px] font-semibold">
-          ${item.stock_disponible}
+          ${stock}
         </span>
       </td>
 
