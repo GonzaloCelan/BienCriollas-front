@@ -70,7 +70,7 @@
   </button>
 
   <button class="nav-item" data-section-btn="horarios">
-    <span>🕒</span><span>Horarios</span>
+    <span>🕒</span><span>Horarios empleados</span>
   </button>
 </nav>
 
@@ -1181,10 +1181,32 @@
 
     <!-- 🔹 TABLA DE STOCK ACTUAL POR VARIEDAD -->
     <div class="bg-white rounded-xl shadow-sm border border-slate-200 mt-6">
-      <div class="px-4 py-3 border-b border-slate-200">
-        <h4 class="text-sm font-semibold text-slate-800">Stock actual por variedad</h4>
-        <p class="text-xs text-slate-500">Última producción y stock disponible</p>
-      </div>
+      <div class="px-4 py-3 border-b border-slate-200 flex items-start justify-between gap-4">
+  
+  <!-- Izquierda -->
+  <div>
+    <h4 class="text-sm font-semibold text-slate-800">Stock actual por variedad</h4>
+    <p class="text-xs text-slate-500">Última producción y stock disponible</p>
+  </div>
+
+  <!-- Derecha -->
+  <div class="text-right">
+
+    <div class="mt-1 inline-flex items-center gap-2 rounded-full  bg-white px-3 py-1 ">
+      <span class="text-[10px] font-semibold uppercase tracking-wide text-slate-500">STOCK TOTAL</span>
+
+      <span
+        id="stock-total-num"
+        class="text-base font-extrabold bg-gradient-to-r from-emerald-600 to-teal-500 text-transparent bg-clip-text drop-shadow-sm"
+      >
+        0
+      </span>
+
+    </div>
+  </div>
+
+</div>
+  </div>
 
       <table class="w-full text-xs text-slate-700">
         <thead class="bg-slate-50 text-[11px] uppercase text-slate-500 border-b border-slate-200">

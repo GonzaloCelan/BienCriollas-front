@@ -23,25 +23,38 @@
   }
 
 export async function cargarStockActual() {
-    const url = `${window.API_BASE_URL}/stock/obtener-stock-actual`;
-    console.log("Llamando a:", url);
+  const url = `${window.API_BASE_URL}/stock/obtener-stock-actual`;
+  console.log("Llamando a:", url);
 
-    try {
-      const response = await fetch(url);
-      console.log("Status:", response.status);
+  try {
+    const response = await fetch(url);
+    console.log("Status:", response.status);
 
-      if (!response.ok) {
-        throw new Error("Error consultando el stock actual");
-      }
-
-      const datos = await response.json();
-      pintarTablaStock(datos);
-
-    } catch (error) {
-      console.error("Error en fetch de stock:", error);
-      alert("No se pudo obtener el stock actual del dia");
+    if (!response.ok) {
+      throw new Error("Error consultando el stock actual");
     }
+
+    const datos = await response.json();
+
+    // ✅ Pintar tabla
+    pintarTablaStock(datos);
+
+    // ✅ Calcular + pintar total (soporta stockDisponible o stock_disponible)
+    const total = Array.isArray(datos)
+      ? datos.reduce((acc, item) => {
+          const val = item.stockDisponible ?? item.stock_disponible ?? 0;
+          return acc + (Number(val) || 0);
+        }, 0)
+      : 0;
+
+    const spanTotal = document.getElementById("stock-total-num");
+    if (spanTotal) spanTotal.textContent = total;
+
+  } catch (error) {
+    console.error("Error en fetch de stock:", error);
+    alert("No se pudo obtener el stock actual del dia");
   }
+}
 
 const UMBRAL_STOCK_BAJO = 50; // acá definís qué es "bajo"
 
