@@ -58,6 +58,8 @@ export function initEstadisticas() {
   }
 }
 
+
+
 // 👉 trae estadísticas para una fecha concreta (DÍA)
 export async function cargarEstadisticaDelDia(fecha) {
   try {
@@ -84,6 +86,8 @@ export async function cargarEstadisticaDelDia(fecha) {
     alert("No se pudieron cargar las estadísticas del día");
   }
 }
+
+
 
 // 👉 trae estadísticas para un mes (YYYY-MM)
 export async function cargarEstadisticaDelMes(periodoYYYYMM) {
@@ -124,9 +128,8 @@ function actualizarKpis(est, tipo = "dia") {
   const totalEmp = est.totalEmpanadasVendidas ?? 0;
   const totalPedidos = est.totalPedidos ?? 0;
   const totalIngresos = Number(est.totalIngresos || 0);
-  const bajoStock = est.variedadBajoStock ?? 0;
-  const totalMermas = est.totalMermas ?? 0;
   const totalMermasImporte = Number(est.totalMermasImporte || 0); // 💰 NUEVO
+   const totalPedidosYa = Number(est.totalPedidosYa|| 0);
 
   // valores numéricos
   document.getElementById("kpi-empanadas").textContent = totalEmp;
@@ -136,12 +139,12 @@ function actualizarKpis(est, tipo = "dia") {
     totalIngresos.toLocaleString("es-AR", {
       minimumFractionDigits: 0,
     });
-  document.getElementById("kpi-bajo-stock").textContent = bajoStock;
 
-  const kpiMermas = document.getElementById("kpi-mermas");
-  if (kpiMermas) {
-    kpiMermas.textContent = totalMermas;
-  }
+    document.getElementById("kpi-pedidosya").textContent =
+    "$" +
+    totalPedidosYa.toLocaleString("es-AR", {
+      minimumFractionDigits: 0,
+    });
 
   // 💰 KPI de plata perdida por mermas
   const kpiMermasDinero = document.getElementById("kpi-mermas-dinero");
@@ -157,15 +160,19 @@ function actualizarKpis(est, tipo = "dia") {
   const labelPedidos = document.getElementById("kpi-label-pedidos");
   const labelIngresos = document.getElementById("kpi-label-ingresos");
   const labelMermasDinero = document.getElementById("kpi-label-mermas-dinero");
+  const labelIngresosPedidosya = document.getElementById("kpi-label-pedidosya");
 
   if (tipo === "mes") {
+
     if (labelPedidos) labelPedidos.textContent = "Pedidos del mes";
-    if (labelIngresos) labelIngresos.textContent = "Ingresos (mensual)";
+    if (labelIngresos) labelIngresos.textContent = "Ingresos particular (mensual)";
+    if(labelIngresosPedidosya) labelIngresosPedidosya.textContent = "Pedidos Ya (sin liquidar mensual)"
     if (labelMermasDinero)
       labelMermasDinero.textContent = "Pérdida por mermas (mensual)";
   } else {
     if (labelPedidos) labelPedidos.textContent = "Pedidos del día";
-    if (labelIngresos) labelIngresos.textContent = "Ingresos (diario)";
+    if (labelIngresos) labelIngresos.textContent = "Ingresos particular (diario)";
+    if(labelIngresosPedidosya) labelIngresosPedidosya.textContent = "Pedidos Ya (sin liquidar diario)"
     if (labelMermasDinero)
       labelMermasDinero.textContent = "Pérdida por mermas (diaria)";
   }
@@ -356,9 +363,31 @@ function renderizarGraficoMermas(listaMermas) {
   const datos = Array.isArray(listaMermas) ? listaMermas : [];
   console.log("Datos para gráfico de mermas:", datos);
 
-  const labels = datos.map(m => m.nombre);
-  const valores = datos.map(m => m.cantidad);
-  const montos  = datos.map(m => Number(m.montoPerdido || 0)); // 💰
+  // Normalizar + ordenar desc por cantidad
+  const items = datos
+    .map(m => ({
+      nombre: m.nombre ?? "Sin nombre",
+      cantidad: Number(m.cantidad) || 0,
+      monto: Number(m.montoPerdido || 0),
+    }))
+    .sort((a, b) => b.cantidad - a.cantidad);
+
+  // Top N + Otros
+  const TOP_N = 8;
+  const top = items.slice(0, TOP_N);
+  const resto = items.slice(TOP_N);
+
+  const otrosCant = resto.reduce((acc, it) => acc + it.cantidad, 0);
+  const otrosMonto = resto.reduce((acc, it) => acc + it.monto, 0);
+
+  const final = [...top];
+  if (otrosCant > 0) {
+    final.push({ nombre: "Otros", cantidad: otrosCant, monto: otrosMonto });
+  }
+
+  const labels = final.map(x => x.nombre);
+  const valores = final.map(x => x.cantidad);
+  const montos = final.map(x => x.monto);
 
   if (graficoMermas) {
     graficoMermas.destroy();
@@ -366,51 +395,79 @@ function renderizarGraficoMermas(listaMermas) {
   }
 
   graficoMermas = new Chart(ctx, {
-    type: "doughnut",
+    type: "bar",
     data: {
       labels,
       datasets: [
         {
+          label: "Mermas (empanadas)",
           data: valores,
+          borderWidth: 1,
+          borderRadius: 10,
+          barThickness: 18,
+          maxBarThickness: 22,
         },
       ],
     },
     options: {
       responsive: true,
       maintainAspectRatio: false,
+      indexAxis: "y", // ✅ barras horizontales
+      layout: { padding: { top: 6, right: 14, bottom: 6, left: 10 } },
       plugins: {
-        legend: { position: "bottom" },
+        legend: { display: false },
         tooltip: {
           backgroundColor: "#0f172a",
-          borderColor: "rgba(148, 163, 184, 0.4)",
+          borderColor: "rgba(148, 163, 184, 0.35)",
           borderWidth: 1,
-          titleFont: { size: 11, weight: "600" },
+          titleFont: { size: 11, weight: "700" },
           bodyFont: { size: 11 },
-          padding: 8,
+          padding: 10,
+          displayColors: false,
           callbacks: {
-            label: ctx => {
-              const i = ctx.dataIndex;
-              const nombre = labels[i] || "";
+            title: (items) => items?.[0]?.label || "",
+            label: (c) => {
+              const i = c.dataIndex;
               const cant = valores[i] ?? 0;
               const monto = montos[i] ?? 0;
-
-              return `${nombre}: ${cant} empanadas — $${monto.toLocaleString(
-                "es-AR",
-                { minimumFractionDigits: 0 }
-              )}`;
+              return ` ${cant} empanadas — $${monto.toLocaleString("es-AR", {
+                minimumFractionDigits: 0,
+              })}`;
             },
           },
         },
         datalabels: {
-          formatter: value => value,
+          anchor: "end",
+          align: "right",
+          offset: 6,
           color: "#0f172a",
-          font: { size: 11, weight: "600" },
+          font: { size: 11, weight: "700" },
+          formatter: (value) => value,
+          clamp: true,
         },
       },
-      cutout: "60%",
+      scales: {
+        x: {
+          beginAtZero: true,
+          grid: { color: "rgba(148, 163, 184, 0.25)" },
+          ticks: {
+            precision: 0,
+            color: "#64748b",
+            font: { size: 11, weight: "600" },
+          },
+        },
+        y: {
+          grid: { display: false },
+          ticks: {
+            color: "#334155",
+            font: { size: 11, weight: "600" },
+          },
+        },
+      },
     },
   });
 }
+
 
 
 function actualizarTituloModo(tipo, valor) {

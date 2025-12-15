@@ -1831,78 +1831,223 @@
   </div>
 
   <!-- 🟦 KPIs PREMIUM (solo 1 vez, arreglado) -->
-  <div class="grid grid-cols-1 md:grid-cols-6 gap-4">
+  <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
 
-    <div class="p-5 rounded-xl bg-gradient-to-br from-blue-50 to-white border border-blue-100 shadow-sm kpi-anim"
-      style="animation-delay: .0s;">
-      <p class="text-[12px] text-blue-700 font-medium">Empanadas vendidas</p>
-      <h2 id="kpi-empanadas" class="text-3xl font-bold text-blue-800 mt-1">0</h2>
-    </div>
-
-    <div class="p-5 rounded-xl bg-gradient-to-br from-indigo-50 to-white border border-indigo-100 shadow-sm kpi-anim"
-      style="animation-delay: .05s;">
-      <p id="kpi-label-pedidos" class="text-[12px] text-indigo-700 font-medium">Pedidos del día</p>
-      <h2 id="kpi-pedidos" class="text-3xl font-bold text-indigo-800 mt-1">0</h2>
-    </div>
-
-    <div class="p-5 rounded-xl bg-gradient-to-br from-green-50 to-white border border-green-100 shadow-sm kpi-anim"
-      style="animation-delay: .1s;">
-      <p id="kpi-label-ingresos" class="text-[12px] text-green-700 font-medium">Ingresos (diarios)</p>
-      <h2 id="kpi-facturacion" class="text-3xl font-bold text-green-700 mt-1">$0</h2>
-    </div>
-
-    <div class="p-5 rounded-xl bg-gradient-to-br from-yellow-50 to-white border border-yellow-100 shadow-sm kpi-anim"
-      style="animation-delay: .15s;">
-      <p class="text-[12px] text-yellow-700 font-medium">Variedades en bajo stock</p>
-      <h2 id="kpi-bajo-stock" class="text-3xl font-bold text-yellow-700 mt-1">0</h2>
-    </div>
-
-    <div class="p-5 rounded-xl bg-gradient-to-br from-red-50 to-white border border-red-100 shadow-sm kpi-anim"
-      style="animation-delay: .2s;">
-      <p class="text-[12px] text-red-700 font-medium">Mermas (empanadas perdidas)</p>
-      <h2 id="kpi-mermas" class="text-3xl font-bold text-red-700 mt-1">0</h2>
-    </div>
-
-    <div class="p-5 rounded-xl bg-gradient-to-br from-rose-50 to-white border border-rose-100 shadow-sm kpi-anim"
-      style="animation-delay: .25s;">
-      <p id="kpi-label-mermas-dinero" class="text-[12px] text-rose-700 font-medium">Pérdida por mermas (diaria)</p>
-      <h2 id="kpi-mermas-dinero" class="text-3xl font-bold text-rose-700 mt-1">$0</h2>
-    </div>
-
+  <!-- Empanadas -->
+  <div class="group p-5 rounded-xl bg-gradient-to-br from-blue-50 to-white border border-blue-100 shadow-sm kpi-anim
+              transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:border-blue-200 hover:ring-2 hover:ring-blue-200/40"
+       style="animation-delay: .0s;">
+    <p class="text-[12px] text-blue-700 font-medium">Empanadas vendidas</p>
+    <h2 id="kpi-empanadas"
+        class="text-3xl font-bold text-blue-800 mt-1 transition-transform duration-300 group-hover:scale-[1.02]">
+      0
+    </h2>
   </div>
 
-  <!-- 📈 Gráfico de empanadas -->
-  <div class="bg-white rounded-xl border shadow-sm px-4 pt-4 pb-4">
-    <h3 class="font-semibold text-sm">Gráfico — Ventas por variedad</h3>
-    <p class="text-xs text-slate-500 mb-3">Visualización de ventas según sabor</p>
+  <!-- Pedidos -->
+  <div class="group p-5 rounded-xl bg-gradient-to-br from-indigo-50 to-white border border-indigo-100 shadow-sm kpi-anim
+              transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:border-indigo-200 hover:ring-2 hover:ring-indigo-200/40"
+       style="animation-delay: .05s;">
+    <p id="kpi-label-pedidos" class="text-[12px] text-indigo-700 font-medium">Pedidos del día</p>
+    <h2 id="kpi-pedidos"
+        class="text-3xl font-bold text-indigo-800 mt-1 transition-transform duration-300 group-hover:scale-[1.02]">
+      0
+    </h2>
+  </div>
 
-    <div class="mt-2 h-52">
-      <canvas id="graficoVariedades"></canvas>
+  <!-- Ingresos -->
+  <div class="group p-5 rounded-xl bg-gradient-to-br from-green-50 to-white border border-green-100 shadow-sm kpi-anim
+              transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:border-green-200 hover:ring-2 hover:ring-green-200/40"
+       style="animation-delay: .1s;">
+    <p id="kpi-label-ingresos" class="text-[12px] text-green-700 font-medium">Ingresos particular (diarios)</p>
+    <h2 id="kpi-facturacion"
+        class="text-3xl font-bold text-green-700 mt-1 transition-transform duration-300 group-hover:scale-[1.02]">
+      $0
+    </h2>
+  </div>
+
+  <!-- PedidosYa -->
+  <div class="group p-5 rounded-xl bg-gradient-to-br from-red-50 to-white border border-red-100 shadow-sm kpi-anim
+              transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:border-red-200 hover:ring-2 hover:ring-red-200/40"
+       style="animation-delay: .2s;">
+    <p id="kpi-label-pedidosya" class="text-[12px] text-red-700 font-medium">Pedidos Ya (sin liquidar)</p>
+    <h2 id="kpi-pedidosya"
+        class="text-3xl font-bold text-red-700 mt-1 transition-transform duration-300 group-hover:scale-[1.02]">
+      $0
+    </h2>
+  </div>
+
+  <!-- ✅ Mermas (cambiado a violeta para NO confundirse con PedidosYa) -->
+  <div class="group p-5 rounded-xl bg-gradient-to-br from-violet-50 to-white border border-violet-100 shadow-sm kpi-anim
+              transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:border-violet-200 hover:ring-2 hover:ring-violet-200/40"
+       style="animation-delay: .25s;">
+    <p id="kpi-label-mermas-dinero" class="text-[12px] text-violet-700 font-medium">Pérdida por mermas (diaria)</p>
+    <h2 id="kpi-mermas-dinero"
+        class="text-3xl font-bold text-violet-700 mt-1 transition-transform duration-300 group-hover:scale-[1.02]">
+      $0
+    </h2>
+  </div>
+
+</div>
+
+
+ <!-- 📈 Gráfico de empanadas (premium) -->
+<div
+  class="overflow-hidden rounded-2xl border border-slate-200/70 bg-white
+         ring-1 ring-black/5
+         shadow-[0_12px_32px_-20px_rgba(2,6,23,0.45)]
+         transition-all duration-300
+         hover:shadow-[0_18px_44px_-24px_rgba(2,6,23,0.55)]
+         hover:border-slate-300/70"
+>
+  <!-- Header premium -->
+  <div
+    class="px-5 py-4 border-b border-slate-200/70
+           bg-gradient-to-r from-slate-50 via-white to-slate-50
+           flex items-start justify-between gap-4"
+  >
+    <div>
+      <h3 class="text-sm font-semibold text-slate-900">Gráfico — Ventas por variedad</h3>
+      <p class="text-[11px] text-slate-500">Visualización de ventas según sabor</p>
+    </div>
+
+    <!-- Chip pro -->
+    <span
+      class="inline-flex items-center gap-2 rounded-full
+             border border-slate-200/70 bg-white/80 backdrop-blur
+             px-3 py-1 text-[10px] font-semibold uppercase tracking-wide text-slate-600 shadow-sm"
+    >
+      <span class="h-2 w-2 rounded-full bg-indigo-500"></span>
+      Ventas
+    </span>
+  </div>
+
+  <!-- Body -->
+  <div class="p-5">
+    <div
+      class="mt-1 h-52 rounded-xl border border-slate-200/60
+             bg-gradient-to-b from-white to-slate-50/40
+             shadow-inner"
+    >
+      <div class="h-full p-3">
+        <canvas id="graficoVariedades"></canvas>
+      </div>
     </div>
   </div>
+
+  <!-- Footer sutil -->
+  <div class="px-5 py-3 border-t border-slate-200/60 bg-gradient-to-r from-white via-slate-50/40 to-white">
+    <p class="text-[11px] text-slate-500">
+      Tip: mirá los picos para identificar las variedades más vendidas.
+    </p>
+  </div>
+</div>
+
 
   <!-- Grilla donas -->
   <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
 
-    <div class="bg-white rounded-xl border border-slate-200 overflow-hidden">
-      <div class="px-4 py-3 border-b border-slate-100">
-        <h3 class="text-sm font-semibold">Ingresos por medio de pago</h3>
-        <p class="text-[11px] text-slate-500">Distribución entre efectivo y transferencia.</p>
-      </div>
-      <div class="p-4 h-64">
+    <div
+  class="overflow-hidden rounded-2xl border border-slate-200/70 bg-white
+         ring-1 ring-black/5
+         shadow-[0_12px_32px_-20px_rgba(2,6,23,0.45)]
+         transition-all duration-300
+         hover:shadow-[0_18px_44px_-24px_rgba(2,6,23,0.55)]
+         hover:border-slate-300/70"
+>
+  <!-- Header premium -->
+  <div
+    class="px-5 py-4 border-b border-slate-200/70
+           bg-gradient-to-r from-slate-50 via-white to-slate-50
+           flex items-start justify-between gap-4"
+  >
+    <div>
+      <h3 class="text-sm font-semibold text-slate-900">Ingresos por medio de pago</h3>
+      <p class="text-[11px] text-slate-500">Distribución entre efectivo y transferencia.</p>
+    </div>
+
+    <!-- Chip pro -->
+    <span
+      class="inline-flex items-center gap-2 rounded-full
+             border border-slate-200/70 bg-white/80 backdrop-blur
+             px-3 py-1 text-[10px] font-semibold uppercase tracking-wide text-slate-600 shadow-sm"
+    >
+      <span class="h-2 w-2 rounded-full bg-emerald-500"></span>
+      Distribución
+    </span>
+  </div>
+
+  <!-- Body -->
+  <div class="p-5">
+    <div
+      class="h-64 rounded-xl border border-slate-200/60 bg-gradient-to-b from-white to-slate-50/40
+             shadow-inner"
+    >
+      <div class="h-full p-3">
         <canvas id="graficoIngresosMedios"></canvas>
       </div>
     </div>
+  </div>
 
-    <div class="bg-white rounded-xl border border-slate-200 overflow-hidden">
-      <div class="px-4 py-3 border-b border-slate-100">
-        <h3 class="text-sm font-semibold">Mermas por variedad</h3>
-        <p class="text-[11px] text-slate-500">Cantidad desperdiciada por sabor.</p>
-      </div>
-      <div class="p-4 h-64">
+  <!-- Footer sutil -->
+  <div class="px-5 py-3 border-t border-slate-200/60 bg-gradient-to-r from-white via-slate-50/40 to-white">
+    <p class="text-[11px] text-slate-500">
+      Tip: si ves una diferencia grande, revisá “combinado” y los egresos del día.
+    </p>
+  </div>
+</div>
+
+
+    <div
+  class="overflow-hidden rounded-2xl border border-slate-200/70 bg-white
+         ring-1 ring-black/5
+         shadow-[0_12px_32px_-20px_rgba(2,6,23,0.45)]
+         transition-all duration-300
+         hover:shadow-[0_18px_44px_-24px_rgba(2,6,23,0.55)]
+         hover:border-slate-300/70"
+>
+  <!-- Header premium -->
+  <div
+    class="px-5 py-4 border-b border-slate-200/70
+           bg-gradient-to-r from-slate-50 via-white to-slate-50
+           flex items-start justify-between gap-4"
+  >
+    <div>
+      <h3 class="text-sm font-semibold text-slate-900">Mermas por variedad</h3>
+      <p class="text-[11px] text-slate-500">Cantidad desperdiciada por sabor.</p>
+    </div>
+
+    <!-- Chip pro -->
+    <span
+      class="inline-flex items-center gap-2 rounded-full
+             border border-slate-200/70 bg-white/80 backdrop-blur
+             px-3 py-1 text-[10px] font-semibold uppercase tracking-wide text-slate-600 shadow-sm"
+    >
+      <span class="h-2 w-2 rounded-full bg-rose-500"></span>
+      Mermas
+    </span>
+  </div>
+
+  <!-- Body -->
+  <div class="p-5">
+    <div
+      class="h-[280px] rounded-xl border border-slate-200/60 bg-gradient-to-b from-white to-slate-50/40
+             shadow-inner"
+    >
+      <div class="h-full p-3">
         <canvas id="graficoMermasVariedad"></canvas>
       </div>
     </div>
+  </div>
+
+  <!-- Footer sutil -->
+  <div class="px-5 py-3 border-t border-slate-200/60 bg-gradient-to-r from-white via-slate-50/40 to-white">
+    <p class="text-[11px] text-slate-500">
+      Tip: ordená por cantidad para detectar rápido las variedades con más merma.
+    </p>
+  </div>
+</div>
+
 
   </div>
 
@@ -2475,6 +2620,17 @@
   window.API_BASE_URL = esLocal
     ? "http://localhost:8080"                      // backend local
     : "https://biencriollas-backend-production.up.railway.app"; // TU dominio de Railway
+</script>
+
+
+<script>
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker.register("/sw.js")
+        .then(() => console.log("✅ SW registrado"))
+        .catch(err => console.error("❌ SW error:", err));
+    });
+  }
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
