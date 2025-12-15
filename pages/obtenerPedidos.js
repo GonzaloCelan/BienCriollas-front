@@ -419,7 +419,6 @@ function pintarPedidosEnTabla(pedidos) {
     const totalFormateado = Number(p.totalPedido || 0).toLocaleString("es-AR");
 
     tr.innerHTML = `
-      <!-- Cliente -->
       <td class="px-3 py-3 font-medium text-slate-800">
         <div class="flex items-center gap-2">
           <span class="inline-flex h-7 w-7 items-center justify-center rounded-full bg-slate-100 text-[11px] text-slate-500">
@@ -431,7 +430,6 @@ function pintarPedidosEnTabla(pedidos) {
         </div>
       </td>
 
-      <!-- Tipo de venta -->
       <td class="px-3 py-3">
         <span class="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-medium ${chipTipoVentaClass}">
           <span class="h-1.5 w-1.5 rounded-full bg-current opacity-80"></span>
@@ -439,12 +437,12 @@ function pintarPedidosEnTabla(pedidos) {
         </span>
       </td>
 
-      <!-- Tipo de pago -->
+     
       <td class="px-3 py-3 text-[12px] text-slate-600">
         ${p.tipoPago || "-"}
       </td>
 
-      <!-- Nº Pedido (PedidosYa) -->
+    
       <td class="px-3 py-3 text-[12px] text-slate-600">
         ${numeroPedidoHtml}
       </td>
@@ -454,7 +452,7 @@ function pintarPedidosEnTabla(pedidos) {
         ${horaEntregaHtml}
       </td>
 
-      <!-- Estado -->
+   
       <td class="px-3 py-3">
         <span class="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide ${estadoClass}">
           <span class="h-1.5 w-1.5 rounded-full bg-current"></span>
@@ -462,13 +460,16 @@ function pintarPedidosEnTabla(pedidos) {
         </span>
       </td>
 
-      <!-- Ver detalle -->
       <td class="px-3 py-3">
-        <button
-          onclick="verDetalle(${p.idPedido})"
-          class="text-[11px] font-medium text-sky-600 hover:text-sky-700 hover:underline decoration-sky-400">
-          Ver detalle
-        </button>
+       <button
+  onclick="verDetalle(${p.idPedido})"
+  class="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-1
+         text-[11px] font-semibold text-slate-800
+         hover:bg-white hover:border-slate-300 hover:shadow-sm
+         transition-all duration-200">
+  <span class="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
+  Ver detalle
+</button>
       </td>
 
       <!-- Total -->

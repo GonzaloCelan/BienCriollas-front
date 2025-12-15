@@ -15,6 +15,9 @@
  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600&family=Pacifico&display=swap" rel="stylesheet">
  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,600,1,0" />
+
+
 <link rel="manifest" href="./manifest.json">
 <meta name="theme-color" content="#ef4444">
 <link rel="apple-touch-icon" href="./icons/icon-192.png">
@@ -31,9 +34,8 @@
   <div class="flex min-h-screen">
 
     <!-- SIDEBAR -->
-    <aside class="w-64 bg-[#f14141] text-white flex flex-col
-         h-screen sticky top-0 aside-css">
-
+    <aside class="w-64 bg-[#f14141] text-white flex flex-col h-screen sticky top-0 sidebar-red relative overflow-hidden">
+    
       <div class="px-6 py-5 border-b border-slate-100">
     <div class="flex flex-col items-center gap-2">
     <img
@@ -47,32 +49,56 @@
     </div>
   </div>
 </div>
+<nav class="flex-1 px-3 py-4 space-y-2">
 
-  <nav class="flex-1 px-3 py-4 space-y-2">
   <button class="nav-item" data-section-btn="pedidos">
-    <span>📦</span><span>Pedidos</span>
+    <span class="nav-ico-badge" aria-hidden="true">
+      <span class="material-symbols-rounded nav-ico">receipt_long</span>
+      </span>
+    <span>Pedidos</span>
   </button>
 
   <button class="nav-item" data-section-btn="stock">
-    <span>🥟</span><span>Stock</span>
+    <span class="nav-ico-badge" aria-hidden="true">
+      <span class="material-symbols-rounded nav-ico">grocery</span>
+    </span>
+    <span>Stock</span>
   </button>
 
   <button class="nav-item" data-section-btn="caja">
-    <span>💰</span><span>Caja</span>
+    <span class="nav-ico-badge" aria-hidden="true">
+      <span class="material-symbols-rounded nav-ico">point_of_sale</span>
+
+    </span>
+    <span>Caja</span>
   </button>
 
   <button class="nav-item" data-section-btn="estadisticas">
-    <span>📊</span><span>Estadísticas</span>
+    <span class="nav-ico-badge" aria-hidden="true">
+      <span class="material-symbols-rounded nav-ico">query_stats</span>
+    </span>
+    <span>Estadísticas</span>
   </button>
 
   <button class="nav-item" data-section-btn="resumen-historico">
-    <span>📈</span><span>Resumen histórico</span>
+    <span class="nav-ico-badge" aria-hidden="true">
+      <span class="material-symbols-rounded nav-ico">timeline</span>
+    </span>
+    <span>Resumen histórico</span>
   </button>
 
   <button class="nav-item" data-section-btn="horarios">
-    <span>🕒</span><span>Horarios empleados</span>
+    <span class="nav-ico-badge" aria-hidden="true">
+      <span class="material-symbols-rounded nav-ico">schedule</span>
+    </span>
+    <span>Horarios empleados</span>
   </button>
+
 </nav>
+
+ <div class="sidebar-emp-wrap">
+  <img src="./icons/empanadas_cartoon_ad.png" class="sidebar-emp-img" alt="">
+</div>
 
       <div class="px-4 py-3 border-t border-slate-100 text-xs text-slate-400">
         v1.0 • Empanadas manager
@@ -2640,6 +2666,7 @@
     });
   }
 </script>
+
 
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
