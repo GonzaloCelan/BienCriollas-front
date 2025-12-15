@@ -1,3 +1,38 @@
+document.addEventListener("click", (e) => {
+  const btn = e.target.closest("[data-btn-pago]");
+  if (!btn) return;
+
+  const modal = document.getElementById("modalPago");
+  const pagoInfo = document.getElementById("pagoInfo");
+  const pagoTipo = document.getElementById("pagoTipo");
+
+  if (!modal) return;
+
+  if (pagoInfo) pagoInfo.textContent = `Pedido #${btn.dataset.id}`;
+  if (pagoTipo) pagoTipo.value = btn.dataset.tipo || "EFECTIVO";
+
+  modal.classList.remove("hidden");
+  modal.classList.add("flex");
+});
+
+function cerrarModalPago() {
+  const modal = document.getElementById("modalPago");
+  if (!modal) return;
+  modal.classList.add("hidden");
+  modal.classList.remove("flex");
+}
+
+document.getElementById("btnCerrarPago")?.addEventListener("click", cerrarModalPago);
+document.getElementById("btnCancelarPago")?.addEventListener("click", cerrarModalPago);
+
+document.getElementById("modalPago")?.addEventListener("click", (e) => {
+  if (e.target.id === "modalPago") cerrarModalPago();
+});
+
+
+
+
+
 // ==============================
 // 🔊 AVISOS Para stock bajo
 // ==============================
@@ -437,10 +472,21 @@ function pintarPedidosEnTabla(pedidos) {
         </span>
       </td>
 
-     
-      <td class="px-3 py-3 text-[12px] text-slate-600">
-        ${p.tipoPago || "-"}
-      </td>
+      <td class="px-3 py-3">
+  <button
+    type="button"
+    class="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-1
+           text-[12px] font-semibold text-slate-700 hover:bg-white hover:border-slate-300
+           transition"
+    data-btn-pago
+    data-id="${p.idPedido}"
+    data-tipo="${p.tipoPago || ''}">
+    <span class="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
+    <span>${p.tipoPago || "Sin pago"}</span>
+  </button>
+</td>
+
+
 
     
       <td class="px-3 py-3 text-[12px] text-slate-600">
@@ -1080,6 +1126,9 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 
+
+
+
 // ==============================
 //  HACER FUNCIONES GLOBALES
 // ==============================
@@ -1088,3 +1137,5 @@ window.actualizarEstadoPedido = actualizarEstadoPedido;
 window.cerrarModalDetalle = cerrarModalDetalle;
 window.imprimirTicket = imprimirTicket;
 window.crearPedido = crearPedido;
+
+

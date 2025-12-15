@@ -394,27 +394,194 @@ body {
   outline-offset: 2px;
 }
 
-.sidebar-emp-img{
-  width: 220px;
-  margin: 0 auto;
-  margin-bottom: 20px;
-  opacity: .60;
-  filter: saturate(.95) contrast(.95);
-  transform: translateY(6px);
-}
-
-.sidebar-emp-wrap{
+.sidebar-premium{
   position: relative;
-  padding-top: 10px;
+  overflow: hidden;
+
+  /* ✅ base: rojo premium (nunca se vuelve blanco) */
+  background: linear-gradient(180deg, #ff4a4a 0%, #e11f1f 55%, #c31616 100%);
 }
 
-/* “fade” para integrarlas */
-.sidebar-emp-wrap::before{
+/* ✅ brillo animado MUY sutil (no lava el texto) */
+.sidebar-premium::before{
   content:"";
   position:absolute;
-  left:0; right:0;
-  top:-10px;
-  height:60px;
-  background: linear-gradient(to bottom, rgba(241,65,65,0), rgba(241,65,65,.95));
+  inset:-60%;
+  z-index:0;
   pointer-events:none;
+
+  background: linear-gradient(
+    120deg,
+    rgba(255,255,255,0) 0%,
+    rgba(255,255,255,0.10) 35%,
+    rgba(255,255,255,0.16) 45%,
+    rgba(255,255,255,0.10) 55%,
+    rgba(255,255,255,0) 80%
+  );
+
+  will-change: transform;
+  transform: translate3d(-35%, -20%, 0);
+  animation: bcSheen 7s linear infinite;  /* ⏩ más fluido y no tan lento */
+}
+
+@keyframes bcSheen{
+  0%   { transform: translate3d(-35%, -20%, 0); }
+  100% { transform: translate3d( 35%,  20%, 0); }
+}
+
+/* ✅ overlay leve para mantener contraste siempre */
+.sidebar-premium::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:0;
+  pointer-events:none;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.10), rgba(0,0,0,0.22));
+}
+
+.sidebar-premium > *{
+  position: relative;
+  z-index: 1;
+}
+
+/* ✅ ayuda a que el texto no “se pierda” cuando pasa el brillo */
+.sidebar-premium h1,
+.sidebar-premium p,
+.sidebar-premium .nav-item{
+  text-shadow: 0 1px 2px rgba(0,0,0,0.28);
+}
+
+
+
+.coin-wrap{
+  --coin: 80px;      /* tamaño (h-20 w-20) */
+  --depth: 10px;     /* “grosor” visual */
+  --rim: 6px;        /* ancho del borde metálico */
+  width: var(--coin);
+  height: var(--coin);
+  perspective: 1100px;
+  border-radius: 9999px;
+}
+
+.coin-pro{
+  width: 100%;
+  height: 100%;
+  position: relative;
+  border-radius: 9999px;
+  transform-style: preserve-3d;
+  will-change: transform;
+  animation: coinSpinPro 3.2s linear infinite;
+  filter: drop-shadow(0 12px 22px rgba(0,0,0,.22));
+}
+
+/* caras */
+.coin-face{
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 9999px;
+  object-fit: cover;
+  backface-visibility: hidden;
+  transform: translateZ(calc(var(--depth) / 2));
+}
+
+/* reverso */
+.coin-back{
+  transform: rotateY(180deg) translateZ(calc(var(--depth) / 2));
+  filter: brightness(.85) contrast(1.05);
+}
+
+/* borde metálico (rim) */
+.coin-pro::before{
+  content: "";
+  position: absolute;
+  inset: -2px;
+  border-radius: 9999px;
+  transform: translateZ(1px);
+  pointer-events: none;
+
+  background: conic-gradient(
+    from 180deg,
+    rgba(255,255,255,.75),
+    rgba(210,214,220,.65),
+    rgba(255,255,255,.85),
+    rgba(160,167,176,.55),
+    rgba(255,255,255,.78)
+  );
+
+  /* máscara para que se vea SOLO el anillo */
+  -webkit-mask: radial-gradient(
+    farthest-side,
+    transparent calc(100% - var(--rim)),
+    #000 calc(100% - var(--rim) + 1px)
+  );
+  mask: radial-gradient(
+    farthest-side,
+    transparent calc(100% - var(--rim)),
+    #000 calc(100% - var(--rim) + 1px)
+  );
+
+  box-shadow:
+    inset 0 0 0 1px rgba(255,255,255,.25),
+    inset 0 -10px 14px rgba(0,0,0,.18);
+}
+
+/* brillo suave (glass) */
+.coin-pro::after{
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  transform: translateZ(calc(var(--depth) / 2 + 1px));
+  pointer-events: none;
+
+  background:
+    linear-gradient(120deg,
+      rgba(255,255,255,0) 0%,
+      rgba(255,255,255,.22) 42%,
+      rgba(255,255,255,0) 60%
+    ),
+    radial-gradient(circle at 28% 22%, rgba(255,255,255,.20), transparent 55%);
+
+  mix-blend-mode: screen;
+  opacity: .9;
+  animation: coinShine 1.8s ease-in-out infinite;
+}
+
+/* giro moneda (suave + un toque de “tilt”) */
+@keyframes coinSpinPro{
+  from { transform: rotateX(14deg) rotateY(0deg); }
+  to   { transform: rotateX(14deg) rotateY(360deg); }
+}
+
+/* brillo que “respira” */
+@keyframes coinShine{
+  0%   { opacity: .55; }
+  50%  { opacity: .95; }
+  100% { opacity: .55; }
+}
+
+/* hover: un poquito más rápido y “premium” */
+.coin-wrap:hover .coin-pro{
+  animation-duration: 2.2s;
+}
+
+/* respetar reduce motion */
+@media (prefers-reduced-motion: reduce){
+  .coin-pro, .coin-pro::after{ animation: none !important; }
+}
+
+/* ✅ FORZAR GIRO (ponelo al final del CSS) */
+.coin-pro{
+  display: block;
+  transform-style: preserve-3d;
+  animation: coinSpinPro 6s linear infinite !important;
+  animation-play-state: running !important;
+  will-change: transform;
+}
+
+@keyframes coinSpinPro{
+  from { transform: rotateX(14deg) rotateY(0deg); }
+  to   { transform: rotateX(14deg) rotateY(360deg); }
 }
