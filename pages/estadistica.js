@@ -123,7 +123,6 @@ export async function cargarEstadisticaDelMes(periodoYYYYMM) {
 
 
 // 🔹 Actualiza los KPI
-// 🔹 Actualiza los KPI
 function actualizarKpis(est, tipo = "dia") {
   const totalEmp = est.totalEmpanadasVendidas ?? 0;
   const totalPedidos = est.totalPedidos ?? 0;

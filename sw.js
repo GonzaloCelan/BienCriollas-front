@@ -1,23 +1,19 @@
-/* sw.js — Bien Criollas (cache SOLO front) */
-const CACHE_NAME = "biencriollas-front-v2"; // subí el número cuando actualices el front
+/* sw.js — Bien Criollas (cache front, pero JS/CSS siempre nuevos si hay red) */
+const CACHE_NAME = "biencriollas-front-v3"; // (cambialo SOLO esta vez para limpiar lo viejo)
 
 const FRONT_ASSETS = [
-  // HTML / manifest / branding
   "/",
   "/index.html",
   "/login.html",
   "/manifest.json",
   "/logoBienCriollas.png",
 
-  // CSS (ajustá si tu archivo se llama distinto)
   "/css/style.css",
 
-  // Components
   "/components/sidebar.js",
   "/components/toast.js",
   "/components/ui.js",
 
-  // Pages
   "/pages/caja.js",
   "/pages/estadistica.js",
   "/pages/horarios.js",
@@ -28,7 +24,6 @@ const FRONT_ASSETS = [
   "/pages/resumenHistorico.js",
   "/pages/stock.js",
 
-  // Imágenes de variedades
   "/variedades/atun.png",
   "/variedades/bondiola.png",
   "/variedades/campo.png",
@@ -42,40 +37,42 @@ const FRONT_ASSETS = [
   "/variedades/vacio.png",
   "/variedades/verdura.png",
 
-  // Iconos PWA (ajustá nombres si difieren)
   "/icons/icon-192.png",
   "/icons/icon-512.png",
 ];
 
-// ✅ Instalación: precache del front
+// ✅ Instalación: precache del front (forzando red, evita agarrar “http cache” viejo)
 self.addEventListener("install", (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(FRONT_ASSETS))
-  );
+  event.waitUntil((async () => {
+    const cache = await caches.open(CACHE_NAME);
+    await cache.addAll(FRONT_ASSETS.map((p) => new Request(p, { cache: "reload" })));
+  })());
   self.skipWaiting();
 });
 
 // ✅ Activación: limpiar versiones viejas
 self.addEventListener("activate", (event) => {
-  event.waitUntil(
-    caches.keys().then((keys) =>
-      Promise.all(keys.map((k) => (k !== CACHE_NAME ? caches.delete(k) : null)))
-    )
-  );
-  self.clients.claim();
+  event.waitUntil((async () => {
+    const keys = await caches.keys();
+    await Promise.all(keys.map((k) => (k !== CACHE_NAME ? caches.delete(k) : null)));
+    await self.clients.claim();
+  })());
 });
 
-// ✅ Fetch: no cachear API / cache-first para assets del front
+// ✅ Fetch
 self.addEventListener("fetch", (event) => {
   const req = event.request;
   if (req.method !== "GET") return;
 
   const url = new URL(req.url);
 
-  // ❌ NO cachear endpoints
+  // Solo mismo origen
+  if (url.origin !== location.origin) return;
+
+  // ❌ NO cachear API
   if (url.pathname.startsWith("/api")) return;
 
-  // ✅ Navegación: si no hay red, devolvemos index/login desde cache
+  // ✅ Navegación (HTML): network-first con fallback a cache
   if (req.mode === "navigate") {
     event.respondWith(
       fetch(req).catch(() =>
@@ -85,18 +82,30 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // ✅ Archivos estáticos: cache-first
-  event.respondWith(
-    caches.match(req).then((cached) => {
-      if (cached) return cached;
+  // ✅ JS/CSS: NETWORK-FIRST (esto arregla tu “se pega el JS viejo”)
+  if (url.pathname.endsWith(".js") || url.pathname.endsWith(".css")) {
+    event.respondWith((async () => {
+      const cache = await caches.open(CACHE_NAME);
+      try {
+        const fresh = await fetch(req);
+        if (fresh && fresh.ok) await cache.put(req, fresh.clone());
+        return fresh;
+      } catch {
+        const cached = await cache.match(req);
+        return cached || new Response("Offline", { status: 503 });
+      }
+    })());
+    return;
+  }
 
-      return fetch(req).then((res) => {
-        if (url.origin === location.origin && res.ok) {
-          const copy = res.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(req, copy));
-        }
-        return res;
-      });
-    })
-  );
+  // ✅ Imágenes / iconos / resto: cache-first
+  event.respondWith((async () => {
+    const cache = await caches.open(CACHE_NAME);
+    const cached = await cache.match(req);
+    if (cached) return cached;
+
+    const res = await fetch(req);
+    if (res && res.ok) await cache.put(req, res.clone());
+    return res;
+  })());
 });

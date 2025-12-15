@@ -2625,13 +2625,22 @@
 
 <script>
   if ("serviceWorker" in navigator) {
-    window.addEventListener("load", () => {
-      navigator.serviceWorker.register("/sw.js")
-        .then(() => console.log("✅ SW registrado"))
-        .catch(err => console.error("❌ SW error:", err));
+    window.addEventListener("load", async () => {
+      try {
+        await navigator.serviceWorker.register("/sw.js", { updateViaCache: "none" });
+
+        // fuerza a buscar updates del SW cada vez que abrís
+        const reg = await navigator.serviceWorker.getRegistration();
+        if (reg) reg.update();
+
+        console.log("✅ SW registrado/actualizado");
+      } catch (err) {
+        console.error("❌ SW error:", err);
+      }
     });
   }
 </script>
+
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
