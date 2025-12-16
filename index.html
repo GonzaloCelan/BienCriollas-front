@@ -1328,30 +1328,110 @@
 
   <!-- KPIs -->
   <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <!-- INGRESOS -->
+<div class="relative overflow-hidden p-5 rounded-2xl
+            bg-gradient-to-br from-emerald-400/90 to-emerald-600
+            text-white shadow-lg transition-all duration-300
+            hover:shadow-emerald-500/40 hover:scale-[1.02]
+            dark:from-emerald-500 dark:to-emerald-700 kpi-anim">
 
-    <!-- INGRESOS -->
-    <div class="p-5 rounded-xl bg-gradient-to-br from-green-50 to-white border border-green-100 shadow-sm kpi-anim">
-      <p class="text-[12px] text-green-700 font-medium">Ingresos totales (pedidos particulares)</p>
-      <h2 id="kpi-ingresos-totales" class="text-3xl font-bold text-green-700 mt-1">$0</h2>
-    </div>
+  <div class="absolute top-3 right-3 opacity-20 text-4xl">💰</div>
 
-    <!-- EFECTIVO -->
-    <div class="p-5 rounded-xl bg-gradient-to-br from-blue-50 to-white border border-blue-100 shadow-sm kpi-anim" style="animation-delay: .05s;">
-      <p class="text-[12px] text-blue-700 font-medium">Ingresos en efectivo (particulares)</p>
-      <h2 id="kpi-ingresos-efectivo" class="text-3xl font-bold text-blue-700 mt-1">$0</h2>
-    </div>
+  <p class="text-[12px] font-medium opacity-90">
+    Ingresos totales (pedidos particulares)
+  </p>
 
-    <!-- TRANSFERENCIA -->
-    <div class="p-5 rounded-xl bg-gradient-to-br from-indigo-50 to-white border border-indigo-100 shadow-sm kpi-anim" style="animation-delay: .1s;">
-      <p class="text-[12px] text-indigo-700 font-medium">Ingresos por transferencia (particular y pedidos ya)</p>
-      <h2 id="kpi-ingresos-transferencias" class="text-3xl font-bold text-indigo-700 mt-1">$0</h2>
-    </div>
+  <h2 id="kpi-ingresos-totales"
+      class="text-3xl font-extrabold mt-2 tracking-tight">
+    $0
+  </h2>
 
-    <!-- MERMAS EN PLATA -->
-    <div class="p-5 rounded-xl bg-gradient-to-br from-red-50 to-white border border-red-100 shadow-sm kpi-anim" style="animation-delay: .15s;">
-      <p class="text-[12px] text-red-700 font-medium">Mermas (plata perdida)</p>
-      <h2 id="kpi-mermas" class="text-3xl font-bold text-red-700 mt-1">$0</h2>
-    </div>
+  <!-- Badge variación -->
+  <div id="badge-ingresos"
+       class="mt-3 inline-flex items-center gap-1 rounded-full
+              bg-white/20 px-2 py-0.5 text-[11px] font-bold">
+    ▲ +0%
+  </div>
+</div>
+
+<!-- EFECTIVO -->
+<div class="relative overflow-hidden p-5 rounded-2xl
+            bg-gradient-to-br from-sky-400/90 to-sky-600
+            text-white shadow-lg transition-all duration-300
+            hover:shadow-sky-500/40 hover:scale-[1.02]
+            dark:from-sky-500 dark:to-sky-700 kpi-anim"
+     style="animation-delay:.05s">
+
+  <div class="absolute top-3 right-3 opacity-20 text-4xl">💵</div>
+
+  <p class="text-[12px] font-medium opacity-90">
+    Ingresos en efectivo (particulares)
+  </p>
+
+  <h2 id="kpi-ingresos-efectivo"
+      class="text-3xl font-extrabold mt-2 tracking-tight">
+    $0
+  </h2>
+
+  <div id="badge-efectivo"
+       class="mt-3 inline-flex items-center gap-1 rounded-full
+              bg-white/20 px-2 py-0.5 text-[11px] font-bold">
+    ▲ +0%
+  </div>
+</div>
+
+<!-- TRANSFERENCIA -->
+<div class="relative overflow-hidden p-5 rounded-2xl
+            bg-gradient-to-br from-indigo-400/90 to-indigo-600
+            text-white shadow-lg transition-all duration-300
+            hover:shadow-indigo-500/40 hover:scale-[1.02]
+            dark:from-indigo-500 dark:to-indigo-700 kpi-anim"
+     style="animation-delay:.1s">
+
+  <div class="absolute top-3 right-3 opacity-20 text-4xl">🔄</div>
+
+  <p class="text-[12px] font-medium opacity-90">
+    Ingresos por transferencia (particular y pedidos ya)
+  </p>
+
+  <h2 id="kpi-ingresos-transferencias"
+      class="text-3xl font-extrabold mt-2 tracking-tight">
+    $0
+  </h2>
+
+  <div id="badge-transferencias"
+       class="mt-3 inline-flex items-center gap-1 rounded-full
+              bg-white/20 px-2 py-0.5 text-[11px] font-bold">
+    ▲ +0%
+  </div>
+</div>
+
+<!-- MERMAS -->
+<div class="relative overflow-hidden p-5 rounded-2xl
+            bg-gradient-to-br from-rose-400/90 to-rose-600
+            text-white shadow-lg transition-all duration-300
+            hover:shadow-rose-500/40 hover:scale-[1.02]
+            dark:from-rose-500 dark:to-rose-700 kpi-anim"
+     style="animation-delay:.15s">
+
+  <div class="absolute top-3 right-3 opacity-20 text-4xl">❌</div>
+
+  <p class="text-[12px] font-medium opacity-90">
+    Mermas (plata perdida)
+  </p>
+
+  <h2 id="kpi-mermas"
+      class="text-3xl font-extrabold mt-2 tracking-tight">
+    $0
+  </h2>
+
+  <div id="badge-mermas"
+       class="mt-3 inline-flex items-center gap-1 rounded-full
+              bg-white/20 px-2 py-0.5 text-[11px] font-bold">
+    ▼ -0%
+  </div>
+</div>
+
 
   </div>
 

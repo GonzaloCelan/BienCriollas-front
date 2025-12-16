@@ -604,6 +604,7 @@ async function cerrarCajaDiaria() {
   }
 }
 
+
 // ============================================================================
 // ⭐ INICIALIZACIÓN
 // ============================================================================
@@ -626,4 +627,38 @@ export function initCaja() {
   cargarIngresos(hoy);
   cargarEgresos(hoy);
   cargarBalance(hoy);
+}
+
+
+function animarKPI(id, nuevoValor) {
+  const el = document.getElementById(id);
+  if (!el) return;
+
+  const actual = parseFloat(el.innerText.replace(/[^\d.-]/g, "")) || 0;
+  const duracion = 500;
+  const inicio = performance.now();
+
+  function frame(t) {
+    const progreso = Math.min((t - inicio) / duracion, 1);
+    const valor = actual + (nuevoValor - actual) * progreso;
+    el.innerText = `$${valor.toFixed(0)}`;
+    if (progreso < 1) requestAnimationFrame(frame);
+  }
+
+  requestAnimationFrame(frame);
+}
+
+function actualizarBadge(idBadge, porcentaje) {
+  const badge = document.getElementById(idBadge);
+  if (!badge) return;
+
+  if (porcentaje >= 0) {
+    badge.innerHTML = `▲ +${porcentaje}%`;
+    badge.classList.remove("bg-rose-500/30");
+    badge.classList.add("bg-emerald-500/30");
+  } else {
+    badge.innerHTML = `▼ ${porcentaje}%`;
+    badge.classList.remove("bg-emerald-500/30");
+    badge.classList.add("bg-rose-500/30");
+  }
 }
