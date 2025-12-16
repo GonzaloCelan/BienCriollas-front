@@ -1160,7 +1160,7 @@
 
       <div class="pt-2 flex gap-3 justify-end">
         <!-- Botón nuevo para ir a mermas -->
-        <button id="btn-ir-a-mermas"
+        <button id="btnAbrirModalMermas"
                 class="inline-flex items-center gap-2
                        rounded-full border border-slate-300 bg-white
                        px-4 py-2
@@ -1269,340 +1269,6 @@
   </div>
 </div>
 
-
-  <!-- 🔹 VISTA MERMAS (NUEVA) -->
-  <div id="vista-mermas" class="p-4 space-y-4 hidden">
-
-    <div class="flex flex-wrap items-center justify-between gap-3 div-merma">
-      <div>
-        <h4 class="text-sm font-semibold text-slate-800">Cargar mermas del día</h4>
-        <p class="text-[11px] text-slate-500">
-          Registra la cantidad perdida por variedad. Las que queden en 0 se toman como sin merma.
-        </p>
-      </div>
-    </div>
-
-    <!-- Grid de variedades (MERMAS, MISMO DISEÑO) -->
-    <div class="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-4 gap-3 text-xs">
-      <!-- 1: Criolla -->
-      <div class="card-variedad group flex flex-col justify-between gap-3 rounded-2xl border border-slate-200 bg-slate-50/80 px-3 py-3
-                  hover:bg-white hover:shadow-md hover:-translate-y-0.5 transition-all cursor-pointer">
-        <div class="flex items-center gap-3">
-          <div class="h-10 w-10 rounded-full overflow-hidden bg-slate-200 flex items-center justify-center">
-            <img src="./variedades/carne.png" alt="Criolla" class="h-full w-full object-cover">
-          </div>
-          <div>
-            <p class="text-sm font-semibold text-slate-800">Criolla</p>
-            <p class="text-[11px] text-slate-400">Carne cortada a cuchillo</p>
-          </div>
-        </div>
-
-        <div class="mt-2 flex items-center justify-between">
-          <span class="text-[11px] text-slate-500">Cantidad perdida</span>
-          <div class="inline-flex items-center gap-1">
-            <input type="number"
-                   min="0"
-                   value="0"
-                   data-perdida-variedad-id="1"
-                   class="w-20 text-right border border-slate-200 rounded-md px-2 py-1 text-[12px] bg-white" />
-          </div>
-        </div>
-      </div>
-
-      <!-- 2: Verdura -->
-      <div class="card-variedad group flex flex-col justify-between gap-3 rounded-2xl border border-slate-200 bg-slate-50/80 px-3 py-3
-                  hover:bg-white hover:shadow-md hover:-translate-y-0.5 transition-all cursor-pointer">
-        <div class="flex items-center gap-3">
-          <div class="h-10 w-10 rounded-full overflow-hidden bg-slate-200 flex items-center justify-center">
-            <img src="./variedades/verdura.png" alt="Verdura" class="h-full w-full object-cover">
-          </div>
-          <div>
-            <p class="text-sm font-semibold text-slate-800">Verdura</p>
-            <p class="text-[11px] text-slate-400">Acelga y salsa blanca</p>
-          </div>
-        </div>
-        <div class="mt-2 flex items-center justify-between">
-          <span class="text-[11px] text-slate-500">Cantidad perdida</span>
-          <div class="inline-flex items-center gap-1">
-            <input type="number"
-                   min="0"
-                   value="0"
-                   data-perdida-variedad-id="2"
-                   class="w-20 text-right border border-slate-200 rounded-md px-2 py-1 text-[12px] bg-white" />
-          </div>
-        </div>
-      </div>
-
-      <!-- 3: Choclo -->
-      <div class="card-variedad group flex flex-col justify-between gap-3 rounded-2xl border border-slate-200 bg-slate-50/80 px-3 py-3
-                  hover:bg-white hover:shadow-md hover:-translate-y-0.5 transition-all cursor-pointer">
-        <div class="flex items-center gap-3">
-          <div class="h-10 w-10 rounded-full overflow-hidden bg-slate-200 flex items-center justify-center">
-            <img src="./variedades/choclo.png" alt="Choclo" class="h-full w-full object-cover">
-          </div>
-          <div>
-            <p class="text-sm font-semibold text-slate-800">Choclo</p>
-            <p class="text-[11px] text-slate-400">Humita cremosa</p>
-          </div>
-        </div>
-        <div class="mt-2 flex items-center justify-between">
-          <span class="text-[11px] text-slate-500">Cantidad perdida</span>
-          <div class="inline-flex items-center gap-1">
-            <input type="number"
-                   min="0"
-                   value="0"
-                   data-perdida-variedad-id="3"
-                   class="w-20 text-right border border-slate-200 rounded-md px-2 py-1 text-[12px] bg-white" />
-          </div>
-        </div>
-      </div>
-
-      <!-- 4: Pollo -->
-      <div class="card-variedad group flex flex-col justify-between gap-3 rounded-2xl border border-slate-200 bg-slate-50/80 px-3 py-3
-                  hover:bg-white hover:shadow-md hover:-translate-y-0.5 transition-all cursor-pointer">
-        <div class="flex items-center gap-3">
-          <div class="h-10 w-10 rounded-full overflow-hidden bg-slate-200 flex items-center justify-center">
-            <img src="./variedades/pollo.png" alt="Pollo" class="h-full w-full object-cover">
-          </div>
-          <div>
-            <p class="text-sm font-semibold text-slate-800">Pollo</p>
-            <p class="text-[11px] text-slate-400">Pollo desmenuzado</p>
-          </div>
-        </div>
-        <div class="mt-2 flex items-center justify-between">
-          <span class="text-[11px] text-slate-500">Cantidad perdida</span>
-          <div class="inline-flex items-center gap-1">
-            <input type="number"
-                   min="0"
-                   value="0"
-                   data-perdida-variedad-id="4"
-                   class="w-20 text-right border border-slate-200 rounded-md px-2 py-1 text-[12px] bg-white" />
-          </div>
-        </div>
-      </div>
-
-      <!-- 5: Atún -->
-      <div class="card-variedad group flex flex-col justify-between gap-3 rounded-2xl border border-slate-200 bg-slate-50/80 px-3 py-3
-                  hover:bg-white hover:shadow-md hover:-translate-y-0.5 transition-all cursor-pointer">
-        <div class="flex items-center gap-3">
-          <div class="h-10 w-10 rounded-full overflow-hidden bg-slate-200 flex items-center justify-center">
-            <img src="./variedades/atun.png" alt="Atún" class="h-full w-full object-cover">
-          </div>
-          <div>
-            <p class="text-sm font-semibold text-slate-800">Atún</p>
-            <p class="text-[11px] text-slate-400">Atún y cebolla</p>
-          </div>
-        </div>
-        <div class="mt-2 flex items-center justify-between">
-          <span class="text-[11px] text-slate-500">Cantidad perdida</span>
-          <div class="inline-flex items-center gap-1">
-            <input type="number"
-                   min="0"
-                   value="0"
-                   data-perdida-variedad-id="5"
-                   class="w-20 text-right border border-slate-200 rounded-md px-2 py-1 text-[12px] bg-white" />
-          </div>
-        </div>
-      </div>
-
-      <!-- 6: Capresse -->
-      <div class="card-variedad group flex flex-col justify-between gap-3 rounded-2xl border border-slate-200 bg-slate-50/80 px-3 py-3
-                  hover:bg-white hover:shadow-md hover:-translate-y-0.5 transition-all cursor-pointer">
-        <div class="flex items-center gap-3">
-          <div class="h-10 w-10 rounded-full overflow-hidden bg-slate-200 flex items-center justify-center">
-            <img src="./variedades/capresse.png" alt="Capresse" class="h-full w-full object-cover">
-          </div>
-          <div>
-            <p class="text-sm font-semibold text-slate-800">Capresse</p>
-            <p class="text-[11px] text-slate-400">Tomate, albahaca y muzza</p>
-          </div>
-        </div>
-        <div class="mt-2 flex items-center justify-between">
-          <span class="text-[11px] text-slate-500">Cantidad perdida</span>
-          <div class="inline-flex items-center gap-1">
-            <input type="number"
-                   min="0"
-                   value="0"
-                   data-perdida-variedad-id="6"
-                   class="w-20 text-right border border-slate-200 rounded-md px-2 py-1 text-[12px] bg-white" />
-          </div>
-        </div>
-      </div>
-
-      <!-- 7: Fugazza -->
-      <div class="card-variedad group flex flex-col justify-between gap-3 rounded-2xl border border-slate-200 bg-slate-50/80 px-3 py-3
-                  hover:bg-white hover:shadow-md hover:-translate-y-0.5 transition-all cursor-pointer">
-        <div class="flex items-center gap-3">
-          <div class="h-10 w-10 rounded-full overflow-hidden bg-slate-200 flex items-center justify-center">
-            <img src="./variedades/fugazza.png" alt="Fugazza" class="h-full w-full object-cover">
-          </div>
-          <div>
-            <p class="text-sm font-semibold text-slate-800">Fugazza</p>
-            <p class="text-[11px] text-slate-400">Cebolla y queso</p>
-          </div>
-        </div>
-        <div class="mt-2 flex items-center justify-between">
-          <span class="text-[11px] text-slate-500">Cantidad perdida</span>
-          <div class="inline-flex items-center gap-1">
-            <input type="number"
-                   min="0"
-                   value="0"
-                   data-perdida-variedad-id="7"
-                   class="w-20 text-right border border-slate-200 rounded-md px-2 py-1 text-[12px] bg-white" />
-          </div>
-        </div>
-      </div>
-
-      <!-- 8: Queso azul -->
-      <div class="card-variedad group flex flex-col justify-between gap-3 rounded-2xl border border-slate-200 bg-slate-50/80 px-3 py-3
-                  hover:bg-white hover:shadow-md hover:-translate-y-0.5 transition-all cursor-pointer">
-        <div class="flex items-center gap-3">
-          <div class="h-10 w-10 rounded-full overflow-hidden bg-slate-200 flex items-center justify-center">
-            <img src="./variedades/queso_azul.png" alt="Queso azul" class="h-full w-full object-cover">
-          </div>
-          <div>
-            <p class="text-sm font-semibold text-slate-800">Queso azul</p>
-            <p class="text-[11px] text-slate-400">Queso azul y muzza</p>
-          </div>
-        </div>
-        <div class="mt-2 flex items-center justify-between">
-          <span class="text-[11px] text-slate-500">Cantidad perdida</span>
-          <div class="inline-flex items-center gap-1">
-            <input type="number"
-                   min="0"
-                   value="0"
-                   data-perdida-variedad-id="8"
-                   class="w-20 text-right border border-slate-200 rounded-md px-2 py-1 text-[12px] bg-white" />
-          </div>
-        </div>
-      </div>
-
-      <!-- 9: Bondiola -->
-      <div class="card-variedad group flex flex-col justify-between gap-3 rounded-2xl border border-slate-200 bg-slate-50/80 px-3 py-3
-                  hover:bg-white hover:shadow-md hover:-translate-y-0.5 transition-all cursor-pointer">
-        <div class="flex items-center gap-3">
-          <div class="h-10 w-10 rounded-full overflow-hidden bg-slate-200 flex items-center justify-center">
-            <img src="./variedades/bondiola.png" alt="Bondiola" class="h-full w-full object-cover">
-          </div>
-          <div>
-            <p class="text-sm font-semibold text-slate-800">Bondiola</p>
-            <p class="text-[11px] text-slate-400">Bondiola braseada</p>
-          </div>
-        </div>
-        <div class="mt-2 flex items-center justify-between">
-          <span class="text-[11px] text-slate-500">Cantidad perdida</span>
-          <div class="inline-flex items-center gap-1">
-            <input type="number"
-                   min="0"
-                   value="0"
-                   data-perdida-variedad-id="9"
-                   class="w-20 text-right border border-slate-200 rounded-md px-2 py-1 text-[12px] bg-white" />
-          </div>
-        </div>
-      </div>
-
-      <!-- 10: Vacío desmenuzado -->
-      <div class="card-variedad group flex flex-col justify-between gap-3 rounded-2xl border border-slate-200 bg-slate-50/80 px-3 py-3
-                  hover:bg-white hover:shadow-md hover:-translate-y-0.5 transition-all cursor-pointer">
-        <div class="flex items-center gap-3">
-          <div class="h-10 w-10 rounded-full overflow-hidden bg-slate-200 flex items-center justify-center">
-            <img src="./variedades/vacio.png" alt="Vacío desmenuzado" class="h-full w-full object-cover">
-          </div>
-          <div>
-            <p class="text-sm font-semibold text-slate-800">Vacío desmenuzado</p>
-            <p class="text-[11px] text-slate-400">Cocción lenta</p>
-          </div>
-        </div>
-        <div class="mt-2 flex items-center justify-between">
-          <span class="text-[11px] text-slate-500">Cantidad perdida</span>
-          <div class="inline-flex items-center gap-1">
-            <input type="number"
-                   min="0"
-                   value="0"
-                   data-perdida-variedad-id="10"
-                   class="w-20 text-right border border-slate-200 rounded-md px-2 py-1 text-[12px] bg-white" />
-          </div>
-        </div>
-      </div>
-
-      <!-- 11: Campo (picante) -->
-      <div class="card-variedad group flex flex-col justify-between gap-3 rounded-2xl border border-slate-200 bg-slate-50/80 px-3 py-3
-                  hover:bg-white hover:shadow-md hover:-translate-y-0.5 transition-all cursor-pointer">
-        <div class="flex items-center gap-3">
-          <div class="h-10 w-10 rounded-full overflow-hidden bg-slate-200 flex items-center justify-center">
-            <img src="./variedades/campo.png" alt="Campo picante" class="h-full w-full object-cover">
-          </div>
-          <div>
-            <p class="text-sm font-semibold text-slate-800">Campo (picante)</p>
-            <p class="text-[11px] text-slate-400">Versión picante</p>
-          </div>
-        </div>
-        <div class="mt-2 flex items-center justify-between">
-          <span class="text-[11px] text-slate-500">Cantidad perdida</span>
-          <div class="inline-flex items-center gap-1">
-            <input type="number"
-                   min="0"
-                   value="0"
-                   data-perdida-variedad-id="11"
-                   class="w-20 text-right border border-slate-200 rounded-md px-2 py-1 text-[12px] bg-white" />
-          </div>
-        </div>
-      </div>
-
-      <!-- 12: Jamón y queso -->
-      <div class="card-variedad group flex flex-col justify-between gap-3 rounded-2xl border border-slate-200 bg-slate-50/80 px-3 py-3
-                  hover:bg-white hover:shadow-md hover:-translate-y-0.5 transition-all cursor-pointer">
-        <div class="flex items-center gap-3">
-          <div class="h-10 w-10 rounded-full overflow-hidden bg-slate-200 flex items-center justify-center">
-            <img src="./variedades/jamon.png" alt="Jamón y queso" class="h-full w-full object-cover">
-          </div>
-          <div>
-            <p class="text-sm font-semibold text-slate-800">Jamón y queso</p>
-            <p class="text-[11px] text-slate-400">Clásica</p>
-          </div>
-        </div>
-        <div class="mt-2 flex items-center justify-between">
-          <span class="text-[11px] text-slate-500">Cantidad perdida</span>
-          <div class="inline-flex items-center gap-1">
-            <input type="number"
-                   min="0"
-                   value="0"
-                   data-perdida-variedad-id="12"
-                   class="w-20 text-right border border-slate-200 rounded-md px-2 py-1 text-[12px] bg-white" />
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="pt-2 flex gap-3 justify-end">
-      <button id="btn-cancelar-mermas"
-              class="inline-flex items-center gap-2
-                     rounded-full border border-slate-300 bg-white
-                     px-4 py-2
-                     text-xs font-semibold tracking-tight text-slate-700
-                     hover:bg-slate-50 hover:border-slate-400
-                     transition-all">
-        Volver sin guardar
-      </button>
-
-      <button id="btn-guardar-mermas"
-              class="inline-flex items-center gap-2
-                     rounded-full
-                     bg-gradient-to-r from-rose-600 to-rose-500
-                     px-4 py-2
-                     text-xs font-semibold tracking-tight text-white
-                     shadow-sm shadow-rose-500/40
-                     hover:shadow-md hover:shadow-rose-500/60
-                     hover:-translate-y-0.5
-                     active:translate-y-0 active:scale-[0.98]
-                     focus-visible:outline-none
-                     focus-visible:ring-2 focus-visible:ring-rose-500/80
-                     focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900
-                     transition-all">
-        Guardar mermas
-      </button>
-    </div>
-  </div>
 </div>
 </div>
 
@@ -2706,6 +2372,107 @@
   </div>
 </div>
 
+<!-- Modal Cargar Mermas -->
+<div id="modalMermas" class="fixed inset-0 z-[9999] hidden items-center justify-center bg-black/40 backdrop-blur-sm">
+
+  <div class="w-[95%] max-w-3xl rounded-2xl bg-white shadow-2xl border border-slate-200 overflow-hidden">
+
+    <!-- Header -->
+    <div class="flex items-center justify-between px-4 py-3 border-b border-slate-200">
+      <h2 class="text-sm font-bold text-slate-800">Cargar mermas</h2>
+      <button id="btnCerrarModalMermas" class="text-slate-400 hover:text-slate-700 text-lg">✕</button>
+    </div>
+
+    <!-- Body -->
+    <div class="p-4">
+      <p class="text-xs text-slate-500 mb-3">Ingresá la cantidad perdida por variedad</p>
+
+      <!-- Grid variedades -->
+      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+
+        <!-- Card variedad (estilo limpio) -->
+        <div class="group flex flex-col items-center rounded-xl px-2 py-1.5 hover:bg-slate-100 transition">
+          <p class="text-[11px] font-semibold text-slate-700 mb-1 text-center">Carne</p>
+          <input type="number" min="0" placeholder="0" data-variedad-id="1" onfocus="this.select()" class="w-14 h-7 rounded-full border border-slate-300 text-center text-sm font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-red-400" />
+        </div>
+
+        <!-- Repetir para cada variedad (con los IDs correspondientes) -->
+        <div class="group flex flex-col items-center rounded-xl px-2 py-1.5 hover:bg-slate-100 transition">
+          <p class="text-[11px] font-semibold text-slate-700 mb-1 text-center">Verdura</p>
+          <input type="number" min="0" placeholder="0" data-variedad-id="2" onfocus="this.select()" class="w-14 h-7 rounded-full border border-slate-300 text-center text-sm font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-red-400" />
+        </div>
+
+        <div class="group flex flex-col items-center rounded-xl px-2 py-1.5 hover:bg-slate-100 transition">
+          <p class="text-[11px] font-semibold text-slate-700 mb-1 text-center">Choclo</p>
+          <input type="number" min="0" placeholder="0" data-variedad-id="3" onfocus="this.select()" class="w-14 h-7 rounded-full border border-slate-300 text-center text-sm font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-red-400" />
+        </div>
+
+        <div class="group flex flex-col items-center rounded-xl px-2 py-1.5 hover:bg-slate-100 transition">
+          <p class="text-[11px] font-semibold text-slate-700 mb-1 text-center">Pollo</p>
+          <input type="number" min="0" placeholder="0" data-variedad-id="4" onfocus="this.select()" class="w-14 h-7 rounded-full border border-slate-300 text-center text-sm font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-red-400" />
+        </div>
+
+        <div class="group flex flex-col items-center rounded-xl px-2 py-1.5 hover:bg-slate-100 transition">
+          <p class="text-[11px] font-semibold text-slate-700 mb-1 text-center">Atún</p>
+          <input type="number" min="0" placeholder="0" data-variedad-id="5" onfocus="this.select()" class="w-14 h-7 rounded-full border border-slate-300 text-center text-sm font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-red-400" />
+        </div>
+
+        <div class="group flex flex-col items-center rounded-xl px-2 py-1.5 hover:bg-slate-100 transition">
+          <p class="text-[11px] font-semibold text-slate-700 mb-1 text-center">Capresse</p>
+          <input type="number" min="0" placeholder="0" data-variedad-id="6" onfocus="this.select()" class="w-14 h-7 rounded-full border border-slate-300 text-center text-sm font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-red-400" />
+        </div>
+
+        <div class="group flex flex-col items-center rounded-xl px-2 py-1.5 hover:bg-slate-100 transition">
+          <p class="text-[11px] font-semibold text-slate-700 mb-1 text-center">Fugazza</p>
+          <input type="number" min="0" placeholder="0" data-variedad-id="7" onfocus="this.select()" class="w-14 h-7 rounded-full border border-slate-300 text-center text-sm font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-red-400" />
+        </div>
+
+        <div class="group flex flex-col items-center rounded-xl px-2 py-1.5 hover:bg-slate-100 transition">
+          <p class="text-[11px] font-semibold text-slate-700 mb-1 text-center">Queso azul</p>
+          <input type="number" min="0" placeholder="0" data-variedad-id="8" onfocus="this.select()" class="w-14 h-7 rounded-full border border-slate-300 text-center text-sm font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-red-400" />
+        </div>
+
+        <div class="group flex flex-col items-center rounded-xl px-2 py-1.5 hover:bg-slate-100 transition">
+          <p class="text-[11px] font-semibold text-slate-700 mb-1 text-center">Bondiola</p>
+          <input type="number" min="0" placeholder="0" data-variedad-id="9" onfocus="this.select()" class="w-14 h-7 rounded-full border border-slate-300 text-center text-sm font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-red-400" />
+        </div>
+
+        <div class="group flex flex-col items-center rounded-xl px-2 py-1.5 hover:bg-slate-100 transition">
+          <p class="text-[11px] font-semibold text-slate-700 mb-1 text-center">Vacio Desmenuzado</p>
+          <input type="number" min="0" placeholder="0" data-variedad-id="10" onfocus="this.select()" class="w-14 h-7 rounded-full border border-slate-300 text-center text-sm font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-red-400" />
+        </div>
+
+        <div class="group flex flex-col items-center rounded-xl px-2 py-1.5 hover:bg-slate-100 transition">
+          <p class="text-[11px] font-semibold text-slate-700 mb-1 text-center">Campo</p>
+          <input type="number" min="0" placeholder="0" data-variedad-id="11" onfocus="this.select()" class="w-14 h-7 rounded-full border border-slate-300 text-center text-sm font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-red-400" />
+        </div>
+
+        <div class="group flex flex-col items-center rounded-xl px-2 py-1.5 hover:bg-slate-100 transition">
+          <p class="text-[11px] font-semibold text-slate-700 mb-1 text-center">Jamón y queso</p>
+          <input type="number" min="0" placeholder="0" data-variedad-id="12" onfocus="this.select()" class="w-14 h-7 rounded-full border border-slate-300 text-center text-sm font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-red-400" />
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="flex items-center justify-between gap-2 px-4 py-3 border-t border-slate-200 bg-slate-50">
+      <button id="btnCancelarMermas" class="rounded-full border border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-100">
+        Cancelar
+      </button>
+
+      <button
+  id="btnGuardarMermas"
+  class="rounded-full bg-red-600 px-4 py-1.5 text-xs font-bold text-white hover:bg-red-700 shadow">
+  Guardar mermas
+</button>
+
+    </div>
+
+  </div>
+</div>
+
+
 
 
   
@@ -2745,7 +2512,6 @@
     });
   }
 </script>
-
 
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>

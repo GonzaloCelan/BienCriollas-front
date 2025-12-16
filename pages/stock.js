@@ -299,47 +299,81 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 
+// ==========================
+// MODAL MERMAS
+// ==========================
+
+function abrirModalMermas() {
+  const modal = document.getElementById("modalMermas");
+  if (!modal) return;
+
+  modal.classList.remove("hidden");
+  modal.classList.add("flex");
+}
+
+function cerrarModalMermas() {
+  const modal = document.getElementById("modalMermas");
+  if (!modal) return;
+
+  modal.classList.add("hidden");
+  modal.classList.remove("flex");
+}
+
+
 
  
-
 document.addEventListener("DOMContentLoaded", () => {
-  const vistaStock = document.getElementById("vista-stock-normal");
-  const vistaMermas = document.getElementById("vista-mermas");
 
-  // Ir a vista mermas
-  document.getElementById("btn-ir-a-mermas").addEventListener("click", () => {
-    vistaStock.classList.add("hidden");
-    vistaMermas.classList.remove("hidden");
-  });
-
-  // Volver sin guardar
-  document.getElementById("btn-cancelar-mermas").addEventListener("click", () => {
-    vistaMermas.classList.add("hidden");
-    vistaStock.classList.remove("hidden");
-  });
-
-  // Botón "Hoy" (si igual querés ver la fecha, aunque no se mande al back)
-  const btnMermaHoy = document.getElementById("btn-merma-hoy");
-  const inputFechaMerma = document.getElementById("fecha-merma");
-
-  if (btnMermaHoy && inputFechaMerma) {
-    btnMermaHoy.addEventListener("click", () => {
-      const hoy = new Date();
-      const yyyy = hoy.getFullYear();
-      const mm = String(hoy.getMonth() + 1).padStart(2, "0");
-      const dd = String(hoy.getDate()).padStart(2, "0");
-      inputFechaMerma.value = `${yyyy}-${mm}-${dd}`;
-    });
+  // Botón abrir modal mermas
+  const btnAbrirMermas = document.getElementById("btnAbrirModalMermas");
+  if (btnAbrirMermas) {
+    btnAbrirMermas.addEventListener("click", abrirModalMermas);
   }
 
-  // 👇 AHORA SIN FECHA EN EL PAYLOAD
-  async function guardarMermas() {
-  const inputs = document.querySelectorAll("[data-perdida-variedad-id]");
+  // Botón guardar mermas (modal)
+  const btnGuardarMermas = document.getElementById("btnGuardarMermas");
+  if (btnGuardarMermas) {
+    btnGuardarMermas.addEventListener("click", guardarMermas);
+  }
+
+  // Cerrar con ✕
+  const btnCerrarModal = document.getElementById("btnCerrarModalMermas");
+  if (btnCerrarModal) {
+    btnCerrarModal.addEventListener("click", cerrarModalMermas);
+  }
+
+  // Cerrar con Cancelar
+  const btnCancelarModal = document.getElementById("btnCancelarMermas");
+  if (btnCancelarModal) {
+    btnCancelarModal.addEventListener("click", cerrarModalMermas);
+  }
+
+  // Producción (esto ya lo tenías)
+  const btnGuardarProduccion = document.getElementById("btn-guardar-produccion");
+  if (btnGuardarProduccion) {
+    btnGuardarProduccion.addEventListener("click", guardarProduccion);
+  }
+
+  // Inicializaciones existentes
+  if (typeof inicializarCardsProduccion === "function") {
+    inicializarCardsProduccion();
+  }
+
+});
+
+
+
+// 👇 Guardar mermas desde MODAL
+async function guardarMermas() {
+  const inputs = document.querySelectorAll(
+    "#modalMermas input[data-variedad-id]"
+  );
+
   const perdidas = [];
 
   inputs.forEach(input => {
     const cantidad = parseInt(input.value, 10) || 0;
-    const idVariedad = parseInt(input.dataset.perdidaVariedadId, 10);
+    const idVariedad = parseInt(input.dataset.variedadId, 10);
 
     if (cantidad > 0) {
       perdidas.push({
@@ -367,31 +401,27 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (!resp.ok) throw new Error("Error registrando mermas");
 
-    // limpiar campos
-    inputs.forEach(i => i.value = 0);
-    const inputFechaMerma = document.getElementById("fecha-merma");
-    if (inputFechaMerma) inputFechaMerma.value = "";
+    // 🧹 limpiar inputs
+    inputs.forEach(i => (i.value = 0));
 
-    // volver a la vista de stock
-    vistaMermas.classList.add("hidden");
-    vistaStock.classList.remove("hidden");
+    // ❌ cerrar modal
+    cerrarModalMermas();
 
-    // 🔹 refrescar tabla AUTOMÁTICO
+    // 🔄 refrescar stock
     if (typeof cargarStockActual === "function") {
-      // si tenés una función que ya hace el fetch y pinta la tabla
       cargarStockActual();
     } else {
-      // plan B: simular click en el botón "Actualizar tabla"
       const btnActualizar = document.getElementById("btn-actualizar-tabla");
       if (btnActualizar) btnActualizar.click();
     }
 
-    // 🔹 toast de éxito
+    // ✅ toast éxito
     if (typeof mostrarToast === "function") {
       mostrarToast("Mermas registradas y stock actualizado ✅");
     } else {
       alert("Mermas registradas y stock actualizado ✅");
     }
+
   } catch (e) {
     console.error(e);
     if (typeof mostrarToast === "function") {
@@ -403,15 +433,22 @@ document.addEventListener("DOMContentLoaded", () => {
 }
 
 
-  document.getElementById("btn-guardar-mermas")
-          .addEventListener("click", guardarMermas);
-});
+
 
 document.addEventListener("DOMContentLoaded", () => {
-  const btnGuardar = document.getElementById("btn-guardar-produccion");
-  if (btnGuardar) {
-    btnGuardar.addEventListener("click", guardarProduccion);
-  }
-});
 
-inicializarCardsProduccion();
+  const btnGuardarMermas = document.getElementById("btnGuardarMermas");
+  if (btnGuardarMermas) {
+    btnGuardarMermas.addEventListener("click", guardarMermas);
+  }
+
+  const btnGuardarProduccion = document.getElementById("btn-guardar-produccion");
+  if (btnGuardarProduccion) {
+    btnGuardarProduccion.addEventListener("click", guardarProduccion);
+  }
+
+  if (typeof inicializarCardsProduccion === "function") {
+    inicializarCardsProduccion();
+  }
+
+});
