@@ -41,14 +41,32 @@ const FRONT_ASSETS = [
   "/icons/icon-512.png",
 ];
 
-// ✅ Instalación: precache del front (forzando red, evita agarrar “http cache” viejo)
+
+// ✅ Instalación: precache del front (robusto, no rompe si algo falla)
 self.addEventListener("install", (event) => {
   event.waitUntil((async () => {
     const cache = await caches.open(CACHE_NAME);
-    await cache.addAll(FRONT_ASSETS.map((p) => new Request(p, { cache: "reload" })));
+
+    await Promise.all(
+      FRONT_ASSETS.map(async (path) => {
+        try {
+          const req = new Request(path, { cache: "reload" });
+          const res = await fetch(req);
+          if (res && res.ok) {
+            await cache.put(req, res.clone());
+          } else {
+            console.warn("[SW] No cacheado:", path, res?.status);
+          }
+        } catch (err) {
+          console.warn("[SW] Error cacheando:", path);
+        }
+      })
+    );
   })());
+
   self.skipWaiting();
 });
+
 
 // ✅ Activación: limpiar versiones viejas
 self.addEventListener("activate", (event) => {

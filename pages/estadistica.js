@@ -145,6 +145,14 @@ function actualizarKpis(est, tipo = "dia") {
       minimumFractionDigits: 0,
     });
 
+    // 💰 Calcular y mostrar el neto estimado (descontando el 31% de comisión)
+const totalPedidosYaNeto = totalPedidosYa * (1 - 0.31); // 31% de comisión
+document.getElementById("kpi-pedidosya-neto").textContent =
+  "≈ Neto estimado (31%): $" +
+  totalPedidosYaNeto.toLocaleString("es-AR", {
+    minimumFractionDigits: 0,
+  });
+  
   // 💰 KPI de plata perdida por mermas
   const kpiMermasDinero = document.getElementById("kpi-mermas-dinero");
   if (kpiMermasDinero) {

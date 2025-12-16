@@ -572,16 +572,23 @@ body {
   .coin-pro, .coin-pro::after{ animation: none !important; }
 }
 
-/* ✅ FORZAR GIRO (ponelo al final del CSS) */
-.coin-pro{
-  display: block;
-  transform-style: preserve-3d;
-  animation: coinSpinPro 6s linear infinite !important;
-  animation-play-state: running !important;
-  will-change: transform;
+
+
+
+
+.kpi-flow {
+  opacity: 0;
+  transform: translateY(16px) scale(0.97);
 }
 
-@keyframes coinSpinPro{
-  from { transform: rotateX(14deg) rotateY(0deg); }
-  to   { transform: rotateX(14deg) rotateY(360deg); }
+.kpi-flow.kpi-visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  transition:
+    opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.div-controles-horarios{
+  margin-top: -20px;
 }

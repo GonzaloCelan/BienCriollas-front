@@ -221,8 +221,13 @@ function pintarGrilla(empleados, turnos, lunes) {
 // ============================================================================
 async function cargarTotalesSemana(lun, dom) {
 
-    const panel = document.getElementById("horTotales");
+    const panel = document.getElementById("horKpisEmpleados");
+    const totalDiv = document.getElementById("horTotalSemana");
+
+    if (!panel || !totalDiv) return;
+
     panel.innerHTML = "";
+    totalDiv.innerHTML = "";
 
     const totales = await fetch(
         `${window.API_BASE_URL}/api/horarios/totales?desde=${toISO(lun)}&hasta=${toISO(dom)}`
@@ -237,54 +242,148 @@ async function cargarTotalesSemana(lun, dom) {
         const horas = Math.round(t.horasTotales * 100) / 100;
         const pago = t.pagoTotal.toLocaleString("es-AR");
 
-        panel.innerHTML += `
-            <div class="border border-slate-300 border-l-4 border-indigo-400 rounded-lg p-4 bg-white shadow-sm 
-                        hover:shadow-md hover:border-indigo-500 transition-all duration-150 animate-slideFade">
-                
-                <div class="font-semibold text-slate-800 text-sm mb-2">
-                    ${t.empleado}
-                </div>
+       panel.innerHTML += `
+  <div class="kpi-flow group relative overflow-hidden rounded-2xl border border-slate-200 bg-white p-4 shadow-sm
+              transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
 
-                <div class="flex items-center justify-between text-xs text-slate-600">
+    <!-- glow sutil -->
+    <div class="pointer-events-none absolute -top-20 -right-20 h-40 w-40 rounded-full
+                bg-indigo-200/30 blur-3xl opacity-0
+                transition-opacity duration-300 group-hover:opacity-100"></div>
 
-                    <!-- HORAS -->
-                    <div class="flex items-center gap-1">
-                        <span class="text-indigo-500 text-sm">🕒</span>
-                        <span>${horas} hs</span>
-                    </div>
+    <!-- HEADER -->
+    <div class="flex items-start justify-between mb-3">
+      <div>
+        <p class="text-sm font-bold text-slate-900 leading-tight">
+          ${t.empleado}
+        </p>
+        <p class="text-[11px] text-slate-400">
+          Resumen semanal
+        </p>
+      </div>
 
-                    <!-- PAGO -->
-                    <div class="flex items-center gap-1">
-                        <span class="text-emerald-600 text-sm">💵</span>
-                        <span class="font-medium">$${pago}</span>
-                    </div>
-                </div>
+      <span class="text-xs font-semibold text-indigo-600 bg-indigo-50
+                   border border-indigo-200 px-2 py-0.5 rounded-full">
+        Empleado
+      </span>
+    </div>
 
-                <!-- Barra de progreso opcional (horas trabajadas del máximo 48h por ej.) -->
-                <div class="h-1.5 bg-slate-200 rounded-full overflow-hidden mt-3">
-                    <div class="h-full bg-indigo-500" style="width: ${Math.min((horas / 48) * 100, 100)}%"></div>
-                </div>
+    <!-- DATOS -->
+    <div class="grid grid-cols-2 gap-3 text-sm">
 
-            </div>
-        `;
+      <!-- HORAS -->
+      <div class="rounded-xl bg-slate-50 border border-slate-200 p-3">
+        <p class="text-[11px] text-slate-500 mb-1 flex items-center gap-1">
+          <span class="text-indigo-500">🕒</span>
+          Horas trabajadas
+        </p>
+        <p class="text-base font-semibold text-slate-800">
+          ${horas} hs
+        </p>
+      </div>
+
+      <!-- PAGO -->
+      <div class="rounded-xl bg-emerald-50 border border-emerald-200 p-3 text-right">
+        <p class="text-[11px] text-emerald-600 mb-1 flex items-center justify-end gap-1">
+          <span>💵</span>
+          Total a pagar
+        </p>
+        <p class="text-base font-bold text-emerald-700">
+          $${pago}
+        </p>
+      </div>
+
+    </div>
+
+    <!-- PROGRESO HORAS -->
+    <div class="mt-4">
+      <div class="flex justify-between text-[10px] text-slate-400 mb-1">
+        <span>Carga horaria</span>
+        <span>${Math.min(horas, 48)} / 48 hs</span>
+      </div>
+
+      <div class="h-2 rounded-full bg-slate-200 overflow-hidden">
+        <div class="h-full rounded-full bg-gradient-to-r from-indigo-500 to-indigo-400
+                    transition-all duration-700"
+             style="width: ${Math.min((horas / 48) * 100, 100)}%">
+        </div>
+      </div>
+    </div>
+
+  </div>
+`;
+
+const kpis = document.querySelectorAll("#horKpisEmpleados .kpi-flow");
+
+kpis.forEach((kpi, index) => {
+  setTimeout(() => {
+    kpi.classList.add("kpi-visible");
+  }, index * 340);
+});
+
+
     });
 
-    // TOTAL SEMANAL PREMIUM
-    const totalDiv = document.getElementById("horTotalSemana");
+    // TOTAL SEMANAL
+   // TOTAL SEMANAL — PREMIUM / PRO
+totalDiv.innerHTML = `
+  <div class="group relative overflow-hidden rounded-2xl border border-emerald-200 bg-white p-5 shadow-sm
+              transition-all duration-300 hover:-translate-y-1 hover:shadow-xl animate-slideFade">
 
-    totalDiv.innerHTML = `
-        <div class="bg-slate-50 border border-slate-300 rounded-lg p-4 shadow-sm animate-slideFade">
-            <div class="flex items-center gap-2 mb-1">
-                <span class="text-blue-600 text-xl">📘</span>
-                <span class="font-medium text-slate-700">Total de la semana</span>
-            </div>
+    <!-- glow sutil -->
+    <div class="pointer-events-none absolute -top-24 -right-24 h-44 w-44 rounded-full
+                bg-emerald-200/30 blur-3xl opacity-0
+                transition-opacity duration-300 group-hover:opacity-100"></div>
 
-            <div class="text-2xl font-bold text-slate-900">
-                $${totalGeneral.toLocaleString("es-AR")}
-            </div>
+    <!-- header -->
+    <div class="flex items-center justify-between mb-3">
+      <div class="flex items-center gap-3">
+        <div class="relative grid h-10 w-10 place-items-center rounded-2xl
+                    border border-emerald-200 bg-emerald-50">
+          <span class="text-xl">💰</span>
+          <span class="absolute inset-0 rounded-2xl ring-0 ring-emerald-200/60
+                       transition-all duration-300 group-hover:ring-4"></span>
         </div>
-    `;
+
+        <div>
+          <p class="text-sm font-semibold text-slate-700">
+            Total a pagar (semana)
+          </p>
+          <p class="text-[11px] text-slate-400">
+            Suma de pagos por horas trabajadas
+          </p>
+        </div>
+      </div>
+
+      <span class="text-[10px] font-semibold text-emerald-700
+                   bg-emerald-50 border border-emerald-200
+                   px-2 py-1 rounded-full">
+        TOTAL
+      </span>
+    </div>
+
+    <!-- monto -->
+    <div class="mt-2">
+      <p class="text-3xl font-extrabold tracking-tight
+                bg-gradient-to-r from-emerald-700 via-green-600 to-emerald-500
+                text-transparent bg-clip-text">
+        $${totalGeneral.toLocaleString("es-AR")}
+      </p>
+    </div>
+
+    <!-- barra -->
+    <div class="mt-4 h-[3px] w-full rounded-full bg-emerald-50 overflow-hidden">
+      <div class="h-full w-1/2 rounded-full bg-gradient-to-r
+                  from-emerald-600 to-green-500
+                  transition-all duration-500 group-hover:w-full"></div>
+    </div>
+
+  </div>
+`;
+
 }
+
+
 
 
 // ============================================================================

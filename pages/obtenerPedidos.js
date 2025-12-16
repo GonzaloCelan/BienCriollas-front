@@ -1,35 +1,3 @@
-document.addEventListener("click", (e) => {
-  const btn = e.target.closest("[data-btn-pago]");
-  if (!btn) return;
-
-  const modal = document.getElementById("modalPago");
-  const pagoInfo = document.getElementById("pagoInfo");
-  const pagoTipo = document.getElementById("pagoTipo");
-
-  if (!modal) return;
-
-  if (pagoInfo) pagoInfo.textContent = `Pedido #${btn.dataset.id}`;
-  if (pagoTipo) pagoTipo.value = btn.dataset.tipo || "EFECTIVO";
-
-  modal.classList.remove("hidden");
-  modal.classList.add("flex");
-});
-
-function cerrarModalPago() {
-  const modal = document.getElementById("modalPago");
-  if (!modal) return;
-  modal.classList.add("hidden");
-  modal.classList.remove("flex");
-}
-
-document.getElementById("btnCerrarPago")?.addEventListener("click", cerrarModalPago);
-document.getElementById("btnCancelarPago")?.addEventListener("click", cerrarModalPago);
-
-document.getElementById("modalPago")?.addEventListener("click", (e) => {
-  if (e.target.id === "modalPago") cerrarModalPago();
-});
-
-
 
 
 
@@ -475,7 +443,7 @@ function pintarPedidosEnTabla(pedidos) {
       <td class="px-3 py-3">
   <button
     type="button"
-    class="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-1
+    class="inline-flex items-center gap-2 rounded-full   px-3 py-1
            text-[12px] font-semibold text-slate-700 hover:bg-white hover:border-slate-300
            transition"
     data-btn-pago
@@ -509,7 +477,7 @@ function pintarPedidosEnTabla(pedidos) {
       <td class="px-3 py-3">
        <button
   onclick="verDetalle(${p.idPedido})"
-  class="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-1
+  class="inline-flex items-center gap-2  px-3 py-1
          text-[11px] font-semibold text-slate-800
          hover:bg-white hover:border-slate-300 hover:shadow-sm
          transition-all duration-200">
@@ -632,6 +600,242 @@ async function actualizarEstadoPedido(id, estado) {
     alert("No se pudo actualizar el estado del pedido");
   }
 }
+
+// ==============================
+//  MODAL: CAMBIAR TIPO DE PAGO
+// ==============================
+function initModalCambioPago() {
+  const modal = document.getElementById("modalPago");
+  if (!modal) return; // si el modal no está en esta pantalla, no rompe nada
+
+  const btnCerrar = document.getElementById("btnCerrarPago");
+  const btnCancelar = document.getElementById("btnCancelarPago");
+  const btnGuardar = document.getElementById("btnGuardarPago");
+
+  const pagoInfo = document.getElementById("pagoInfo");
+  const pagoTipo = document.getElementById("pagoTipo");
+
+  const bloqueCombinado = document.getElementById("bloqueCombinado");
+  const mEfe = document.getElementById("mEfe");
+  const mTra = document.getElementById("mTra");
+  const sumaInfo = document.getElementById("sumaInfo");
+  const pagoError = document.getElementById("pagoError");
+
+  if (!btnCerrar || !btnCancelar || !btnGuardar || !pagoTipo) return;
+
+  let pedidoSel = { id: null, total: 0, tipo: "", estado: "", cliente: "" };
+
+  const money = (n) => Number(n || 0).toLocaleString("es-AR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const toCents = (n) => Math.round(Number(n || 0) * 100);
+
+  function setError(msg) {
+    if (!pagoError) return;
+    if (!msg) {
+      pagoError.classList.add("hidden");
+      pagoError.textContent = "";
+      return;
+    }
+    pagoError.textContent = msg;
+    pagoError.classList.remove("hidden");
+  }
+
+  function cerrar() {
+    modal.classList.add("hidden");
+    modal.classList.remove("flex");
+    setError("");
+  }
+
+  function recalcularSuma() {
+    if (!sumaInfo) return;
+
+    if (pagoTipo.value !== "COMBINADO") {
+      sumaInfo.textContent = "";
+      return;
+    }
+
+    const ef = Number(mEfe?.value || 0);
+    const tr = Number(mTra?.value || 0);
+    const sum = ef + tr;
+
+    sumaInfo.textContent = `Total: $${money(pedidoSel.total)} • Suma: $${money(sum)}`;
+  }
+
+  function toggleCombinadoUI() {
+    if (!bloqueCombinado) return;
+
+    if (pagoTipo.value === "COMBINADO") {
+      bloqueCombinado.classList.remove("hidden");
+      // valores default si no estaban
+      if (mEfe && mTra) {
+        if (mEfe.value === "" && mTra.value === "") {
+          // por defecto: todo al efectivo
+          mEfe.value = Number(pedidoSel.total || 0).toFixed(2);
+          mTra.value = "0.00";
+        }
+      }
+      recalcularSuma();
+    } else {
+      bloqueCombinado.classList.add("hidden");
+      if (mEfe) mEfe.value = "";
+      if (mTra) mTra.value = "";
+      if (sumaInfo) sumaInfo.textContent = "";
+      setError("");
+    }
+  }
+
+  function abrirDesdeBoton(btn) {
+    const id = Number(btn.dataset.id || 0);
+    const tipo = (btn.dataset.tipo || "").toUpperCase();
+    const total = Number(btn.dataset.total || 0);
+    const estado = (btn.dataset.estado || "").toUpperCase();
+    const cliente = btn.dataset.cliente || "";
+
+    if (!id) return;
+
+    // Regla segura: solo pendientes (así no rompés caja/histórico)
+    if (estado && estado !== "PENDIENTE") {
+      showToast("Solo podés cambiar el pago si el pedido está PENDIENTE", true);
+      return;
+    }
+
+    pedidoSel = { id, total, tipo, estado, cliente };
+
+    if (pagoInfo) {
+      pagoInfo.textContent = `Pedido #${id}${cliente ? ` • ${cliente}` : ""} • Total $${money(total)}`;
+    }
+
+    // set tipo actual si existe
+    const tipoOk = ["EFECTIVO", "TRANSFERENCIA", "COMBINADO"].includes(tipo) ? tipo : "EFECTIVO";
+    pagoTipo.value = tipoOk;
+
+    // reset inputs combinado según tipo
+    if (tipoOk === "EFECTIVO") {
+      if (mEfe) mEfe.value = Number(total || 0).toFixed(2);
+      if (mTra) mTra.value = "0.00";
+    } else if (tipoOk === "TRANSFERENCIA") {
+      if (mEfe) mEfe.value = "0.00";
+      if (mTra) mTra.value = Number(total || 0).toFixed(2);
+    } else {
+      // combinado: dejamos editable (si viene vacío, lo default se setea en toggleCombinadoUI)
+      if (mEfe && mTra) {
+        if (mEfe.value === "" && mTra.value === "") {
+          mEfe.value = Number(total || 0).toFixed(2);
+          mTra.value = "0.00";
+        }
+      }
+    }
+
+    toggleCombinadoUI();
+    setError("");
+
+    modal.classList.remove("hidden");
+    modal.classList.add("flex");
+  }
+
+  // Delegación: cualquier click en el botón de pago abre el modal
+  document.addEventListener("click", (e) => {
+    const btn = e.target.closest("[data-btn-pago]");
+    if (!btn) return;
+    abrirDesdeBoton(btn);
+  });
+
+  // Cerrar
+  btnCerrar.addEventListener("click", cerrar);
+  btnCancelar.addEventListener("click", cerrar);
+
+  // Click afuera
+  modal.addEventListener("click", (e) => {
+    if (e.target === modal) cerrar();
+  });
+
+  // Cambia tipo
+  pagoTipo.addEventListener("change", toggleCombinadoUI);
+
+  // Recalcular suma
+  if (mEfe) mEfe.addEventListener("input", () => {
+    if (pagoTipo.value !== "COMBINADO") return;
+    recalcularSuma();
+  });
+  if (mTra) mTra.addEventListener("input", () => {
+    if (pagoTipo.value !== "COMBINADO") return;
+    recalcularSuma();
+  });
+
+  // Guardar
+  btnGuardar.addEventListener("click", async () => {
+    try {
+      setError("");
+
+      const idPedido = pedidoSel.id;
+      const nuevoPago = pagoTipo.value;
+
+      if (!idPedido) return;
+
+      // Validación combinado
+      let body = null;
+
+      if (nuevoPago === "COMBINADO") {
+        const ef = Number(mEfe?.value || 0);
+        const tr = Number(mTra?.value || 0);
+
+        if (ef < 0 || tr < 0) {
+          setError("Los montos no pueden ser negativos.");
+          return;
+        }
+
+        const totalC = toCents(pedidoSel.total);
+        const sumaC = toCents(ef) + toCents(tr);
+
+        if (totalC !== sumaC) {
+          setError("La suma de Efectivo + Transferencia debe coincidir con el total del pedido.");
+          return;
+        }
+
+        body = { montoEfectivo: ef, montoTransferencia: tr };
+      }
+
+      btnGuardar.disabled = true;
+      const txtOriginal = btnGuardar.textContent;
+      btnGuardar.textContent = "Guardando...";
+
+      const url = `${window.API_BASE_URL}/pedido/actualizar-pago/${idPedido}/${encodeURIComponent(nuevoPago)}`;
+
+      const opts = { method: "PUT" };
+      if (body) {
+        opts.headers = { "Content-Type": "application/json" };
+        opts.body = JSON.stringify(body);
+      }
+
+      const res = await fetch(url, opts);
+
+      if (!res.ok) {
+        const t = await res.text().catch(() => "");
+        throw new Error(t || "No se pudo actualizar el pago.");
+      }
+
+      showToast("Pago actualizado ✅");
+      cerrar();
+
+      // recargar tabla respetando el filtro actual
+      const selector = document.getElementById("selector-estado");
+      const estadoFiltro = selector ? selector.value : estadoActual;
+      await cargarPedidosPorEstado(estadoFiltro);
+
+      btnGuardar.textContent = txtOriginal;
+      btnGuardar.disabled = false;
+
+    } catch (err) {
+      console.error(err);
+      setError(err?.message || "Error actualizando el pago.");
+      btnGuardar.disabled = false;
+      btnGuardar.textContent = "Guardar";
+    }
+  });
+}
+
+// Llamada segura (si el modal no existe, no hace nada)
+document.addEventListener("DOMContentLoaded", initModalCambioPago);
+
 
 
 

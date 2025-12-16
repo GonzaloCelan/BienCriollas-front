@@ -1214,7 +1214,7 @@
     </div>
 
    <!-- Derecha -->
-<div class="flex items-center gap-2">
+<div class="flex items-center gap-2 px-20">
   <!-- Botón -->
   <button
     id="btn-actualizar-tabla"
@@ -1229,9 +1229,7 @@
 
   <!-- Stock total -->
   <div
-    class="inline-flex items-center gap-2 rounded-full
-           border border-slate-200/70 bg-white/80 backdrop-blur
-           px-3 py-1 shadow-sm"
+    class="inline-flex items-center gap-2 px-1 py-1 "
   >
     <span class="text-[10px] font-semibold uppercase tracking-wide text-slate-500">
       STOCK TOTAL
@@ -1240,7 +1238,7 @@
     <span
       id="stock-total-num"
       class="text-[15px] font-extrabold bg-gradient-to-r from-emerald-600 to-teal-500
-             text-transparent bg-clip-text drop-shadow-sm"
+             text-transparent bg-clip-text  "
     >0</span>
   </div>
 </div>
@@ -1273,7 +1271,7 @@
 
 
   <!-- 🔹 VISTA MERMAS (NUEVA) -->
-  <div id="vista-mermas" class="p-4 space-y-4 formulario-produccion-css hidden">
+  <div id="vista-mermas" class="p-4 space-y-4 hidden">
 
     <div class="flex flex-wrap items-center justify-between gap-3 div-merma">
       <div>
@@ -1892,16 +1890,30 @@
     </h2>
   </div>
 
+
   <!-- PedidosYa -->
-  <div class="group p-5 rounded-xl bg-gradient-to-br from-red-50 to-white border border-red-100 shadow-sm kpi-anim
-              transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:border-red-200 hover:ring-2 hover:ring-red-200/40"
-       style="animation-delay: .2s;">
-    <p id="kpi-label-pedidosya" class="text-[12px] text-red-700 font-medium">Pedidos Ya (sin liquidar)</p>
-    <h2 id="kpi-pedidosya"
-        class="text-3xl font-bold text-red-700 mt-1 transition-transform duration-300 group-hover:scale-[1.02]">
-      $0
-    </h2>
-  </div>
+<div class="group p-5 rounded-xl bg-gradient-to-br from-red-50 to-white border border-red-100 shadow-sm kpi-anim
+            transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:border-red-200 hover:ring-2 hover:ring-red-200/40"
+     style="animation-delay: .2s;">
+
+  <p id="kpi-label-pedidosya" class="text-[12px] text-red-700 font-medium">
+    PedidosYa (sin liquidar)
+  </p>
+
+  <!-- Total bruto -->
+  <h2 id="kpi-pedidosya"
+      class="text-3xl font-bold text-red-700 mt-1 transition-transform duration-300 group-hover:scale-[1.02]">
+    $0
+  </h2>
+
+  <!-- Neto estimado -->
+  <p id="kpi-pedidosya-neto"
+     class="mt-1 text-[13px] text-red-500/80 font-medium">
+    ≈ Neto estimado (30%): $0
+  </p>
+
+</div>
+
 
   <!-- ✅ Mermas (cambiado a violeta para NO confundirse con PedidosYa) -->
   <div class="group p-5 rounded-xl bg-gradient-to-br from-violet-50 to-white border border-violet-100 shadow-sm kpi-anim
@@ -2085,12 +2097,10 @@
 <div data-section="resumen-historico" class="hidden">
   <!-- Header -->
   <div class="mb-4 flex items-start justify-between gap-3">
-    <div>
-      <h2 class="text-lg font-bold text-slate-900">Resumen histórico</h2>
-      <p class="text-sm text-slate-500">
-        Acumulado general de cajas cerradas (efectivo, transferencias, PedidosYa, egresos y total).
-      </p>
-    </div>
+<p class="text-sm text-slate-500">
+  Vista consolidada del rendimiento del negocio a lo largo del tiempo.
+</p>
+
 
     <!-- Estado / actualizar -->
     <div class="flex items-center gap-2">
@@ -2104,6 +2114,89 @@
 <!-- KPIs (Resumen histórico) — estilo premium + animaciones (mantiene IDs) -->
 <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-6 gap-4">
 
+    <!-- ABAJO: TOTAL (grande) -->
+  <div class="xl:col-span-3">
+    <!-- Total (VERDE premium) -->
+    <div class="group relative overflow-hidden rounded-2xl border border-emerald-200 bg-white p-4 shadow-sm
+                transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:border-emerald-300">
+      <div class="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+        <div class="absolute -left-1/2 top-0 h-full w-1/2 bg-gradient-to-r from-transparent via-white/50 to-transparent
+                    skew-x-[-20deg] animate-[shine_1.2s_ease-in-out_1]"></div>
+      </div>
+      <div class="pointer-events-none absolute -top-24 -right-24 h-44 w-44 rounded-full bg-emerald-300/30 blur-3xl
+                  opacity-0 transition-opacity duration-300 group-hover:opacity-100"></div>
+
+      <div class="flex items-start justify-between gap-3">
+        <div class="flex items-center gap-3">
+          <div class="relative grid h-10 w-10 place-items-center rounded-2xl border border-emerald-200 bg-emerald-50">
+            <span class="text-base transition-transform duration-300 group-hover:scale-110">📈</span>
+            <span class="absolute inset-0 rounded-2xl ring-0 ring-emerald-200/60 transition-all duration-300 group-hover:ring-4"></span>
+          </div>
+
+          <div class="min-w-0">
+            <p class="text-xs font-semibold text-slate-600 truncate">Total acumulado</p>
+            <p class="text-[11px] text-slate-400 truncate">Efectivo + Transferencia + PedidosYa</p>
+          </div>
+        </div>
+
+        <span class="text-[10px] font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-1 rounded-full">
+          TOTAL
+        </span>
+      </div>
+
+      <p id="kpi-acum-total"
+         class="mt-3 text-[26px] leading-none font-extrabold tracking-tight
+                bg-gradient-to-r from-emerald-700 via-green-600 to-emerald-500 text-transparent bg-clip-text
+                transition-transform duration-300 group-hover:scale-[1.04] origin-left">
+        $0
+      </p>
+
+      <div class="mt-3 h-[3px] w-full rounded-full bg-emerald-50 overflow-hidden">
+        <div class="h-full w-1/2 rounded-full bg-gradient-to-r from-emerald-600 to-green-500
+                    transition-all duration-500 group-hover:w-full"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ABAJO: EGRESOS (grande) -->
+  <div class="xl:col-span-3">
+    <!-- Egresos (ROJO premium) -->
+    <div class="group relative overflow-hidden rounded-2xl border border-rose-200 bg-white p-4 shadow-sm
+                transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:border-rose-300">
+      <div class="pointer-events-none absolute -top-24 -right-24 h-44 w-44 rounded-full bg-rose-300/25 blur-3xl
+                  opacity-0 transition-opacity duration-300 group-hover:opacity-100"></div>
+
+      <div class="flex items-start justify-between gap-3">
+        <div class="flex items-center gap-3">
+          <div class="relative grid h-10 w-10 place-items-center rounded-2xl border border-rose-200 bg-rose-50">
+            <span class="text-base transition-transform duration-300 group-hover:scale-110">📉</span>
+            <span class="absolute inset-0 rounded-2xl ring-0 ring-rose-200/60 transition-all duration-300 group-hover:ring-4"></span>
+          </div>
+
+          <div class="min-w-0">
+            <p class="text-xs font-semibold text-slate-600 truncate">Egresos acumulados</p>
+            <p class="text-[11px] text-slate-400 truncate">Mermas + egresos (cajas cerradas)</p>
+          </div>
+        </div>
+
+        <span class="text-[10px] font-semibold text-rose-700 bg-rose-50 border border-rose-200 px-2 py-1 rounded-full">
+          EGRESO
+        </span>
+      </div>
+
+      <p id="kpi-acum-egresos"
+         class="mt-3 text-[26px] leading-none font-extrabold tracking-tight
+                bg-gradient-to-r from-red-700 via-rose-600 to-rose-500 text-transparent bg-clip-text
+                transition-transform duration-300 group-hover:scale-[1.04] origin-left">
+        $0
+      </p>
+
+      <div class="mt-3 h-[3px] w-full rounded-full bg-rose-50 overflow-hidden">
+        <div class="h-full w-1/2 rounded-full bg-gradient-to-r from-red-600 to-rose-500
+                    transition-all duration-500 group-hover:w-full"></div>
+      </div>
+    </div>
+  </div>
   <!-- ARRIBA: EFECTIVO -->
   <div class="xl:col-span-2">
     <!-- Efectivo -->
@@ -2218,89 +2311,7 @@
     </div>
   </div>
 
-  <!-- ABAJO: TOTAL (grande) -->
-  <div class="xl:col-span-3">
-    <!-- Total (VERDE premium) -->
-    <div class="group relative overflow-hidden rounded-2xl border border-emerald-200 bg-white p-4 shadow-sm
-                transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:border-emerald-300">
-      <div class="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-        <div class="absolute -left-1/2 top-0 h-full w-1/2 bg-gradient-to-r from-transparent via-white/50 to-transparent
-                    skew-x-[-20deg] animate-[shine_1.2s_ease-in-out_1]"></div>
-      </div>
-      <div class="pointer-events-none absolute -top-24 -right-24 h-44 w-44 rounded-full bg-emerald-300/30 blur-3xl
-                  opacity-0 transition-opacity duration-300 group-hover:opacity-100"></div>
 
-      <div class="flex items-start justify-between gap-3">
-        <div class="flex items-center gap-3">
-          <div class="relative grid h-10 w-10 place-items-center rounded-2xl border border-emerald-200 bg-emerald-50">
-            <span class="text-base transition-transform duration-300 group-hover:scale-110">📈</span>
-            <span class="absolute inset-0 rounded-2xl ring-0 ring-emerald-200/60 transition-all duration-300 group-hover:ring-4"></span>
-          </div>
-
-          <div class="min-w-0">
-            <p class="text-xs font-semibold text-slate-600 truncate">Total acumulado</p>
-            <p class="text-[11px] text-slate-400 truncate">Efectivo + Transferencia + PedidosYa</p>
-          </div>
-        </div>
-
-        <span class="text-[10px] font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-1 rounded-full">
-          TOTAL
-        </span>
-      </div>
-
-      <p id="kpi-acum-total"
-         class="mt-3 text-[26px] leading-none font-extrabold tracking-tight
-                bg-gradient-to-r from-emerald-700 via-green-600 to-emerald-500 text-transparent bg-clip-text
-                transition-transform duration-300 group-hover:scale-[1.04] origin-left">
-        $0
-      </p>
-
-      <div class="mt-3 h-[3px] w-full rounded-full bg-emerald-50 overflow-hidden">
-        <div class="h-full w-1/2 rounded-full bg-gradient-to-r from-emerald-600 to-green-500
-                    transition-all duration-500 group-hover:w-full"></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ABAJO: EGRESOS (grande) -->
-  <div class="xl:col-span-3">
-    <!-- Egresos (ROJO premium) -->
-    <div class="group relative overflow-hidden rounded-2xl border border-rose-200 bg-white p-4 shadow-sm
-                transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:border-rose-300">
-      <div class="pointer-events-none absolute -top-24 -right-24 h-44 w-44 rounded-full bg-rose-300/25 blur-3xl
-                  opacity-0 transition-opacity duration-300 group-hover:opacity-100"></div>
-
-      <div class="flex items-start justify-between gap-3">
-        <div class="flex items-center gap-3">
-          <div class="relative grid h-10 w-10 place-items-center rounded-2xl border border-rose-200 bg-rose-50">
-            <span class="text-base transition-transform duration-300 group-hover:scale-110">📉</span>
-            <span class="absolute inset-0 rounded-2xl ring-0 ring-rose-200/60 transition-all duration-300 group-hover:ring-4"></span>
-          </div>
-
-          <div class="min-w-0">
-            <p class="text-xs font-semibold text-slate-600 truncate">Egresos acumulados</p>
-            <p class="text-[11px] text-slate-400 truncate">Mermas + egresos (cajas cerradas)</p>
-          </div>
-        </div>
-
-        <span class="text-[10px] font-semibold text-rose-700 bg-rose-50 border border-rose-200 px-2 py-1 rounded-full">
-          EGRESO
-        </span>
-      </div>
-
-      <p id="kpi-acum-egresos"
-         class="mt-3 text-[26px] leading-none font-extrabold tracking-tight
-                bg-gradient-to-r from-red-700 via-rose-600 to-rose-500 text-transparent bg-clip-text
-                transition-transform duration-300 group-hover:scale-[1.04] origin-left">
-        $0
-      </p>
-
-      <div class="mt-3 h-[3px] w-full rounded-full bg-rose-50 overflow-hidden">
-        <div class="h-full w-1/2 rounded-full bg-gradient-to-r from-red-600 to-rose-500
-                    transition-all duration-500 group-hover:w-full"></div>
-      </div>
-    </div>
-  </div>
 
 </div>
 
@@ -2314,81 +2325,93 @@
 
 
 <!-- SECCION HORARIOS EMPLEADOS -->
-<div data-section="horarios" class="hidden p-6 bg-slate-100 min-h-screen overflow-visible">
+<div data-section="horarios"
+     class="hidden p-6 bg-gradient-to-br from-slate-100 to-slate-50 min-h-screen">
 
-  <!-- TITULO DINÁMICO DE LA SEMANA -->
-  <div class="flex justify-between items-center div-dinamico-semana-horario">
-    <div>
-      <h1 class="text-[18px] font-bold text-slate-900" id="tituloDinamico">
-        Registrando horarios...
-      </h1>
-      <p class="text-slate-500 text-sm mt-1 mb-5">
-        Configurá turnos y horarios del personal para la semana seleccionada.
-      </p>
+  <!-- ================= CONTROLES ================= -->
+<div class="mb-6  flex flex-col gap-4 div-controles-horarios">
+
+  <!-- FILA SUPERIOR -->
+  <div class="flex items-start justify-between gap-4">
+
+    <!-- IZQUIERDA: TITULO + BOTON -->
+    <div class="flex flex-col gap-3">
+
+      <div>
+        <h1 id="tituloDinamico"
+            class="text-lg font-extrabold text-slate-900 tracking-tight">
+          Control horario semanal
+        </h1>
+        <p class="text-sm text-slate-500">
+          Gestión y registro de horas trabajadas por empleado
+        </p>
+      </div>
+
+      <!-- BOTÓN DEBAJO DEL TEXTO -->
+      <button id="btnMarcarPagado"
+              onclick="marcarSemanaPagada()"
+              class="inline-flex w-fit items-center gap-2
+                     rounded-xl px-4 py-2 text-sm font-semibold
+                     bg-gradient-to-r from-emerald-600 to-emerald-500
+                     hover:from-emerald-700 hover:to-emerald-600
+                     text-white shadow-md hover:shadow-lg
+                     active:scale-[0.97] transition-all">
+        ✓ Marcar semana como pagada
+      </button>
+
     </div>
 
-    <!-- Selector de semana (Flechas) -->
-    <div class="flex items-center gap-2">
-      <button onclick="semanaAnterior()" 
-              class="px-3 py-1 bg-white border border-slate-300 hover:bg-slate-50 rounded-md text-sm">
+    <!-- DERECHA: SELECTOR DE SEMANA -->
+    <div class="flex items-center gap-2 px-3 py-2">
+
+      <button onclick="semanaAnterior()"
+              class="h-8 w-8 rounded-lg 
+                     flex items-center justify-center
+                     hover:bg-slate-100 active:scale-95 transition">
         ←
       </button>
 
-      <!-- Rango de la semana (lo usa el JS) -->
-      <div id="horSemRango"
-           class="px-4 py-1 bg-white border border-slate-300 rounded-md text-sm font-medium">
-        --
+      <div class="px-4 py-1 rounded-full bg-white border border-slate-300
+                  text-sm font-semibold text-slate-700 shadow-sm">
+        <span id="horSemRango">--</span>
       </div>
 
       <button onclick="semanaSiguiente()"
-              class="px-3 py-1 bg-white border border-slate-300 hover:bg-slate-50 rounded-md text-sm">
+              class="h-8 w-8 rounded-lg 
+                     flex items-center justify-center
+                     hover:bg-slate-100 active:scale-95 transition">
         →
       </button>
     </div>
+
   </div>
 
-  <!-- FILTROS -->
-  <div class="flex items-center gap-4 mb-6">
-    <select id="selectEmpleado" 
-            class="px-4 py-2 bg-white border border-slate-300 rounded-lg text-sm shadow-sm">
-      <option value="0">Todos los empleados</option>
-    </select>
+</div>
 
-    <!-- Eliminado botón Día/Semana y Agregar turno -->
+
+
+  <!-- ================= KPIs POR EMPLEADO (DINÁMICOS) ================= -->
+  <!-- ACA PINTA cargarTotalesSemana() -->
+  <div id="horKpisEmpleados"
+       class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-6">
   </div>
 
-<!-- CONTENEDOR PRINCIPAL -->
-<div class="grid grid-cols-12 gap-6 items-start">
+  <!-- ================= TOTAL SEMANAL ================= -->
+  <!-- ACA PINTA cargarTotalesSemana() -->
+  <div id="horTotalSemana" class="mb-8"></div>
 
-  <!-- GRID SEMANAL -->
+ 
+
+  <!-- ================= GRID HORARIOS ================= -->
   <div id="horGrid"
-       class="col-span-9 bg-white rounded-xl shadow-md border border-slate-200 overflow-hidden p-4 pb-6">
-    <!-- JS llena esto -->
-  </div>
-
-  <!-- PANEL LATERAL DE TOTALES (PREMIUM) -->
-  <div class="col-span-3 bg-white/90 backdrop-blur-sm shadow-lg rounded-xl border border-slate-200 p-5 animate-slideFade">
-
-    <h2 class="text-base font-semibold text-slate-700 flex items-center gap-2 mb-4">
-      <span class="text-rose-600 text-xl">💼</span>
-      Totales de la semana
-    </h2>
-
-    <div id="horTotales" class="space-y-3"></div>
-
-    <div id="horTotalSemana" class="mt-6"></div>
-
-    <button id="btnMarcarPagado"
-            onclick="marcarSemanaPagada()"
-            class="w-full mt-5 px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-md 
-                   text-sm shadow flex items-center justify-center gap-2 transition-all">
-        ✓ Marcar semana como pagada
-    </button>
+       class="bg-white rounded-2xl border border-slate-200 shadow-md p-5">
+    <!-- JS carga la tabla -->
   </div>
 
 </div>
 
-</div>
+
+
 
 
 
@@ -2566,8 +2589,6 @@
       <h3 class="text-base font-extrabold text-slate-900">Cambiar tipo de pago</h3>
       <button id="btnCerrarPago" class="rounded-full px-2 py-1 text-slate-500 hover:bg-slate-100">✕</button>
     </div>
-
-    <p id="pagoInfo" class="mt-1 text-xs text-slate-500"></p>
 
     <div class="mt-4 space-y-3">
       <label class="block">
