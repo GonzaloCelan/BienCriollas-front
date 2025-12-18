@@ -520,6 +520,7 @@ async function verDetalle(idPedido) {
     ultimoDetallePedido = detalles;
     ultimoIdPedido = idPedido;
     ultimoNombreCliente = detalles[0]?.cliente || "";
+ 
 
     // Cliente arriba
     const clienteSpan = document.getElementById("detalle-cliente");
@@ -837,32 +838,30 @@ function initModalCambioPago() {
 document.addEventListener("DOMContentLoaded", initModalCambioPago);
 
 
-
-
 function imprimirTicket() {
-  // Si no hay detalle cargado, avisamos
   if (!ultimoDetallePedido || ultimoDetallePedido.length === 0) {
     alert("Primero abrí el detalle de un pedido para imprimir la comanda.");
     return;
   }
 
-  // Datos principales
   const numeroPedido = ultimoIdPedido ?? "";
   const cliente = ultimoNombreCliente || ultimoDetallePedido[0]?.cliente || "";
   const totalPedido = Number(ultimoDetallePedido[0]?.subtotal || 0);
 
-  // Filas de variedades + cantidad
+
+
   const filasHtml = ultimoDetallePedido
     .map(d => `
       <tr>
-        <td>${d.nombreVariedad}</td>
-        <td style="text-align:right;">${d.cantidad}</td>
+        <td class="col-var">${d.nombreVariedad}</td>
+        <td class="col-cant">${d.cantidad}</td>
       </tr>
     `)
     .join("");
 
-  // Abrimos ventanita con el ticket
   const w = window.open("", "_blank", "width=400,height=600");
+
+  const PRINTABLE_MM = 52;
 
   const html = `
   <!DOCTYPE html>
@@ -871,33 +870,51 @@ function imprimirTicket() {
       <meta charset="UTF-8" />
       <title>Comanda Pedido ${numeroPedido}</title>
       <style>
+        @page { size: 58mm auto; margin: 0; }
+
         body {
-          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-          font-size: 12px;
           margin: 0;
-          padding: 8px;
+          padding: 0.2mm;
+          width: 58mm;
+          font-family: Arial, sans-serif;
+          font-size: 11px;
         }
-        .ticket { width: 260px; }
-        .titulo { text-align: center; font-weight: 700; margin-bottom: 4px; }
-        .subtitulo { text-align: center; font-size: 11px; margin-bottom: 8px; }
-        table { width: 100%; border-collapse: collapse; }
-        th, td { padding: 2px 0; }
+
+        .ticket { width: ${PRINTABLE_MM}mm; }
+
+        .titulo { text-align: center; font-weight: 700; margin: 0 0 2mm 0; }
+        .subtitulo { text-align: center; font-size: 10px; margin: 0 0 2mm 0; }
+
+        .cliente { margin: 0 0 1mm 0; }
+        .tipo { margin: 0 0 2mm 0; }
+
+        table {
+          width: 100%;
+          border-collapse: collapse;
+          table-layout: fixed;
+        }
+
+        th, td { padding: 1mm 0; vertical-align: top; }
         th { border-bottom: 1px solid #000; text-align: left; }
-        tfoot td { border-top: 1px solid #000; font-weight: 700; padding-top: 4px; }
+
+        .col-var { width: calc(100% - 14mm); word-break: break-word; }
+        .col-cant { width: 14mm; text-align: right; white-space: nowrap; }
+
+        tfoot td { border-top: 1px solid #000; font-weight: 700; padding-top: 2mm; }
       </style>
     </head>
-    <body onload="window.print(); window.close();">
+    <body>
       <div class="ticket">
         <div class="titulo">Bien Criollas</div>
         <div class="subtitulo">Comanda Pedido ${numeroPedido}</div>
 
-        <p><strong>Cliente:</strong> ${cliente}</p>
+        <p class="cliente"><strong>Cliente:</strong> ${cliente}</p>
 
         <table>
           <thead>
             <tr>
-              <th>Variedad</th>
-              <th style="text-align:right;">Cant.</th>
+              <th class="col-var">Variedad</th>
+              <th class="col-cant">Cant.</th>
             </tr>
           </thead>
           <tbody>
@@ -905,12 +922,16 @@ function imprimirTicket() {
           </tbody>
           <tfoot>
             <tr>
-              <td>Total</td>
-              <td style="text-align:right;">$${totalPedido}</td>
+              <td class="col-var">Total</td>
+              <td class="col-cant">$${totalPedido}</td>
             </tr>
           </tfoot>
         </table>
       </div>
+
+      <script>
+        setTimeout(() => { window.print(); window.close(); }, 200);
+      </script>
     </body>
   </html>
   `;
@@ -919,6 +940,8 @@ function imprimirTicket() {
   w.document.write(html);
   w.document.close();
 }
+
+
 
 
 export function resetFormularioPedido() {
