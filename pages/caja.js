@@ -310,6 +310,7 @@ async function cargarIngresos(fecha) {
     const transferencia = Number(
       data.ingresosTransferencia ?? data.ingresosTransferencias ?? 0
     );
+    const egresosTotales = Number(data.totalEgresos ?? 0);
 
     if ($("kpi-ingresos-totales")) {
       $("kpi-ingresos-totales").textContent = `$${ingresosTotales.toLocaleString("es-AR")}`;
@@ -321,7 +322,7 @@ async function cargarIngresos(fecha) {
       $("kpi-ingresos-transferencias").textContent = `$${transferencia.toLocaleString("es-AR")}`;
     }
     if ($("kpi-mermas")) {
-      $("kpi-mermas").textContent = `$${Number(data.totalMermas ?? data.mermas ?? 0).toLocaleString("es-AR")}`;
+      $("kpi-mermas").textContent = `$${egresosTotales.toLocaleString("es-AR")}`;
     }
 
     // Si tu backend devuelve estado acá, cachealo (así no hace falta otro fetch)

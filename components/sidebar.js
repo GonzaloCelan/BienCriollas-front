@@ -46,16 +46,18 @@ export function cambiarSeccion(target) {
       sub: "Resumen de ventas y actividad del negocio"
     },
     
-  // 🆕 NUEVA SECCIÓN RESUMEN HISTÓRICO
     "resumen-historico": {
     titulo: "Resumen histórico",
     sub: "Acumulado general de cajas cerradas: efectivo, transferencias, PedidosYa, egresos y total."
     },
 
-    // 🆕 NUEVA SECCIÓN HORARIOS
     horarios: {
       titulo: "Horarios del Personal",
       sub: "Turnos, horas trabajadas y cálculo semanal"
+    },
+    egreso: {
+      titulo: "Control de egresos",
+      sub: "Registrá gastos y mirá cómo impactan en el mes"
     }
   };
 
@@ -69,6 +71,7 @@ export function cambiarSeccion(target) {
 // 🟩 FUNCIÓN EXPORTABLE DESDE JS
 // (llamada por pedidos.init.js)
 // ==========================
+
 export function cambiarSeccionDesdeJS(target) {
   cambiarSeccion(target);
 
@@ -157,6 +160,15 @@ document.addEventListener("DOMContentLoaded", () => {
         import("../pages/horarios.js").then(mod => {
           if (mod.initHorarios) mod.initHorarios();
         });
+      }
+
+      // ======================
+      // 🆕 📌 SECCION: EGRESOS
+      // ======================
+      if (target === "egreso") {
+        import("../pages/egresos.js").then(mod => {
+  if (mod.initEgresos) mod.initEgresos();
+});
       }
 
     });

@@ -34,7 +34,7 @@
   <div class="flex min-h-screen">
 
     <!-- SIDEBAR -->
-    <aside class="w-64 text-white flex flex-col h-screen sticky top-0 sidebar-premium relative overflow-hidden">
+    <aside class="w-64 text-white flex flex-col h-dvh fixed left-0 top-0 sidebar-premium overflow-hidden z-40">
     
       <div class="px-6 py-5 border-b border-slate-100">
     <div class="flex flex-col items-center gap-2">
@@ -77,6 +77,19 @@
     <span>Caja</span>
   </button>
 
+  <button class="nav-item" data-section-btn="egreso">
+    <span class="nav-ico-badge" aria-hidden="true">
+      <span class="material-symbols-rounded nav-ico">schedule</span>
+    </span>
+    <span>Egresos</span>
+  </button>
+
+  <button class="nav-item" data-section-btn="horarios">
+    <span class="nav-ico-badge" aria-hidden="true">
+      <span class="material-symbols-rounded nav-ico">schedule</span>
+    </span>
+    <span>Horarios empleados</span>
+  </button>
   <button class="nav-item" data-section-btn="estadisticas">
     <span class="nav-ico-badge" aria-hidden="true">
       <span class="material-symbols-rounded nav-ico">query_stats</span>
@@ -91,12 +104,9 @@
     <span>Resumen histórico</span>
   </button>
 
-  <button class="nav-item" data-section-btn="horarios">
-    <span class="nav-ico-badge" aria-hidden="true">
-      <span class="material-symbols-rounded nav-ico">schedule</span>
-    </span>
-    <span>Horarios empleados</span>
-  </button>
+  
+
+   
 
 </nav>
 
@@ -106,10 +116,10 @@
     </aside>
 
     <!-- MAIN -->
-    <main class="flex-1 flex flex-col">
+<main class="flex-1 flex flex-col ml-64">
 
       <!-- HEADER -->
-      <header class="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-6">
+<header class="h-16 bg-white  flex items-center justify-between px-6 header-secciones">
         <div>
           <h2 class="text-lg font-semibold" id="titulo-seccion">Pedidos</h2>
           <p class="text-xs text-slate-500" id="subtitulo-seccion">
@@ -1417,7 +1427,7 @@
   <div class="absolute top-3 right-3 opacity-20 text-4xl">❌</div>
 
   <p class="text-[12px] font-medium opacity-90">
-    Mermas (plata perdida)
+    Egresos Totales (mermas del día y egresos varios)
   </p>
 
   <h2 id="kpi-mermas"
@@ -1435,54 +1445,30 @@
 
   </div>
 
-  <button 
+<button 
   id="btn-pedidosya"
   class="relative group inline-flex items-center gap-2
-         text-sm font-semibold rounded-xl
+         text-sm font-extrabold rounded-full
          bg-white text-red-600 border-2 border-red-600
          px-5 py-3 shadow-sm
-         hover:bg-red-600 hover:text-white
-         hover:shadow-md hover:-translate-y-0.5
-         active:translate-y-0 active:shadow-sm
          transition-all duration-200
-         animate-pulse">
-  <span class="text-lg leading-none group-hover:scale-110 transition-transform">🛵</span>
-  <span>+ Cargar PedidosYa</span>
-  <span class="pointer-events-none absolute opacity-0 group-hover:opacity-100 transition-opacity duration-200
-               inset-0 rounded-xl
-               bg-gradient-to-r from-transparent via-white/30 to-transparent"></span>
+         hover:scale-[1.03]
+         hover:shadow-[0_12px_30px_-12px_rgba(239,68,68,0.55)]
+         active:scale-[1.01]">
+
+  <!-- Logo -->
+  <img
+    src="/icons/pedidosya.png"
+    alt="PedidosYa"
+    class="h-7 w-7 object-contain drop-shadow-sm
+           transition-transform duration-200 group-hover:scale-110"
+  />
+
+  <span>PedidosYa</span>
 </button>
 
 
-  <!-- EGRESOS -->
-  <div class="bg-white rounded-xl border shadow-sm p-5">
-    <div class="flex items-center justify-between mb-3">
-      <div>
-        <h3 class="text-sm font-semibold text-slate-800">Egresos del día</h3>
-        <p class="text-xs text-slate-500">Pagos, sueldos y gastos varios.</p>
-      </div>
 
-      <button id="btn-abrir-egreso"
-    class="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-slate-800 to-slate-900
-             px-6 py-2 text-xs font-semibold tracking-tight text-white shadow-sm hover:shadow-md">
-    + Registrar Egreso
-</button>
-
-
-      
-    </div>
-
-    <table class="w-full text-xs">
-      <thead class="border-b bg-slate-50 text-slate-500">
-        <tr>
-          <th class="py-2 text-left">Descripción</th>
-          <th class="py-2 text-right">Monto</th>
-          <th class="py-2 text-right">Hora</th>
-        </tr>
-      </thead>
-      <tbody id="tabla-egresos-body"></tbody>
-    </table>
-  </div>
 
   <!-- BALANCE FINAL -->
 <div
@@ -2156,23 +2142,442 @@
 
 </div>
 
+<!-- SECCION EGRESOS -->
+<div data-section="egreso" class="hidden p-1 bg-gradient-to-br from-slate-100 to-slate-50 min-h-screen">
+
+<div class="gap-2 div-egresos-titulo">
+  <h1 class="text-[16px] font-extrabold text-slate-900">
+    Egresos acumulados del mes <span id="egresos-mes"></span>
+  </h1>
+  <p class="text-xs font-semibold text-slate-500">Suma total por categoría desde el 1° del mes hasta hoy</p>
+</div>
 
 
+<div  class="p-6 space-y-10">
+
+  <!-- ===================== -->
+  <!-- CARDS -->
+  <!-- ===================== -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+    <!-- PERSONAL -->
+    <div class="group relative rounded-2xl overflow-hidden border border-slate-200 bg-white shadow-sm
+            transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:border-emerald-200">
+
+  <!-- glow / decor -->
+  <span class="pointer-events-none absolute -top-16 -right-16 h-40 w-40 rounded-full bg-emerald-400/25 blur-2xl
+               transition-opacity duration-300 opacity-0 group-hover:opacity-100"></span>
+  <span class="pointer-events-none absolute inset-0 bg-gradient-to-br from-emerald-50/60 via-white to-white opacity-0
+               transition-opacity duration-300 group-hover:opacity-100"></span>
+
+  <div class="relative bg-gradient-to-r from-emerald-700 via-emerald-600 to-emerald-500 p-5 text-white text-center">
+    <!-- Icono -->
+    <div class="mx-auto mb-2 grid h-12 w-12 place-items-center rounded-2xl bg-white/15 ring-1 ring-white/20 shadow-sm
+                transition-transform duration-300 group-hover:scale-110">
+      <svg class="h-9 w-9" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M16 7V5a3 3 0 00-6 0v2M5 7h14l1 12H4L5 7z"/>
+      </svg>
+    </div>
+
+    <!-- Título -->
+    <p class="font-extrabold text-base tracking-wide drop-shadow-sm">
+      Egresos de Personal
+    </p>
+  </div>
+
+  <div class="relative p-5 text-center">
+    <div id="egreso-personal-total"
+         class="text-3xl font-extrabold text-slate-900 tracking-tight transition-transform duration-300 group-hover:scale-[1.02]">
+      $120.000
+    </div>
+    <div id="egreso-personal-pct"
+     class="mt-2 inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1
+            text-xs font-extrabold text-emerald-700">
+  —%
+</div>
+  </div>
+</div>
+
+
+
+    <!-- PRODUCCIÓN -->
+    <div class="group relative rounded-2xl overflow-hidden border border-slate-200 bg-white shadow-sm
+            transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:border-orange-200">
+
+  <span class="pointer-events-none absolute -top-16 -right-16 h-40 w-40 rounded-full bg-orange-400/25 blur-2xl
+               transition-opacity duration-300 opacity-0 group-hover:opacity-100"></span>
+  <span class="pointer-events-none absolute inset-0 bg-gradient-to-br from-orange-50/60 via-white to-white opacity-0
+               transition-opacity duration-300 group-hover:opacity-100"></span>
+
+  <div class="relative bg-gradient-to-r from-orange-600 via-orange-500 to-amber-400 p-5 text-white text-center">
+    <div class="mx-auto mb-2 grid h-12 w-12 place-items-center rounded-2xl bg-white/15 ring-1 ring-white/20 shadow-sm
+                transition-transform duration-300 group-hover:scale-110">
+      <svg class="h-9 w-9" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M20 13V7a2 2 0 00-2-2H6a2 2 0 00-2 2v6M3 13h18M7 13v6m10-6v6"/>
+      </svg>
+    </div>
+
+    <p class="font-extrabold text-base tracking-wide drop-shadow-sm">
+      Egresos de Producción
+    </p>
+  </div>
+
+  <div class="relative p-5 text-center">
+    <div id="egreso-produccion-total"
+         class="text-3xl font-extrabold text-slate-900 tracking-tight transition-transform duration-300 group-hover:scale-[1.02]">
+      $85.500
+    </div>
+    <div id="egreso-produccion-pct"
+     class="mt-2 inline-flex items-center gap-2 rounded-full border border-orange-200 bg-orange-50 px-3 py-1
+            text-xs font-extrabold text-orange-700">
+  —%
+</div>
+
+  </div>
+</div>
+
+<!-- DIA A DIA -->
+   <div class="group relative rounded-2xl overflow-hidden border border-slate-200 bg-white shadow-sm
+            transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:border-blue-200">
+
+  <span class="pointer-events-none absolute -top-16 -right-16 h-40 w-40 rounded-full bg-blue-400/25 blur-2xl
+               transition-opacity duration-300 opacity-0 group-hover:opacity-100"></span>
+  <span class="pointer-events-none absolute inset-0 bg-gradient-to-br from-blue-50/60 via-white to-white opacity-0
+               transition-opacity duration-300 group-hover:opacity-100"></span>
+
+  <div class="relative bg-gradient-to-r from-blue-700 via-blue-600 to-sky-500 p-5 text-white text-center">
+    <div class="mx-auto mb-2 grid h-12 w-12 place-items-center rounded-2xl bg-white/15 ring-1 ring-white/20 shadow-sm
+                transition-transform duration-300 group-hover:scale-110">
+      <svg class="h-9 w-9" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M3 9l9-7 9 7v11a2 2 0 01-2 2h-4a2 2 0 01-2-2V12H9v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
+      </svg>
+    </div>
+
+    <p class="font-extrabold text-base tracking-wide drop-shadow-sm">
+      Egresos del Día a Día
+    </p>
+  </div>
+
+  <div class="relative p-5 text-center">
+    <div id="egreso-dia-total"
+         class="text-3xl font-extrabold text-slate-900 tracking-tight transition-transform duration-300 group-hover:scale-[1.02]">
+      $30.000
+    </div>
+    <div id="egreso-dia-pct"
+     class="mt-2 inline-flex items-center gap-2 rounded-full border border-blue-200 bg-blue-50 px-3 py-1
+            text-xs font-extrabold text-blue-700">
+  —%
+</div>
+
+  </div>
+</div>
 
 
 
   </div>
 
+  <!-- ===================== -->
+  <!-- BOTONES -->
+  <!-- ===================== -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+    <button
+  id="btn-egreso-personal"
+  class="group relative flex items-center justify-center gap-2 rounded-full border border-slate-200 bg-white px-6 py-3
+         text-sm font-extrabold text-slate-800 shadow-sm transition-all duration-300
+         hover:-translate-y-0.5 hover:shadow-lg hover:border-red-200">
+  <!-- glow -->
+  <span class="pointer-events-none absolute inset-0 rounded-full opacity-0 blur-xl transition-opacity duration-300
+               group-hover:opacity-60 group-hover:bg-gradient-to-r group-hover:from-red-600/30 group-hover:to-red-400/30"></span>
+
+  <!-- fondo hover -->
+  <span class="pointer-events-none absolute inset-0 rounded-full opacity-0 transition-opacity duration-300
+               group-hover:opacity-100 bg-gradient-to-r from-red-700 to-red-500"></span>
+
+  <span class="relative flex items-center gap-2">
+   
+    <span class="transition-colors duration-300 group-hover:text-white">Cargar Egreso de Personal</span>
+  </span>
+</button>
+
+<button
+  id="btn-egreso-produccion"
+  class="group relative flex items-center justify-center gap-2 rounded-full border border-slate-200 bg-white px-6 py-3
+         text-sm font-extrabold text-slate-800 shadow-sm transition-all duration-300
+         hover:-translate-y-0.5 hover:shadow-lg hover:border-red-200">
+  <span class="pointer-events-none absolute inset-0 rounded-full opacity-0 blur-xl transition-opacity duration-300
+               group-hover:opacity-60 group-hover:bg-gradient-to-r group-hover:from-red-600/30 group-hover:to-red-400/30"></span>
+  <span class="pointer-events-none absolute inset-0 rounded-full opacity-0 transition-opacity duration-300
+               group-hover:opacity-100 bg-gradient-to-r from-red-700 to-red-500"></span>
+
+  <span class="relative flex items-center gap-2">
+    <span class="transition-colors duration-300 group-hover:text-white">Cargar Egreso de Producción</span>
+  </span>
+</button>
+
+<button
+  id="btn-egreso-dia"
+  class="group relative flex items-center justify-center gap-2 rounded-full border border-slate-200 bg-white px-6 py-3
+         text-sm font-extrabold text-slate-800 shadow-sm transition-all duration-300
+         hover:-translate-y-0.5 hover:shadow-lg hover:border-red-200">
+  <span class="pointer-events-none absolute inset-0 rounded-full opacity-0 blur-xl transition-opacity duration-300
+               group-hover:opacity-60 group-hover:bg-gradient-to-r group-hover:from-red-600/30 group-hover:to-red-400/30"></span>
+  <span class="pointer-events-none absolute inset-0 rounded-full opacity-0 transition-opacity duration-300
+               group-hover:opacity-100 bg-gradient-to-r from-red-700 to-red-500"></span>
+
+  <span class="relative flex items-center gap-2">
+    
+    <span class="transition-colors duration-300 group-hover:text-white">Cargar Egreso del Día a Día</span>
+  </span>
+</button>
+
+
+  </div>
+
+  <!-- ===================== -->
+  <!-- TABLA -->
+  <!-- ===================== -->
+  <!-- ===================== -->
+<!-- ÚLTIMOS EGRESOS (Actividad reciente) -->
+<!-- ===================== -->
+<div class="relative overflow-visible rounded-3xl border border-transparent bg-transparent shadow-none">
+
+  <!-- decor / glow MUY suave (opcional) -->
+  <span class="pointer-events-none absolute -top-24 -right-24 h-72 w-72 rounded-full bg-red-500/10 blur-3xl"></span>
+  <span class="pointer-events-none absolute -bottom-28 -left-28 h-80 w-80 rounded-full bg-sky-500/10 blur-3xl"></span>
+
+  <!-- Header TRANSPARENTE -->
+  <div class="relative px-2 md:px-3 py-3 border-b border-transparent bg-transparent">
+    <div class="flex items-center justify-between gap-3">
+      <div class="flex items-center gap-3">
+        <div>
+          <h2 class="text-base font-extrabold text-slate-950 tracking-tight">
+            Actividad de hoy
+          </h2>
+          <p class="text-xs font-semibold text-slate-500">
+            Últimos egresos cargados (vista rápida)
+          </p>
+        </div>
+      </div>
+
+      <button type="button" onclick="window.refrescarEgresos?.()"
+        class="group inline-flex items-center gap-2 rounded-full border border-slate-200/70 bg-white/60 px-4 py-2 text-xs font-extrabold text-slate-700
+               shadow-sm hover:shadow-md transition-all hover:-translate-y-[1px] active:translate-y-0 backdrop-blur">
+        <span class="inline-block transition-transform duration-300 group-hover:rotate-180">⟲</span>
+        Actualizar
+      </button>
+    </div>
+  </div>
+
+  <!-- Body TRANSPARENTE -->
+  <div class="relative px-0 md:px-1 py-2 bg-transparent">
+    <!-- Labels mini (transparentes) -->
+    <div class="px-2 pb-2 text-[11px] font-extrabold tracking-wide text-slate-400 uppercase grid grid-cols-[180px_140px_1fr_180px] gap-2">
+      <div>Hora</div>
+      <div>Tipo</div>
+      <div>Detalle</div>
+      <div class="text-right">Monto</div>
+    </div>
+
+    <!-- “Tabla” sin fondo (las filas hacen todo el look) -->
+    <table class="w-full text-sm border-separate border-spacing-y-3">
+      <tbody id="tabla-egresos-body">
+        <!-- se llena por JS -->
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Footer TRANSPARENTE -->
+  <div class="relative px-2 md:px-3 py-2 border-t border-transparent bg-transparent">
+    <div class="text-[11px] font-semibold text-slate-500">
+      Esta vista muestra solo hoy. El historial completo está abajo por categoría.
+    </div>
+  </div>
+</div>
+
+
+
+  <!-- ===================== -->
+<!-- TABLA (POR TIPO + PAGINADO) -->
+<!-- ===================== -->
+<div class=" bg-transparen overflow-hidden">
+
+  <!-- HEADER premium -->
+  <div class="px-2 md:px-3 py-3 border-b border-transparent bg-transparent">
+  <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+
+    <div class="flex items-start gap-3">
+      <div class="h-10 w-10 rounded-2xl bg-slate-900/90 text-white grid place-items-center text-lg shadow-sm">
+        📌
+      </div>
+      <div>
+        <h2 class="text-base md:text-lg font-extrabold leading-tight text-slate-950">
+          Historial de egresos por categoría
+        </h2>
+        <p class="text-xs font-semibold text-slate-500 mt-0.5">
+          Filtrá por Personal / Producción / Día a día y navegá por páginas.
+        </p>
+      </div>
+    </div>
+
+    <!-- filtro (glass) -->
+    <div class="flex items-center gap-2">
+      <span class="text-xs font-extrabold text-slate-700">Categoría</span>
+      <select id="filtro-egreso-tipo"
+        class="rounded-full border border-slate-200/70 bg-white/60 backdrop-blur px-4 py-2 text-sm font-extrabold text-slate-900
+               shadow-sm hover:bg-white/80 transition focus:outline-none focus:ring-2 focus:ring-red-200">
+        <option value="PERSONAL">PERSONAL</option>
+        <option value="PRODUCCION">PRODUCCION</option>
+        <option value="OTROS">OTROS</option>
+      </select>
+    </div>
+
+  </div>
+</div>
+
+
+  <!-- TABLE WRAP (estilo card premium como el ejemplo) -->
+<div class="p-4 md:p-5 border-b border-transparent bg-transparent">
+  <div class="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-[0_18px_55px_-40px_rgba(15,23,42,.35)]">
+
+    <table class="w-full text-sm">
+      <!-- header minimal -->
+      <thead class="bg-white text-slate-500">
+        <tr class="border-b border-slate-100">
+          <th class="px-5 py-4 text-left text-[12px] font-extrabold tracking-wide uppercase">Fecha</th>
+          <th class="px-5 py-4 text-left text-[12px] font-extrabold tracking-wide uppercase">Tipo</th>
+          <th class="px-5 py-4 text-left text-[12px] font-extrabold tracking-wide uppercase">Detalle</th>
+          <th class="px-5 py-4 text-right text-[12px] font-extrabold tracking-wide uppercase">Monto</th>
+        </tr>
+      </thead>
+
+      <!-- ✅ MISMO ID -->
+      <tbody id="tabla-egresos-tipo-body"
+             class="[&>tr]:border-b [&>tr]:border-slate-100 [&>tr:last-child]:border-b-0
+                    [&>tr]:transition-all [&>tr]:duration-200
+                    [&>tr:hover]:bg-red-50/60
+                    [&>tr:hover]:shadow-[inset_0_0_0_1px_rgba(239,68,68,.18)]
+                    [&>tr:hover]:scale-[1.002]">
+        <!-- se llena por JS -->
+      </tbody>
+    </table>
+  </div>
+
+  <!-- FOOTER premium (lo tuyo, apenas pulido para que combine con el estilo de la tabla) -->
+  <div class="mt-4 px-1 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+    <!-- info -->
+    <div class="inline-flex items-center gap-2 text-xs font-extrabold text-slate-700">
+      <span class="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1.5 shadow-sm">
+        <span class="h-2 w-2 rounded-full bg-red-600"></span>
+        <span id="egresos-tipo-page-info">Página 1 / 1</span>
+      </span>
+
+      <span class="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1.5 shadow-sm">
+        <span class="text-slate-400">•</span>
+        <span id="egresos-tipo-total">0 resultados</span>
+      </span>
+    </div>
+
+    <!-- dots -->
+    <div class="flex items-center justify-center gap-2">
+      <div id="egresos-tipo-dots" class="flex items-center justify-center gap-2"></div>
+    </div>
+
+    <!-- flechas -->
+    <div class="flex items-center justify-end gap-2">
+      <button id="egresos-tipo-prev"
+        class="h-10 w-10 rounded-full border border-slate-200 bg-white grid place-items-center font-black text-slate-800
+               shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md hover:border-red-200 hover:bg-red-50
+               disabled:opacity-40 disabled:cursor-not-allowed"
+        title="Anterior" aria-label="Anterior">←</button>
+
+      <button id="egresos-tipo-next"
+        class="h-10 w-10 rounded-full border border-slate-200 bg-white grid place-items-center font-black text-slate-800
+               shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md hover:border-red-200 hover:bg-red-50
+               disabled:opacity-40 disabled:cursor-not-allowed"
+        title="Siguiente" aria-label="Siguiente">→</button>
+    </div>
+  </div>
+</div>
+
+</div>
 
 
 
 
 
 
+
+</div>
+</div>
 
 
 </section>
 
+
+
+
+    </main>
+
+    <!-- ===================== -->
+<!-- MODAL EGRESO (reutilizable) -->
+<!-- ===================== -->
+<div id="modalEgreso" class="fixed left-0 top-0 w-screen h-screen hidden items-center justify-center bg-black/10 backdrop-blur-sm z-[999999]">
+  <div class="w-[94%] max-w-md rounded-2xl bg-white shadow-2xl  overflow-hidden">
+    <!-- Header (ROJO) -->
+    <div class="px-5 py-4 bg-gradient-to-r from-red-700 to-red-600 text-white">
+      <div class="flex items-start justify-between gap-3">
+        <div>
+          <h3 id="modalEgresoTitle" class="text-base font-extrabold">Cargar egreso</h3>
+          <p id="modalEgresoSubtitle" class="text-xs text-white/85 mt-0.5">Completá detalle y monto</p>
+        </div>
+        <button id="btnCerrarModalEgreso"
+          class="h-9 w-9 rounded-full bg-white/15 hover:bg-white/25 grid place-items-center font-black transition"
+          aria-label="Cerrar">✕</button>
+      </div>
+    </div>
+
+    <!-- Body -->
+    <form id="formEgreso" class="p-5 space-y-4">
+      <!-- error -->
+      <div id="modalEgresoError" class="hidden rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-xs font-semibold text-red-700"></div>
+
+      <div>
+        <label class="block text-xs font-bold text-slate-700">Detalle</label>
+        <input id="egresoDescripcion" type="text" maxlength="255"
+          class="mt-1 w-full rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-900
+                 focus:outline-none focus:ring-2 focus:ring-red-200"
+          placeholder="Ej: Pago empleado, cajas, verdura..." required />
+        <p id="errDesc" class="mt-1 hidden text-[11px] font-bold text-red-600"></p>
+      </div>
+
+      <div>
+        <label class="block text-xs font-bold text-slate-700">Monto</label>
+        <div class="mt-1 flex items-center gap-2">
+          <span class="px-3 py-2 rounded-2xl border border-slate-200 bg-slate-50 text-sm font-extrabold text-slate-700">$</span>
+          <input id="egresoMonto" type="number" step="0.01" min="0"
+            class="w-full rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-900
+                   focus:outline-none focus:ring-2 focus:ring-red-200"
+            placeholder="0.00" required />
+        </div>
+        <p id="errMonto" class="mt-1 hidden text-[11px] font-bold text-red-600"></p>
+      </div>
+
+      <!-- Footer (PASTILLA) -->
+      <div class="pt-2 flex items-center justify-end gap-2">
+        <button type="button" id="btnCancelarEgreso"
+          class="rounded-full border border-slate-200 bg-white px-5 py-2 text-sm font-extrabold text-slate-700 hover:bg-slate-50 transition">
+          Cancelar
+        </button>
+
+        <button type="submit" id="btnGuardarEgreso"
+          class="rounded-full bg-red-600 px-5 py-2 text-sm font-extrabold text-white hover:bg-red-700 transition shadow-sm">
+          Guardar egreso
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
 
 
 <!-- Modal detalle pedido -->
@@ -2311,16 +2716,16 @@
     <h2 class="text-sm font-semibold text-slate-800 mb-3">Registrar liquidación PedidosYa</h2>
 
     <label class="text-xs text-slate-600">Fecha recibida:</label>
-    <input id="py-fecha" type="date" class="w-full border rounded px-2 py-1 mt-1 mb-3 text-xs">
+    <input id="py-fecha" type="date" class="w-full border rounded-full px-2 py-1 mt-1 mb-3 text-xs">
 
     <label class="text-xs text-slate-600">Monto recibido:</label>
-    <input id="py-monto" type="number" min="0" class="w-full border rounded px-2 py-1 mt-1 mb-4 text-xs">
+    <input id="py-monto" type="number" min="0" class="w-full border rounded-full px-2 py-1 mt-1 mb-4 text-xs">
 
     <div class="flex justify-end gap-2">
-      <button id="py-cancelar" class="text-xs px-3 py-1 rounded bg-slate-300 hover:bg-slate-400">
+      <button id="py-cancelar" class="text-xs px-3 py-1 rounded-full bg-slate-300 hover:bg-slate-400">
         Cancelar
       </button>
-      <button id="py-guardar" class="text-xs px-3 py-1 rounded bg-purple-600 text-white hover:bg-purple-500">
+      <button id="py-guardar" class="text-xs px-3 py-1 rounded-full bg-purple-600 text-white hover:bg-red-500">
         Guardar
       </button>
     </div>
@@ -2552,15 +2957,6 @@
   </div>
 </div>
 
-
-
-
-  
-</div>
-</div>
-
-
-    </main>
   </div>
 
 <script>
@@ -2604,6 +3000,7 @@
 <script type="module" src="./pages/estadistica.js"></script>
 <script type="module" src="./pages/stock.js"></script>
 <script type="module" src="./pages/horarios.js"></script>
+<script type="module" src="./pages/egresos.js"></script>
 
 
 

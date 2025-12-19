@@ -23,6 +23,7 @@ const FRONT_ASSETS = [
   "/pages/pedidos.js",
   "/pages/resumenHistorico.js",
   "/pages/stock.js",
+  "/pages/egresos.js",
 
   "/variedades/atun.png",
   "/variedades/bondiola.png",
