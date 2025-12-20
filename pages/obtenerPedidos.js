@@ -406,11 +406,11 @@ function pintarPedidosEnTabla(pedidos) {
     const tipoVentaChipHtml = isPedidosYa
       ? `
         <span class="inline-flex h-7 w-[120px] rounded-full overflow-hidden
-                     bg-[#E30613] shadow-sm ring-1 ring-black/5">
+                     bg-[#EC4348] shadow-sm ring-1 ring-black/5">
           <img
-            src="/icons/pedidosyalogo.jpg"
+            src="/icons/py.png"
             alt="PedidosYa"
-            class="block h-full w-full object-contain"
+            class="block h-full w-full object-contain scale-115"
           />
         </span>
       `
@@ -485,7 +485,7 @@ function pintarPedidosEnTabla(pedidos) {
 
       <!-- ✅ Tipo venta (usa el chip final) -->
       <td class="${tdBase}">
-  <div class="flex items-center justify-center">
+  <div class="flex items-center justify-start">
     ${tipoVentaChipHtml}
   </div>
 </td>
