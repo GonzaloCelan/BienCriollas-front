@@ -595,3 +595,13 @@ will-change: transform;
 .div-egresos-titulo{
   margin-left: 30px;
 }
+
+.badge{
+  display:inline-block;
+  margin-left: 2mm;
+  padding: 0.5mm 1.5mm;
+  border: 1px solid #000;
+  font-weight: 700;
+  font-size: 9px;
+  letter-spacing: .3px;
+}

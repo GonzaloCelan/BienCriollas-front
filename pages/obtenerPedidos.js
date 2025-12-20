@@ -847,8 +847,17 @@ function imprimirTicket() {
   const numeroPedido = ultimoIdPedido ?? "";
   const cliente = ultimoNombreCliente || ultimoDetallePedido[0]?.cliente || "";
   const totalPedido = Number(ultimoDetallePedido[0]?.subtotal || 0);
+  
+  const tipoVentaRaw = (ultimoDetallePedido[0]?.tipoVenta || "").toString().trim();
 
+  const tipoVentaLabel = /pedidos[\s_]*ya|pya/i.test(tipoVentaRaw)
+  ? "PEDIDOSYA"
+  : "PARTICULAR";
 
+  const totalPedidoFmt = totalPedido.toLocaleString("es-AR", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+});
 
   const filasHtml = ultimoDetallePedido
     .map(d => `
@@ -882,6 +891,16 @@ function imprimirTicket() {
 
         .ticket { width: ${PRINTABLE_MM}mm; }
 
+        .logo-wrap { text-align: center; margin: 0 0 1.5mm 0; }
+        .logo {
+          max-width: 34mm;     /* probá 30–40mm */
+          max-height: 12mm;    /* evita que “coma” el ticket */
+          width: auto;
+          height: auto;
+          object-fit: contain;
+          display: inline-block;
+        }
+
         .titulo { text-align: center; font-weight: 700; margin: 0 0 2mm 0; }
         .subtitulo { text-align: center; font-size: 10px; margin: 0 0 2mm 0; }
 
@@ -905,11 +924,17 @@ function imprimirTicket() {
     </head>
     <body>
       <div class="ticket">
+        <div class="logo-wrap">
+          <img class="logo" src="./icons/logo_bien_criollas_transparente_negro_fino.png" alt="Bien Criollas" />
+        </div>
+
         <div class="titulo">Bien Criollas</div>
-        <div class="subtitulo">Comanda Pedido ${numeroPedido}</div>
+        <div class="subtitulo">
+  Pedido ${numeroPedido}<span class="badge"> - ${tipoVentaLabel}</span>
+</div>
 
         <p class="cliente"><strong>Cliente:</strong> ${cliente}</p>
-
+       
         <table>
           <thead>
             <tr>
@@ -923,7 +948,7 @@ function imprimirTicket() {
           <tfoot>
             <tr>
               <td class="col-var">Total</td>
-              <td class="col-cant">$${totalPedido}</td>
+              <td class="col-cant">$${totalPedidoFmt}</td>
             </tr>
           </tfoot>
         </table>
@@ -934,7 +959,8 @@ function imprimirTicket() {
       </script>
     </body>
   </html>
-  `;
+`;
+
 
   w.document.open();
   w.document.write(html);
