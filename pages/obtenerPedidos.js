@@ -303,10 +303,8 @@ function pintarPedidosEnTabla(pedidos) {
   const tbody = document.getElementById("tbody-pedidos");
   tbody.innerHTML = "";
 
-  // 🔹 HORA ACTUAL (una sola vez)
   const ahora = new Date();
 
-  // 🔹 SIN PEDIDOS
   if (!pedidos || pedidos.length === 0) {
     tbody.innerHTML = `
       <tr>
@@ -322,19 +320,25 @@ function pintarPedidosEnTabla(pedidos) {
     return;
   }
 
-  pedidos.forEach(p => {
+  pedidos.forEach((p, idx) => {
     const tr = document.createElement("tr");
 
-    // 🔸 CÁLCULO DE COLOR POR HORA DE ENTREGA
-    let highlightClass = "";
+    // Normalizo tipoVenta
+    const tipoVentaRaw = (p.tipoVenta || "").trim();
+    const tipoVentaLower = tipoVentaRaw.toLowerCase();
+    const isPedidosYa = tipoVentaLower.includes("pedidos");
+    const isParticular = tipoVentaLower.includes("particular");
 
+    // ---------------------------------------------
+    // 1) Highlight por hora (solo particular + pendiente)
+    // ---------------------------------------------
+    let rowTintBase = "bg-white"; // base de la “card”
     if (
-      p.estadoPedido === "PENDIENTE" &&
-      p.tipoVenta === "PARTICULAR" &&
+      (p.estadoPedido || "").toUpperCase() === "PENDIENTE" &&
+      isParticular &&
       p.horaEntrega
     ) {
-      // Se espera formato "HH:mm"
-      const [hStr, mStr] = p.horaEntrega.split(":");
+      const [hStr, mStr] = String(p.horaEntrega).split(":");
       const horaNum = parseInt(hStr, 10);
       const minNum = parseInt(mStr, 10);
 
@@ -342,67 +346,110 @@ function pintarPedidosEnTabla(pedidos) {
         const horaEntregaDate = new Date();
         horaEntregaDate.setHours(horaNum, minNum, 0, 0);
 
-        const diffMs = horaEntregaDate.getTime() - ahora.getTime();
-        const diffMin = diffMs / 60000; // minutos
+        const diffMin = (horaEntregaDate.getTime() - ahora.getTime()) / 60000;
 
-        // ⏳ Se acerca (0–20 min) → amarillo suave
-        if (diffMin > 0 && diffMin <= 10) {
-          highlightClass = "bg-amber-50";
-        }
-        // ⌛ Ya se pasó y sigue pendiente → rojo suave
-        else if (diffMin <= 0) {
-          highlightClass = "bg-rose-50";
-        }
+        if (diffMin > 0 && diffMin <= 10) rowTintBase = "bg-amber-50/60";
+        else if (diffMin <= 0) rowTintBase = "bg-rose-50/60";
       }
     }
 
-    // Estilos base de la fila + highlight al final (pisa el zebra)
-    tr.className = `
-      group
-      text-[13px] text-slate-700
-      border-b border-slate-100 last:border-b-0
-      odd:bg-white even:bg-slate-50/40
-      hover:bg-slate-50/90
-      transition-colors
-      ${highlightClass}
+    // ---------------------------------------------
+    // 2) Hover por canal (se aplica en TD para que pinte perfecto)
+    // ---------------------------------------------
+    const hoverTd =
+      isPedidosYa ? "group-hover:bg-red-50/80" :
+      isParticular ? "group-hover:bg-emerald-50/80" :
+      "group-hover:bg-slate-50/70";
+
+    // TD base tipo “card row” (redondeo y bordes por extremos)
+    const tdBase = `
+       px-3 py-2 ${rowTintBase}
+  align-middle
+  border-y border-slate-200/70
+  ${hoverTd}
+  transition-colors
+  first:rounded-l-2xl last:rounded-r-2xl
+  first:border-l last:border-r
     `;
 
-    // Chip tipo de venta
+    // TR flotante + animación (cascada)
+    tr.className = `
+      group row-float-in pedido-row
+    `;
+    tr.style.animationDelay = `${Math.min(idx * 45, 260)}ms`;
+
+    // ---------------------------------------------
+    // 3) Chips: tipo venta + estado
+    // ---------------------------------------------
     const chipTipoVentaClass =
-      p.tipoVenta === "PARTICULAR"
+      isParticular
         ? "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100"
         : "bg-sky-50 text-sky-700 ring-1 ring-sky-100";
 
-    // Chip estado
-    let estadoClass = "";
-    switch (p.estadoPedido) {
-      case "PENDIENTE":
-        estadoClass = "bg-amber-50 text-amber-700 ring-1 ring-amber-100";
-        break;
-      case "ENTREGADO":
-        estadoClass = "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100";
-        break;
-      default:
-        estadoClass = "bg-rose-50 text-rose-700 ring-1 ring-rose-100";
-        break;
+    let chipTipoVentaClassFinal =
+      "border shadow-sm font-extrabold uppercase tracking-wide ";
+
+    if (isPedidosYa) {
+      chipTipoVentaClassFinal += "bg-red-600 text-white border-red-700";
+    } else {
+      chipTipoVentaClassFinal += `${chipTipoVentaClass} border-slate-200`;
     }
 
-    const inicialCliente = p.cliente ? p.cliente.charAt(0).toUpperCase() : "?";
+    // Icono SOLO para Particular (PedidosYa va como imagen completa)
+    const tipoVentaIconHtml = isParticular
+      ? `<span class="text-[12px] leading-none">🙋</span>`
+      : "";
 
-    const numeroPedidoHtml =
-      p.tipoVenta === "PEDIDOS_YA"
-        ? `#${p.numeroPedidoPedidosYa}`
-        : `<span class="text-slate-300">—</span>`;
+    // ✅ Chip final de tipo venta:
+    // - PedidosYa: SOLO imagen, sin texto
+    // - Particular/otros: chip normal con icono + texto
+    const tipoVentaChipHtml = isPedidosYa
+      ? `
+        <span class="inline-flex h-7 w-[120px] rounded-full overflow-hidden
+                     bg-[#E30613] shadow-sm ring-1 ring-black/5">
+          <img
+            src="/icons/pedidosyalogo.jpg"
+            alt="PedidosYa"
+            class="block h-full w-full object-contain"
+          />
+        </span>
+      `
+      : `
+        <span class="inline-flex items-center gap-2 rounded-full px-2.5 py-1 text-[11px] ${chipTipoVentaClassFinal}">
+          ${tipoVentaIconHtml}
+          <span>${tipoVentaRaw || "-"}</span>
+        </span>
+      `;
 
-    const horaEntregaHtml =
-      p.tipoVenta === "PARTICULAR"
-        ? `<span class="inline-flex items-center rounded-md bg-slate-50 px-2 py-0.5 text-[11px] text-slate-700">
-             ${p.horaEntrega || "-"}
-           </span>`
-        : `<span class="text-slate-300 text-[12px]">—</span>`;
+    // Estado premium (sin puntito)
+    const estadoUpper = (p.estadoPedido || "").toUpperCase();
+    let estadoClassFinal = "border shadow-sm font-extrabold uppercase tracking-wide ";
+
+    if (estadoUpper === "PENDIENTE") {
+      estadoClassFinal += "bg-amber-50 text-amber-800 border-amber-200 ring-1 ring-amber-100";
+    } else if (estadoUpper === "ENTREGADO") {
+      estadoClassFinal += "bg-emerald-50 text-emerald-800 border-emerald-200 ring-1 ring-emerald-100";
+    } else {
+      estadoClassFinal += "bg-rose-50 text-rose-800 border-rose-200 ring-1 ring-rose-100";
+    }
+
+    // ---------------------------------------------
+    // 4) Campos calculados
+    // ---------------------------------------------
+    const inicialCliente = p.cliente ? String(p.cliente).charAt(0).toUpperCase() : "?";
+
+    const numeroPedidoHtml = isPedidosYa
+      ? `#${p.numeroPedidoPedidosYa ?? ""}`
+      : `<span class="text-slate-300">—</span>`;
+
+    const horaEntregaHtml = isParticular
+      ? `<span class="inline-flex items-center rounded-md bg-slate-50 px-2 py-0.5 text-[11px] text-slate-700">
+           ${p.horaEntrega || "-"}
+         </span>`
+      : `<span class="text-slate-300 text-[12px]">—</span>`;
 
     const accionesHtml =
-      p.estadoPedido === "PENDIENTE"
+      estadoUpper === "PENDIENTE"
         ? `
           <button
             onclick="actualizarEstadoPedido(${p.idPedido}, 'ENTREGADO')"
@@ -421,9 +468,12 @@ function pintarPedidosEnTabla(pedidos) {
 
     const totalFormateado = Number(p.totalPedido || 0).toLocaleString("es-AR");
 
+    // ---------------------------------------------
+    // 5) Render fila
+    // ---------------------------------------------
     tr.innerHTML = `
-      <td class="px-3 py-3 font-medium text-slate-800">
-        <div class="flex items-center gap-2">
+      <td class="${tdBase} font-medium text-slate-800">
+        <div class="flex items-center gap-2 min-w-0">
           <span class="inline-flex h-7 w-7 items-center justify-center rounded-full bg-slate-100 text-[11px] text-slate-500">
             ${inicialCliente}
           </span>
@@ -433,68 +483,59 @@ function pintarPedidosEnTabla(pedidos) {
         </div>
       </td>
 
-      <td class="px-3 py-3">
-        <span class="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-medium ${chipTipoVentaClass}">
-          <span class="h-1.5 w-1.5 rounded-full bg-current opacity-80"></span>
-          ${p.tipoVenta}
-        </span>
-      </td>
-
-      <td class="px-3 py-3">
-  <button
-    type="button"
-    class="inline-flex items-center gap-2 rounded-full   px-3 py-1
-           text-[12px] font-semibold text-slate-700 hover:bg-white hover:border-slate-300
-           transition"
-    data-btn-pago
-    data-id="${p.idPedido}"
-    data-tipo="${p.tipoPago || ''}">
-    <span class="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
-    <span>${p.tipoPago || "Sin pago"}</span>
-  </button>
+      <!-- ✅ Tipo venta (usa el chip final) -->
+      <td class="${tdBase}">
+  <div class="flex items-center justify-center">
+    ${tipoVentaChipHtml}
+  </div>
 </td>
 
+      <td class="${tdBase}">
+        <button
+          type="button"
+          class="inline-flex items-center gap-2 rounded-full px-3 py-1
+                 border border-slate-200 bg-white
+                 text-[12px] font-extrabold text-slate-700
+                 hover:border-slate-300 hover:shadow-sm transition"
+          data-btn-pago
+          data-id="${p.idPedido}"
+          data-tipo="${p.tipoPago || ''}">
+          <span>${p.tipoPago || "Sin pago"}</span>
+        </button>
+      </td>
 
-
-    
-      <td class="px-3 py-3 text-[12px] text-slate-600">
+      <td class="${tdBase} text-[12px] text-slate-600">
         ${numeroPedidoHtml}
       </td>
 
-      <!-- Hora entrega -->
-      <td class="px-3 py-3 text-[12px] text-slate-600">
+      <td class="${tdBase} text-[12px] text-slate-600">
         ${horaEntregaHtml}
       </td>
 
-   
-      <td class="px-3 py-3">
-        <span class="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide ${estadoClass}">
-          <span class="h-1.5 w-1.5 rounded-full bg-current"></span>
-          ${p.estadoPedido}
+      <td class="${tdBase}">
+        <span class="inline-flex items-center rounded-full px-3 py-1 text-[11px] ${estadoClassFinal}">
+          ${p.estadoPedido || "-"}
         </span>
       </td>
 
-      <td class="px-3 py-3">
-       <button
-  onclick="verDetalle(${p.idPedido})"
-  class="inline-flex items-center gap-2  px-3 py-1
-         text-[11px] font-semibold text-slate-800
-         hover:bg-white hover:border-slate-300 hover:shadow-sm
-         transition-all duration-200">
-  <span class="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
-  Ver detalle
-</button>
+      <td class="${tdBase}">
+        <button
+          onclick="verDetalle(${p.idPedido})"
+          class="inline-flex items-center gap-2 rounded-full px-3 py-1
+                 border border-slate-200 bg-white
+                 text-[11px] font-extrabold text-slate-800
+                 hover:border-slate-300 hover:shadow-sm transition-all duration-200">
+          Ver detalle
+        </button>
       </td>
 
-      <!-- Total -->
-      <td class="px-3 py-3 text-right">
-        <span class="text-[13px] font-semibold text-slate-900">
+      <td class="${tdBase} text-right">
+        <span class="text-[13px] font-extrabold text-slate-900">
           $${totalFormateado}
         </span>
       </td>
 
-      <!-- Acciones -->
-      <td class="px-3 py-3">
+      <td class="${tdBase}">
         <div class="flex items-center justify-center gap-2">
           ${accionesHtml}
         </div>
@@ -504,6 +545,7 @@ function pintarPedidosEnTabla(pedidos) {
     tbody.appendChild(tr);
   });
 }
+
 
 
 

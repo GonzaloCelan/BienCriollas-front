@@ -15,6 +15,9 @@
  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600&family=Pacifico&display=swap" rel="stylesheet">
  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&display=swap" rel="stylesheet">
+ <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,600,1,0" />
 
 
@@ -79,7 +82,7 @@
 
   <button class="nav-item" data-section-btn="egreso">
     <span class="nav-ico-badge" aria-hidden="true">
-      <span class="material-symbols-rounded nav-ico">schedule</span>
+      <span class="material-symbols-rounded nav-ico">trending_down</span>
     </span>
     <span>Egresos</span>
   </button>
@@ -202,20 +205,31 @@
 </div>
 
           <!-- Tabla -->
-          <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-            <table class="w-full text-xs">
-              <thead class="bg-slate-50 border-b border-slate-200">
+          <div class="rounded-2xl bg-transparent border-0 shadow-none overflow-visible">
+            <table class="table-fixed text-xs w-full border-separate border-spacing-y-3">
+               <colgroup>
+    <col class="w-[240px]" />  <!-- Cliente -->
+    <col class="w-[170px]" />  <!-- Tipo venta -->
+    <col class="w-[170px]" />  <!-- Pago -->
+    <col class="w-[190px]" />  <!-- Número pedido -->
+    <col class="w-[120px]" />  <!-- Horario -->
+    <col class="w-[150px]" />  <!-- Estado -->
+    <col class="w-[140px]" />  <!-- Detalle -->
+    <col class="w-[130px]" />  <!-- Total -->
+    <col class="w-[110px]" />  <!-- Action -->
+  </colgroup>
+              <thead class="bg-transparent">
                 <tr class="text-left text-slate-500">
                   
-                  <th class="px-3 py-2">Cliente</th>
-                  <th class="px-3 py-2">Tipo venta</th>
-                  <th class="px-3 py-2">Pago</th>
-                  <th class="px-3 py-2">Número de pedido</th>
-                  <th class="px-3 py-2">Horario</th>
-                  <th class="px-3 py-2">Estado</th>
-                  <th class="px-3 py-2">Detalle</th>
-                  <th class="px-3 py-2 text-right">Total</th>
-                  <th class="px-3 py-2 text-right">Accion</th>
+                  <th class="px-3 py-2 text-left text-[12px] font-extrabold text-slate-500">Cliente</th>
+                  <th class="px-3 py-2 text-left text-[12px] font-extrabold text-slate-500">Tipo venta</th>
+                  <th class="px-3 py-2 text-left text-[12px] font-extrabold text-slate-500">Pago</th>
+                  <th class="px-3 py-2 text-left text-[12px] font-extrabold text-slate-500">Número de pedido</th>
+                  <th class="px-3 py-2 text-left text-[12px] font-extrabold text-slate-500">Horario</th>
+                  <th class="px-3 py-2 text-left text-[12px] font-extrabold text-slate-500">Estado</th>
+                  <th class="px-3 py-2 text-left text-[12px] font-extrabold text-slate-500">Detalle</th>
+                  <th class="px-3 py-2 text-right pr-5 text-[12px] font-extrabold text-slate-500 ">Total</th>
+                  <th class="px-3 py-2 text-center text-[12px] font-extrabold text-slate-500">Accion</th>
                 </tr>
               </thead>
               <tbody id="tbody-pedidos" class="divide-y divide-slate-100">
