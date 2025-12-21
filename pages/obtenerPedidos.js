@@ -889,17 +889,17 @@ function imprimirTicket() {
   const numeroPedido = ultimoIdPedido ?? "";
   const cliente = ultimoNombreCliente || ultimoDetallePedido[0]?.cliente || "";
   const totalPedido = Number(ultimoDetallePedido[0]?.subtotal || 0);
-  
+
   const tipoVentaRaw = (ultimoDetallePedido[0]?.tipoVenta || "").toString().trim();
 
   const tipoVentaLabel = /pedidos[\s_]*ya|pya/i.test(tipoVentaRaw)
-  ? "PEDIDOSYA"
-  : "PARTICULAR";
+    ? "PEDIDOSYA"
+    : "PARTICULAR";
 
   const totalPedidoFmt = totalPedido.toLocaleString("es-AR", {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2
-});
+  });
 
   const filasHtml = ultimoDetallePedido
     .map(d => `
@@ -935,8 +935,8 @@ function imprimirTicket() {
 
         .logo-wrap { text-align: center; margin: 0 0 1.5mm 0; }
         .logo {
-          max-width: 34mm;     /* probá 30–40mm */
-          max-height: 12mm;    /* evita que “coma” el ticket */
+          max-width: 40mm;
+          max-height: 15mm;
           width: auto;
           height: auto;
           object-fit: contain;
@@ -962,6 +962,17 @@ function imprimirTicket() {
         .col-cant { width: 14mm; text-align: right; white-space: nowrap; }
 
         tfoot td { border-top: 1px solid #000; font-weight: 700; padding-top: 2mm; }
+
+        /* ✅ leyenda fiscal */
+        .nota-wrap { margin-top: 3mm; }
+        .nota-sep { border-top: 1px solid #00000079; margin: 0 0 1.5mm 0; }
+        .nota-fiscal {
+           text-align: center;
+  font-size: 7.5px;
+  font-weight: 500;
+  color: #888;
+  letter-spacing: 0.2px;
+        }
       </style>
     </head>
     <body>
@@ -972,11 +983,11 @@ function imprimirTicket() {
 
         <div class="titulo">Bien Criollas</div>
         <div class="subtitulo">
-  Pedido ${numeroPedido}<span class="badge"> - ${tipoVentaLabel}</span>
-</div>
+          Pedido ${numeroPedido}<span class="badge"> - ${tipoVentaLabel}</span>
+        </div>
 
         <p class="cliente"><strong>Cliente:</strong> ${cliente}</p>
-       
+
         <table>
           <thead>
             <tr>
@@ -994,6 +1005,12 @@ function imprimirTicket() {
             </tr>
           </tfoot>
         </table>
+
+        
+        <div class="nota-wrap">
+          <div class="nota-sep"></div>
+          <div class="nota-fiscal">NO VÁLIDO COMO FACTURA</div>
+        </div>
       </div>
 
       <script>
@@ -1001,13 +1018,13 @@ function imprimirTicket() {
       </script>
     </body>
   </html>
-`;
-
+  `;
 
   w.document.open();
   w.document.write(html);
   w.document.close();
 }
+
 
 
 
