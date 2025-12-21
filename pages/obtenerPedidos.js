@@ -403,16 +403,17 @@ function pintarPedidosEnTabla(pedidos) {
     // ✅ Chip final de tipo venta:
     // - PedidosYa: SOLO imagen, sin texto
     // - Particular/otros: chip normal con icono + texto
-    const tipoVentaChipHtml = isPedidosYa
+ const tipoVentaChipHtml = isPedidosYa
       ? `
         <span class="inline-flex h-7 w-[120px] rounded-full overflow-hidden
-                     bg-[#EC4348] shadow-sm ring-1 ring-black/5">
-          <img
-            src="/icons/py.png"
-            alt="PedidosYa"
-            class="block h-full w-full object-contain scale-115"
-          />
-        </span>
+             bg-white shadow-sm ring-1 ring-black/5 border border-[#EA044E]">
+  <img
+    src="/icons/PedidosYa_Logo_1.png"
+    alt="PedidosYa"
+    class="  block h-[20px]  w-[110px] object-contain mx-auto my-1"
+  />
+</span>
+
       `
       : `
         <span class="inline-flex items-center gap-2 rounded-full px-2.5 py-1 text-[11px] ${chipTipoVentaClassFinal}">
@@ -420,6 +421,8 @@ function pintarPedidosEnTabla(pedidos) {
           <span>${tipoVentaRaw || "-"}</span>
         </span>
       `;
+
+
 
     // Estado premium (sin puntito)
     const estadoUpper = (p.estadoPedido || "").toUpperCase();
