@@ -939,17 +939,17 @@ function imprimirTicket() {
         .logo-wrap { text-align: center; margin: 0 0 1.5mm 0; }
         .logo {
           max-width: 40mm;
-          max-height: 15mm;
+          max-height: 24mm;
           width: auto;
           height: auto;
           object-fit: contain;
           display: inline-block;
         }
 
-        .titulo { text-align: center; font-weight: 700; margin: 0 0 2mm 0; }
+        .titulo { text-align: center; font-weight: 700; margin: 0 0 2mm 0; font-size: 16px; }
         .subtitulo { text-align: center; font-size: 10px; margin: 0 0 2mm 0; }
 
-        .cliente { margin: 0 0 1mm 0; }
+        .cliente { margin: 0 0 1mm 0; ont-size: 12px; }
         .tipo { margin: 0 0 2mm 0; }
 
         table {
@@ -968,13 +968,13 @@ function imprimirTicket() {
 
         /* ✅ leyenda fiscal */
         .nota-wrap { margin-top: 3mm; }
-        .nota-sep { border-top: 1px solid #00000079; margin: 0 0 1.5mm 0; }
+        .nota-sep { border-top: 1px dotted #000000ff margin: 0 0 1.5mm 0; }
         .nota-fiscal {
            text-align: center;
-  font-size: 7.5px;
-  font-weight: 500;
-  color: #888;
-  letter-spacing: 0.2px;
+        font-size: 8px;
+        font-weight: 700;
+        color: #000000ff;
+        letter-spacing: 0.2px;
         }
       </style>
     </head>
