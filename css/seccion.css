@@ -1,0 +1,40 @@
+/* Fondo "manchas rojas" premium (sutil) */
+.bg-manchas-rojas {
+  position: relative;
+  background: #f7f9fc; /* gris base */
+  overflow: hidden;
+}
+
+.bg-manchas-rojas::before,
+.bg-manchas-rojas::after {
+  content: "";
+  position: absolute;
+  width: 520px;
+  height: 520px;
+  border-radius: 9999px;
+  filter: blur(55px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.bg-manchas-rojas::before {
+  background: #e11d48;   /* rojo */
+  top: -180px;
+  left: -160px;
+  opacity: 0.10;
+}
+
+.bg-manchas-rojas::after {
+  background: #dc2626;   /* rojo más fuerte */
+  bottom: -220px;
+  right: -180px;
+  opacity: 0.08;
+}
+
+/* tu contenido arriba */
+.bg-manchas-rojas > * {
+  position: relative;
+  z-index: 1;
+}
+
+
