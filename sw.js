@@ -1,5 +1,5 @@
 /* sw.js — Bien Criollas (cache front, pero JS/CSS siempre nuevos si hay red) */
-const CACHE_NAME = "biencriollas-front-v3"; // (cambialo SOLO esta vez para limpiar lo viejo)
+const CACHE_NAME = "biencriollas-front-v4"; // (cambialo SOLO esta vez para limpiar lo viejo)
 
 const FRONT_ASSETS = [
   "/",
@@ -9,6 +9,8 @@ const FRONT_ASSETS = [
   "/logoBienCriollas.png",
 
   "/css/style.css",
+   "/css/seccion.css",
+    "/css/estadistica.css",
 
   "/components/sidebar.js",
   "/components/toast.js",
