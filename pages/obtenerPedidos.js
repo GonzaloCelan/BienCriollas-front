@@ -668,6 +668,7 @@ async function actualizarEstadoPedido(id, estado) {
     const isErrorToast = estado === "CANCELADO";
     showToast(message, isErrorToast);
 
+    await cargarStockParaPedidos();
     await cargarPedidosPorEstado(estadoFiltro);
     actualizarKPIsPedidos();
 
@@ -1096,6 +1097,7 @@ export function resetFormularioPedido() {
 
 async function crearPedido() {
 
+
   // 1) Datos principales del pedido
   const cliente    = document.querySelector('input[placeholder="Nombre del cliente"]')?.value || "";
   const tipoVenta  = document.querySelector('#tipo-venta-nuevo-pedido')?.value || "PARTICULAR";
@@ -1173,7 +1175,7 @@ async function crearPedido() {
     // volver al inicio después de un pequeño delay
     setTimeout(() => {
       window.location.reload();
-    }, 500);
+    }, 300);
 
   } catch (e) {
     console.error(e);
