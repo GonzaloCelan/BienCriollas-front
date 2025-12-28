@@ -62,7 +62,7 @@ function mostrarAvisoStockBajo(cantidad) {
   }, 4000);
 
   // ⚠️ Usamos tu función ya existente
-  hablar(`Hay ${cantidad} variedades con stock bajo. Por favor revisar el stock.`);
+ //  hablar(`Hay ${cantidad} variedades con stock bajo. Por favor revisar el stock.`);
 }
 
 function chequearStockBajo(variedades) {
@@ -287,6 +287,8 @@ async function cargarPedidosPorEstado(estado = estadoActual, page = 0, size = 10
 
     // 👉 PAGINACIÓN
     generarPaginacion(data);
+    actualizarKPIsPedidos();
+
 
   } catch (error) {
     console.error("❌ Error cargando pedidos:", error);
@@ -310,7 +312,20 @@ function pintarPedidosEnTabla(pedidos) {
       <tr>
         <td colspan="9" class="py-10 text-center text-sm text-slate-400 bg-slate-50">
           <div class="flex flex-col items-center gap-2">
-            <span class="text-2xl">📝</span>
+            <span class="inline-flex items-center justify-center h-40 w-40">
+              <svg width="600" height="600" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                <ellipse cx="100" cy="160" rx="60" ry="10" fill="#e0e0e0" />
+                <path d="M40,140 Q40,60 100,60 Q160,60 160,140 Z" fill="#F4C578" stroke="#D9A654" stroke-width="4" />
+                <path d="M40,140 Q35,125 45,120 Q55,115 65,122 Q75,110 85,118 Q100,105 115,118 Q125,110 135,122 Q145,115 155,120 Q165,125 160,140" fill="none" stroke="#D9A654" stroke-width="4" stroke-linecap="round" />
+                <path d="M75,110 Q85,100 95,110" fill="none" stroke="#5C4033" stroke-width="3" stroke-linecap="round" />
+                <path d="M105,110 Q115,100 125,110" fill="none" stroke="#5C4033" stroke-width="3" stroke-linecap="round" />
+                <path d="M90,135 Q100,128 110,135" fill="none" stroke="#5C4033" stroke-width="2.5" stroke-linecap="round" />
+                <circle cx="120" cy="120" r="4" fill="#A5D8FF">
+                  <animate attributeName="cy" from="120" to="135" dur="2s" repeatCount="indefinite" />
+                  <animate attributeName="opacity" from="1" to="0" dur="2s" repeatCount="indefinite" />
+                </circle>
+              </svg>
+            </span>
             <p class="font-medium text-slate-600">No hay pedidos cargados todavía</p>
             <p class="text-xs text-slate-400">Cuando registres un pedido aparecerá en esta tabla.</p>
           </div>
@@ -329,12 +344,14 @@ function pintarPedidosEnTabla(pedidos) {
     const isPedidosYa = tipoVentaLower.includes("pedidos");
     const isParticular = tipoVentaLower.includes("particular");
 
+    const estadoUpper = (p.estadoPedido || "").toUpperCase();
+
     // ---------------------------------------------
-    // 1) Highlight por hora (solo particular + pendiente)
+    // 1) Highlight por hora (solo particular + (pendiente o preparado))
     // ---------------------------------------------
-    let rowTintBase = "bg-white"; // base de la “card”
+    let rowTintBase = "bg-white";
     if (
-      (p.estadoPedido || "").toUpperCase() === "PENDIENTE" &&
+      (estadoUpper === "PENDIENTE" || estadoUpper === "PREPARADO") &&
       isParticular &&
       p.horaEntrega
     ) {
@@ -354,40 +371,35 @@ function pintarPedidosEnTabla(pedidos) {
     }
 
     // ---------------------------------------------
-    // 2) Hover por canal (se aplica en TD para que pinte perfecto)
+    // 2) Hover por canal
     // ---------------------------------------------
     const hoverTd =
       isPedidosYa ? "group-hover:bg-red-50/80" :
       isParticular ? "group-hover:bg-emerald-50/80" :
       "group-hover:bg-slate-50/70";
 
-    // TD base tipo “card row” (redondeo y bordes por extremos)
     const tdBase = `
-       px-3 py-2 ${rowTintBase}
-  align-middle
-  border-y border-slate-200/70
-  ${hoverTd}
-  transition-colors
-  first:rounded-l-2xl last:rounded-r-2xl
-  first:border-l last:border-r
+      px-3 py-2 ${rowTintBase}
+      align-middle
+      border-y border-slate-200/70
+      ${hoverTd}
+      transition-colors
+      first:rounded-l-2xl last:rounded-r-2xl
+      first:border-l last:border-r
     `;
 
-    // TR flotante + animación (cascada)
-    tr.className = `
-      group row-float-in pedido-row
-    `;
+    tr.className = `group row-float-in pedido-row`;
     tr.style.animationDelay = `${Math.min(idx * 45, 260)}ms`;
 
     // ---------------------------------------------
-    // 3) Chips: tipo venta + estado
+    // 3) Chip Tipo venta
     // ---------------------------------------------
     const chipTipoVentaClass =
       isParticular
         ? "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100"
         : "bg-sky-50 text-sky-700 ring-1 ring-sky-100";
 
-    let chipTipoVentaClassFinal =
-      "border shadow-sm font-extrabold uppercase tracking-wide ";
+    let chipTipoVentaClassFinal = "border shadow-sm font-extrabold uppercase tracking-wide ";
 
     if (isPedidosYa) {
       chipTipoVentaClassFinal += "bg-red-600 text-white border-red-700";
@@ -395,25 +407,20 @@ function pintarPedidosEnTabla(pedidos) {
       chipTipoVentaClassFinal += `${chipTipoVentaClass} border-slate-200`;
     }
 
-    // Icono SOLO para Particular (PedidosYa va como imagen completa)
     const tipoVentaIconHtml = isParticular
       ? `<span class="text-[12px] leading-none">🙋</span>`
       : "";
 
-    // ✅ Chip final de tipo venta:
-    // - PedidosYa: SOLO imagen, sin texto
-    // - Particular/otros: chip normal con icono + texto
- const tipoVentaChipHtml = isPedidosYa
+    const tipoVentaChipHtml = isPedidosYa
       ? `
         <span class="inline-flex h-7 w-[120px] rounded-full overflow-hidden
              bg-white shadow-sm ring-1 ring-black/5 border border-[#EA044E]">
-  <img
-    src="/icons/PedidosYa_Logo_1.png"
-    alt="PedidosYa"
-    class="  block h-[20px]  w-[110px] object-contain mx-auto my-1"
-  />
-</span>
-
+          <img
+            src="/icons/PedidosYa_Logo_1.png"
+            alt="PedidosYa"
+            class="block h-[20px] w-[110px] object-contain mx-auto my-1"
+          />
+        </span>
       `
       : `
         <span class="inline-flex items-center gap-2 rounded-full px-2.5 py-1 text-[11px] ${chipTipoVentaClassFinal}">
@@ -422,14 +429,15 @@ function pintarPedidosEnTabla(pedidos) {
         </span>
       `;
 
-
-
-    // Estado premium (sin puntito)
-    const estadoUpper = (p.estadoPedido || "").toUpperCase();
+    // ---------------------------------------------
+    // 4) Chip Estado (con PREPARADO)
+    // ---------------------------------------------
     let estadoClassFinal = "border shadow-sm font-extrabold uppercase tracking-wide ";
 
     if (estadoUpper === "PENDIENTE") {
       estadoClassFinal += "bg-amber-50 text-amber-800 border-amber-200 ring-1 ring-amber-100";
+    } else if (estadoUpper === "PREPARADO") {
+      estadoClassFinal += "bg-sky-50 text-sky-800 border-sky-200 ring-1 ring-sky-100";
     } else if (estadoUpper === "ENTREGADO") {
       estadoClassFinal += "bg-emerald-50 text-emerald-800 border-emerald-200 ring-1 ring-emerald-100";
     } else {
@@ -437,7 +445,7 @@ function pintarPedidosEnTabla(pedidos) {
     }
 
     // ---------------------------------------------
-    // 4) Campos calculados
+    // 5) Campos calculados
     // ---------------------------------------------
     const inicialCliente = p.cliente ? String(p.cliente).charAt(0).toUpperCase() : "?";
 
@@ -451,13 +459,46 @@ function pintarPedidosEnTabla(pedidos) {
          </span>`
       : `<span class="text-slate-300 text-[12px]">—</span>`;
 
+    // Pago editable solo en PENDIENTE o PREPARADO
+    const puedeEditarPago = (estadoUpper === "PENDIENTE" || estadoUpper === "PREPARADO");
+
+    const pagoHtml = puedeEditarPago
+      ? `
+        <button
+          type="button"
+          class="inline-flex items-center gap-2 rounded-full px-3 py-1
+                 border border-slate-200 bg-white
+                 text-[12px] font-extrabold text-slate-700
+                 hover:border-slate-300 hover:shadow-sm transition"
+          data-btn-pago
+          data-id="${p.idPedido}"
+          data-tipo="${p.tipoPago || ''}"
+          data-estado="${p.estadoPedido || ''}"
+          data-total="${p.totalPedido || 0}"
+          data-cliente="${p.cliente || ''}">
+          <span>${p.tipoPago || "Sin pago"}</span>
+        </button>
+      `
+      : `
+        <span
+          class="inline-flex items-center gap-2 rounded-full px-3 py-1
+                 border border-slate-200 bg-slate-50
+                 text-[12px] font-extrabold text-slate-400 cursor-not-allowed select-none"
+          title="No se puede editar el pago en este estado">
+          <span>${p.tipoPago || "Sin pago"}</span>
+        </span>
+      `;
+
+    // Acciones:
+    // PENDIENTE -> OK => PREPARADO
+    // PREPARADO -> OK => ENTREGADO
     const accionesHtml =
-      estadoUpper === "PENDIENTE"
+      (estadoUpper === "PENDIENTE" || estadoUpper === "PREPARADO")
         ? `
           <button
-            onclick="actualizarEstadoPedido(${p.idPedido}, 'ENTREGADO')"
+            onclick="actualizarEstadoPedido(${p.idPedido}, '${estadoUpper === "PENDIENTE" ? "PREPARADO" : "ENTREGADO"}')"
             class="flex h-7 w-7 items-center justify-center rounded-full border border-emerald-100 bg-emerald-50 text-emerald-600 text-[13px] font-bold hover:bg-emerald-100 hover:border-emerald-200 transition-colors"
-            title="Marcar como entregado">
+            title="${estadoUpper === "PENDIENTE" ? "Marcar como preparado" : "Marcar como entregado"}">
             ✓
           </button>
           <button
@@ -472,7 +513,7 @@ function pintarPedidosEnTabla(pedidos) {
     const totalFormateado = Number(p.totalPedido || 0).toLocaleString("es-AR");
 
     // ---------------------------------------------
-    // 5) Render fila
+    // 6) Render fila
     // ---------------------------------------------
     tr.innerHTML = `
       <td class="${tdBase} font-medium text-slate-800">
@@ -486,25 +527,14 @@ function pintarPedidosEnTabla(pedidos) {
         </div>
       </td>
 
-      <!-- ✅ Tipo venta (usa el chip final) -->
       <td class="${tdBase}">
-  <div class="flex items-center justify-start">
-    ${tipoVentaChipHtml}
-  </div>
-</td>
+        <div class="flex items-center justify-start">
+          ${tipoVentaChipHtml}
+        </div>
+      </td>
 
       <td class="${tdBase}">
-        <button
-          type="button"
-          class="inline-flex items-center gap-2 rounded-full px-3 py-1
-                 border border-slate-200 bg-white
-                 text-[12px] font-extrabold text-slate-700
-                 hover:border-slate-300 hover:shadow-sm transition"
-          data-btn-pago
-          data-id="${p.idPedido}"
-          data-tipo="${p.tipoPago || ''}">
-          <span>${p.tipoPago || "Sin pago"}</span>
-        </button>
+        ${pagoHtml}
       </td>
 
       <td class="${tdBase} text-[12px] text-slate-600">
@@ -548,7 +578,6 @@ function pintarPedidosEnTabla(pedidos) {
     tbody.appendChild(tr);
   });
 }
-
 
 
 
@@ -640,6 +669,8 @@ async function actualizarEstadoPedido(id, estado) {
     showToast(message, isErrorToast);
 
     await cargarPedidosPorEstado(estadoFiltro);
+    actualizarKPIsPedidos();
+
 
   } catch (e) {
     console.error(e);
@@ -671,7 +702,8 @@ function initModalCambioPago() {
 
   let pedidoSel = { id: null, total: 0, tipo: "", estado: "", cliente: "" };
 
-  const money = (n) => Number(n || 0).toLocaleString("es-AR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const money = (n) =>
+    Number(n || 0).toLocaleString("es-AR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   const toCents = (n) => Math.round(Number(n || 0) * 100);
 
   function setError(msg) {
@@ -738,9 +770,9 @@ function initModalCambioPago() {
 
     if (!id) return;
 
-    // Regla segura: solo pendientes (así no rompés caja/histórico)
-    if (estado && estado !== "PENDIENTE") {
-      showToast("Solo podés cambiar el pago si el pedido está PENDIENTE", true);
+    // ✅ Regla nueva: se puede en PENDIENTE o PREPARADO (después NO)
+    if (estado && estado !== "PENDIENTE" && estado !== "PREPARADO") {
+      showToast("Solo podés cambiar el pago si el pedido está PENDIENTE o PREPARADO", true);
       return;
     }
 
@@ -879,6 +911,7 @@ function initModalCambioPago() {
   });
 }
 
+
 // Llamada segura (si el modal no existe, no hace nada)
 document.addEventListener("DOMContentLoaded", initModalCambioPago);
 
@@ -932,6 +965,7 @@ function imprimirTicket() {
           width: 58mm;
           font-family: Arial, sans-serif;
           font-size: 11px;
+          font-weight: 800;
         }
 
         .ticket { width: ${PRINTABLE_MM}mm; }
@@ -944,9 +978,10 @@ function imprimirTicket() {
           height: auto;
           object-fit: contain;
           display: inline-block;
+          
         }
 
-        .titulo { text-align: center; font-weight: 700; margin: 0 0 2mm 0; font-size: 16px; }
+        .titulo { text-align: center; font-weight: 800; margin: 0 0 2mm 0; font-size: 16px; }
         .subtitulo { text-align: center; font-size: 10px; margin: 0 0 2mm 0; }
 
         .cliente { margin: 0 0 1mm 0; ont-size: 12px; }
@@ -1132,11 +1167,13 @@ async function crearPedido() {
 
     // limpiar formulario
     resetFormularioPedido();
+    actualizarKPIsPedidos();
+
 
     // volver al inicio después de un pequeño delay
     setTimeout(() => {
       window.location.reload();
-    }, 800);
+    }, 500);
 
   } catch (e) {
     console.error(e);
@@ -1220,6 +1257,69 @@ function aplicarSinStockDesdeError(mensaje) {
     helper.textContent = "Sin stock";
     filaCantidad.appendChild(helper);
   }
+}
+
+
+// ==============================
+// 📊 KPIs de estados (tiempo real)
+// ==============================
+let __kpiDebounce = null;
+let __kpiAbort = null;
+
+/** setea un KPI si existe */
+function __setKpiById(id, value) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = String(value ?? 0);
+}
+
+/** obtiene totalElements para un estado usando /pedido/paginado */
+async function __fetchTotalEstado(estado, signal) {
+  const url = `${window.API_BASE_URL}/pedido/paginado?estado=${encodeURIComponent(estado)}&page=0&size=1`;
+  const res = await fetch(url, { signal });
+  if (!res.ok) return 0;
+  const data = await res.json();
+  return typeof data.totalElements === "number" ? data.totalElements : 0;
+}
+
+/**
+ * Actualiza KPIs por estado.
+ * - Debounce para que si la llamás 10 veces seguidas no spamee requests.
+ * - Cancela la llamada anterior si todavía estaba en vuelo.
+ */
+export function actualizarKPIsPedidos({ debounceMs = 120 } = {}) {
+  clearTimeout(__kpiDebounce);
+
+  __kpiDebounce = setTimeout(async () => {
+    try {
+      // si no hay KPIs en el DOM, no hacemos nada
+      const hayKpis =
+        document.getElementById("kpi-pendientes") ||
+        document.getElementById("kpi-preparados") ||
+        document.getElementById("kpi-entregados") ||
+        document.getElementById("kpi-cancelados");
+
+      if (!hayKpis) return;
+
+      // abort previous
+      if (__kpiAbort) __kpiAbort.abort();
+      __kpiAbort = new AbortController();
+
+      const [pend, prep, entr, canc] = await Promise.all([
+        __fetchTotalEstado("PENDIENTE", __kpiAbort.signal),
+        __fetchTotalEstado("PREPARADO", __kpiAbort.signal),
+        __fetchTotalEstado("ENTREGADO", __kpiAbort.signal),
+        __fetchTotalEstado("CANCELADO", __kpiAbort.signal),
+      ]);
+
+      __setKpiById("kpi-pendientes", pend);
+      __setKpiById("kpi-preparados", prep);
+      __setKpiById("kpi-entregados", entr);
+      __setKpiById("kpi-cancelados", canc);
+    } catch (e) {
+      // AbortError = normal cuando se dispara otra actualización
+      if (e?.name !== "AbortError") console.warn("No se pudieron actualizar KPIs:", e);
+    }
+  }, debounceMs);
 }
 
 
