@@ -1,4 +1,4 @@
-const API_BASE = "http://localhost:8080";
+const API_BASE = window.API_BASE_URL;
 
 let _inited = false;
 let _data = [];
