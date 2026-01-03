@@ -111,7 +111,7 @@
     <span class="nav-ico-badge" aria-hidden="true">
       <span class="material-symbols-rounded nav-ico">timeline</span>
     </span>
-    <span>Resumen histórico</span>
+    <span>Acumulado a la fecha</span>
   </button>
 
   <button class="nav-item" data-section-btn="configuracion">
@@ -136,8 +136,8 @@
 <main class="flex-1 flex flex-col ml-64 bg-manchas-rojas">
 
       <!-- HEADER -->
-<header class=" h-16 font-extrabold tracking-tight text-slate-900 text-[20px] leading-tight flex items-center justify-between px-6 header-secciones  bg-transparent">
-        <div>
+<header class=" h-16 font-extrabold tracking-tight text-slate-900 text-[20px] leading-tight flex items-center justify-between header-secciones  bg-transparent px-12">
+  <div >
           <h2 class="text-lg font-semibold" id="titulo-seccion">Pedidos</h2>
           <p class="text-xs text-slate-500" id="subtitulo-seccion">
             Listado de pedidos del día
@@ -148,13 +148,13 @@
 
   <button
     onclick="localStorage.removeItem('bc_logueado'); window.location.href='login.html';"
-    class="px-2 py-1 text-[11px] border border-slate-300 rounded-md hover:bg-slate-50"
+    class="px-2 py-1 text-[11px] border border-slate-300 rounded-full hover:bg-slate-50"
   >
     Cerrar sesión
   </button>
 </div>
 
-      </header>
+</header>
 
      
 
@@ -167,13 +167,13 @@
 <!-- ============================== --> 
 <!-- 🟡 FECHA DEL TÍTULO ANIMADO    -->
 <!-- ============================== -->
-<div class="div-fecha mt-3 mb-10">
+<div class="div-fecha mt-3 mb-10 px-7">
   <h1 id="titulo-fecha" class="titulo-handwrite mb-1"></h1>
   <p class="text-xs text-slate-500 mb-4">Estás registrando pedidos para esta fecha.</p>
 </div>
 
 <!-- KPIs de estados (chiquitos) -->
-<div class=" grid grid-cols-1 sm:grid-cols-3 gap-3 div-kpis-pedidos">
+<div class=" grid grid-cols-1 sm:grid-cols-3 gap-3 div-kpis-pedidos px-7">
 
   <!-- PENDIENTES -->
   <div class="rounded-full  bg-transparent px-4 py-3 kpi-pendientes-p">
@@ -246,7 +246,7 @@
 
 
          <!-- Filtros -->
-<div class="flex flex-wrap items-center gap-3">
+<div class="flex flex-wrap items-center gap-3 px-7">
   
 
   <div class="flex items-center gap-2">
@@ -293,7 +293,7 @@
 
           <!-- Tabla -->
           <div class="rounded-2xl bg-transparent border-0 shadow-none overflow-visible">
-            <table class="table-fixed text-xs w-full border-separate border-spacing-y-3">
+            <table class="table-fixed text-xs w-full border-separate border-spacing-y-3 px-7">
                <colgroup>
     <col class="w-[240px]" />  <!-- Cliente -->
     <col class="w-[170px]" />  <!-- Tipo venta -->
@@ -1014,7 +1014,7 @@
 <div data-section="stock" class="space-y-5 hidden seccion">
 
   <!-- 🔹 VISTA STOCK NORMAL (LO QUE YA TENÍAS) -->
-  <div id="vista-stock-normal" class="space-y-5">
+  <div id="vista-stock-normal" class="space-y-5 px-7">
 
     <!-- 🔹 FORMULARIO PARA CARGAR PRODUCCIÓN -->
     <div id="seccion-produccion" class="p-4 space-y-4 formulario-produccion-css">
@@ -1031,11 +1031,11 @@
           <input
             id="fecha-produccion"
             type="date"
-            class="border rounded-md px-2 py-1 text-xs bg-slate-50 border-slate-300
+            class="border rounded-full px-2 py-1 text-xs bg-slate-50 border-slate-300
                    focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-slate-900"
           />
           <button type="button"
-                  class="px-3 py-1.5 rounded-md border border-slate-300 text-slate-700 hover:bg-slate-50">
+                  class="px-3 py-1.5 rounded-full border border-slate-300 text-slate-700 hover:bg-slate-50">
             Hoy
           </button>
         </div>
@@ -1387,7 +1387,7 @@
          ring-1 ring-black/5
          transition-all duration-300
          hover:shadow-[0_16px_40px_-22px_rgba(2,6,23,0.45)]
-         hover:border-slate-300/70"
+         hover:border-slate-300/70 "
 >
   <!-- Header premium -->
   <div
@@ -1449,12 +1449,6 @@
     </table>
   </div>
 
-  <!-- Footer sutil (opcional, queda pro) -->
-  <div class="px-5 py-3 border-t border-slate-200/60 bg-gradient-to-r from-white via-slate-50/40 to-white">
-    <p class="text-[11px] text-slate-500">
-      Consejo: rojo ≤ 50, amarillo ≤ 100, verde &gt; 100.
-    </p>
-  </div>
 </div>
 
 </div>
@@ -1464,7 +1458,7 @@
 <div data-section="caja" class=" p-6 space-y-6 seccion">
 
  <!-- TÍTULO DE LA CAJA -->
-<div class="w-full flex flex-col items-start gap-1 text-left">
+<div class="w-full flex flex-col items-start gap-1 text-left ">
   <h2 id="caja-dia-actual"
       class="text-[20px] font-semibold text-slate-700 tracking-tight caja-h2">
   </h2>
@@ -1485,7 +1479,7 @@
       <input 
         type="date" 
         id="caja-fecha"
-        class="h-9 w-44 border border-slate-200 rounded-lg px-2.5 text-xs bg-slate-50
+        class="h-9 w-44 border border-slate-200 rounded-full px-2.5 text-xs bg-slate-50
                focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 outline-none">
 
       <button
@@ -1515,7 +1509,7 @@
 
 
   <!-- KPIs -->
-<div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-4 ">
 
   <!-- INGRESOS TOTALES -->
   <div class="group relative overflow-hidden rounded-[26px] p-5
@@ -1735,56 +1729,299 @@
 
 
 
-<button 
+
+
+<div class="flex flex-col sm:flex-row sm:items-center gap-3 mt-4 pt-4 pb-4">
+
+  <button 
   id="btn-pedidosya"
-  class="relative group inline-flex items-center gap-2
-         text-sm font-extrabold rounded-full
-         bg-white text-red-600 border-2 border-red-600
-         px-5 py-3 shadow-sm
-         transition-all duration-200
+  class="relative group inline-flex items-center justify-center
+         rounded-full bg-trasparent
+         p-3  transition-all duration-200
          hover:scale-[1.03]
          hover:shadow-[0_12px_30px_-12px_rgba(239,68,68,0.55)]
-         active:scale-[1.01]">
+         active:scale-[1.01]"
+  aria-label="PedidosYa">
 
-  <!-- Logo -->
   <img
-    src="/icons/pedidosya.png"
-    alt="PedidosYa"
-    class="h-7 w-7 object-contain drop-shadow-sm
+    src="/icons/PedidosYa_Logo_1.png"
+    alt=""
+    class="h-8 w-25 object-contain drop-shadow-sm
            transition-transform duration-200 group-hover:scale-110"
   />
-
-  <span>PedidosYa</span>
 </button>
 
+  <!-- Toggle + Inputs inline -->
+  <div class="flex flex-wrap items-center gap-3">
 
+    <!-- Toggle -->
+    <label class="inline-flex items-center gap-2 cursor-pointer select-none">
+      <input id="py-toggle" type="checkbox" class="sr-only peer">
+      <span class="relative inline-flex h-6 w-11 items-center rounded-full bg-slate-200 transition peer-checked:bg-rose-500">
+        <span class="inline-block h-5 w-5 translate-x-1 rounded-full bg-white transition peer-checked:translate-x-5"></span>
+      </span>
+      <span class="text-xs font-extrabold text-slate-700">Cargar liquidación</span>
+    </label>
 
+    <!-- Inputs (aparecen cuando toggle ON) -->
+    <div id="py-inline" class="hidden items-center gap-2">
+      <input id="py-fecha" type="date"
+             class="h-8 rounded-full border border-slate-200 bg-white px-3 text-sm font-semibold text-slate-700
+                    focus:outline-none focus:ring-4 focus:ring-rose-100" />
 
-  <!-- BALANCE FINAL -->
-<div
-  class="relative overflow-hidden p-6 rounded-2xl shadow-md border bg-white 
-         flex flex-col items-center gap-1
-         before:absolute before:inset-0 before:bg-gradient-to-br before:from-green-50 before:to-slate-50 before:opacity-30"
->
-    <!-- Icono circular -->
-    <div class="w-12 h-12 flex items-center justify-center rounded-full 
-                bg-green-100 text-green-600 shadow-inner">
-        💰
+      <input id="py-monto" type="number" inputmode="numeric" min="0" step="1"
+             placeholder="Monto"
+             class="h-8 w-36 rounded-full border border-slate-200 bg-white px-3 text-sm font-semibold text-slate-700
+                    focus:outline-none focus:ring-4 focus:ring-rose-100" />
+
+      <span class="text-[11px] text-slate-400">Enter y botón</span>
     </div>
 
-    <p class="text-[14px] text-slate-600 font-semibold tracking-wide mt-1">
-        Balance final del día
-    </p>
-
-    <h2 id="caja-balance"
-        class="text-5xl font-extrabold mt-1 transition-all duration-300">
-        $0
-    </h2>
-
-    <p class="text-[12px] text-slate-400 mt-1">
-        Ingresos – Egresos
-    </p>
+  </div>
 </div>
+
+
+<!-- ====== BLOQUE 3 TABLAS (pegable dentro de tu sección actual) ====== -->
+<div class="mt-6 space-y-4">
+
+  <!-- Header mini -->
+  <div class="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+    <div>
+      <h3 class="text-base sm:text-lg font-extrabold text-slate-900">Detalle de caja</h3>
+      <p class="text-xs text-slate-500">Listados por canal/medio. (Por defecto: solo ENTREGADOS)</p>
+    </div>
+  </div>
+
+  <!-- Grid 3 tablas -->
+  <div class="grid grid-cols-1 xl:grid-cols-3 gap-4">
+
+    <!-- =======================
+         EFECTIVO (Particular)
+    ======================= -->
+    <div class="group relative overflow-hidden rounded-2xl bg-white div-caja-ef">
+      <div class="pointer-events-none absolute -top-20 -right-24 h-48 w-48 rounded-full bg-emerald-200/40 blur-3xl opacity-0 transition-opacity duration-300 group-hover:opacity-100"></div>
+
+      <div class="p-4 border-b border-slate-100">
+        <div class="flex items-start justify-between gap-3">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="inline-flex h-2.5 w-2.5 rounded-full bg-emerald-500"></span>
+              <h4 class="text-sm font-extrabold text-slate-900">Particular · Efectivo</h4>
+            </div>
+            <p class="mt-1 text-xs text-slate-500">Pedidos particulares pagados en efectivo.</p>
+          </div>
+
+          <div class="text-right">
+            <div class="text-[11px] font-extrabold text-slate-500">TOTAL</div>
+            <div id="total-efectivo" class="text-lg font-black tracking-tight text-emerald-600">$0</div>
+            <div class="text-[11px] text-slate-500">
+              <span id="count-efectivo" class="font-extrabold">0</span> pedidos
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="p-0">
+        <div class="max-h-[420px] overflow-auto rounded-xl border border-slate-100">
+          <table class="w-full text-left">
+            <thead class="sticky top-0 bg-white/95 backdrop-blur border-b border-slate-100">
+              <tr class="text-[11px] uppercase tracking-wide text-slate-500">
+                <th class="px-3 py-2 font-extrabold">Hora</th>
+                <th class="px-3 py-2 font-extrabold">Cliente</th>
+                <th class="px-3 py-2 font-extrabold text-right">Total</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-efectivo" class="text-[13px]">
+              <tr>
+                <td colspan="4" class="px-3 py-10 text-center text-slate-400">
+                  Sin pedidos en efectivo.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+      
+      </div>
+    </div>
+
+    <!-- =======================
+         TRANSFERENCIA (Particular)
+    ======================= -->
+    <div class="group relative overflow-hidden rounded-2xl bg-white div-caja-tf">
+      <div class="pointer-events-none absolute -top-20 -right-24 h-48 w-48 rounded-full bg-sky-200/40 blur-3xl opacity-0 transition-opacity duration-300 group-hover:opacity-100"></div>
+
+      <div class="p-4 border-b border-slate-100">
+        <div class="flex items-start justify-between gap-3">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="inline-flex h-2.5 w-2.5 rounded-full bg-sky-500"></span>
+              <h4 class="text-sm font-extrabold text-slate-900">Particular · Transferencia</h4>
+            </div>
+            <p class="mt-1 text-xs text-slate-500">Pedidos particulares pagados por transferencia.</p>
+          </div>
+
+          <div class="text-right">
+            <div class="text-[11px] font-extrabold text-slate-500">TOTAL</div>
+            <div id="total-transferencia" class="text-lg font-black tracking-tight text-sky-600">$0</div>
+            <div class="text-[11px] text-slate-500">
+              <span id="count-transferencia" class="font-extrabold">0</span> pedidos
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="p-0">
+        <div class="max-h-[420px] overflow-auto rounded-xl border border-slate-100">
+          <table class="w-full text-left">
+            <thead class="sticky top-0 bg-white/95 backdrop-blur border-b border-slate-100">
+              <tr class="text-[11px] uppercase tracking-wide text-slate-500">
+                <th class="px-3 py-2 font-extrabold">Hora</th>
+                <th class="px-3 py-2 font-extrabold">Cliente</th>
+                <th class="px-3 py-2 font-extrabold text-right">Total</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-transferencia" class="text-[13px]">
+              <tr>
+                <td colspan="4" class="px-3 py-10 text-center text-slate-400">
+                  Sin pedidos por transferencia.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- =======================
+         PEDIDOS YA
+    ======================= -->
+    <div class="group relative overflow-hidden rounded-2xl bg-white div-caja-py">
+      <div class="pointer-events-none absolute -top-20 -right-24 h-48 w-48 rounded-full bg-rose-200/40 blur-3xl opacity-0 transition-opacity duration-300 group-hover:opacity-100"></div>
+
+      <div class="p-4 border-b border-slate-100">
+        <div class="flex items-start justify-between gap-3">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="inline-flex h-2.5 w-2.5 rounded-full bg-rose-500"></span>
+              <h4 class="text-sm font-extrabold text-slate-900">PedidosYa</h4>
+            </div>
+            <p class="mt-1 text-xs text-slate-500">Pedidos del canal PedidosYa (N° plataforma).</p>
+          </div>
+
+          <div class="text-right">
+            <div class="text-[11px] font-extrabold text-slate-500">TOTAL</div>
+            <div id="total-pedidosya" class="text-lg font-black tracking-tight text-rose-600">$0</div>
+            <div class="text-[11px] text-slate-500">
+              <span id="count-pedidosya" class="font-extrabold">0</span> pedidos
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="p-0">
+        <div class="max-h-[420px] overflow-auto rounded-xl border border-slate-100">
+          <table class="w-full text-left">
+            <thead class="sticky top-0 bg-white/95 backdrop-blur border-b border-slate-100">
+              <tr class="text-[11px] uppercase tracking-wide text-slate-500">
+                <th class="px-3 py-2 font-extrabold">N° Plataforma</th>
+                <th class="px-3 py-2 font-extrabold">Cliente</th>
+                <th class="px-3 py-2 font-extrabold text-right">Total</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-pedidosya" class="text-[13px]">
+              <tr>
+                <td colspan="4" class="px-3 py-10 text-center text-slate-400">
+                  Sin pedidos de PedidosYa.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+
+<!-- BALANCE FINAL (Premium / Banco) -->
+<div
+  class="relative overflow-hidden p-7 
+          flex flex-col items-center gap-1
+         
+         "
+>
+
+  <!-- Icono circular premium -->
+  <div
+    class="relative z-10 w-12 h-12 flex items-center justify-center rounded-full
+           bg-gradient-to-br from-emerald-50 to-white
+           border border-emerald-200/60
+           shadow-[inset_0_1px_0_rgba(255,255,255,0.9),0_10px_25px_-18px_rgba(16,185,129,0.6)]"
+  >
+    <!-- SVG dinero -->
+    <svg
+      class="h-6 w-6 text-emerald-700"
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
+    >
+      <!-- billete -->
+      <path
+        d="M4 7.5C4 6.67 4.67 6 5.5 6H18.5C19.33 6 20 6.67 20 7.5V16.5C20 17.33 19.33 18 18.5 18H5.5C4.67 18 4 17.33 4 16.5V7.5Z"
+        stroke="currentColor"
+        stroke-width="1.8"
+        stroke-linejoin="round"
+      />
+      <!-- borde interno -->
+      <path
+        d="M6.2 8.6C7.1 8.6 7.8 7.9 7.8 7M17.8 8.6C16.9 8.6 16.2 7.9 16.2 7M6.2 15.4C7.1 15.4 7.8 16.1 7.8 17M17.8 15.4C16.9 15.4 16.2 16.1 16.2 17"
+        stroke="currentColor"
+        stroke-width="1.8"
+        stroke-linecap="round"
+      />
+      <!-- moneda / centro -->
+      <path
+        d="M12 9.2C13.55 9.2 14.8 10.45 14.8 12C14.8 13.55 13.55 14.8 12 14.8C10.45 14.8 9.2 13.55 9.2 12C9.2 10.45 10.45 9.2 12 9.2Z"
+        stroke="currentColor"
+        stroke-width="1.8"
+      />
+      <path
+        d="M11.1 12.9C11.35 13.25 11.75 13.4 12.2 13.4C12.85 13.4 13.3 13.05 13.3 12.55C13.3 12.1 12.98 11.82 12.35 11.7L11.95 11.62C11.35 11.5 11.05 11.25 11.05 10.8C11.05 10.3 11.5 9.95 12.15 9.95C12.55 9.95 12.9 10.08 13.15 10.35"
+        stroke="currentColor"
+        stroke-width="1.6"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+    </svg>
+  </div>
+
+  <p class="relative z-10 text-[13px] text-slate-600 font-semibold tracking-wide mt-2">
+    Balance final del día
+  </p>
+
+  <!-- Número premium -->
+  <h2
+    id="caja-balance"
+    class="relative z-10 text-5xl font-extrabold mt-1 tracking-tight
+           bg-gradient-to-b from-slate-900 to-slate-700 bg-clip-text text-transparent
+           drop-shadow-[0_1px_0_rgba(255,255,255,0.75)]
+           transition-all duration-300"
+  >
+    $0
+  </h2>
+
+  <p class="relative z-10 text-[12px] text-slate-500 mt-1">
+    Ingresos <span class="text-slate-400">–</span> Egresos
+  </p>
+
+  <!-- micro-detalle decorativo -->
+  <div class="relative z-10 mt-3 h-[1px] w-24 bg-gradient-to-r from-transparent via-emerald-200/70 to-transparent"></div>
+</div>
+
 
 
   <!-- BOTÓN CERRAR CAJA -->
@@ -1792,7 +2029,7 @@
     <button
   id="btn-cerrar-caja"
   class="relative group inline-flex items-center justify-center gap-2
-         rounded-2xl
+         rounded-full
          px-6 py-3
          text-sm font-semibold tracking-tight
          text-white
@@ -1826,6 +2063,7 @@
 
 
 
+
 </div>
 
 
@@ -1844,7 +2082,7 @@
       <div class="flex items-center gap-2">
         <span class="text-[11px] text-slate-500 hidden md:inline">Ver por día</span>
         <input type="date" id="estadistica-fecha"
-          class="border border-slate-200 rounded-md px-2 py-1 text-xs text-slate-700
+          class="border border-slate-200 rounded-full px-4 py-1 text-xs text-slate-700
                  focus:outline-none focus:ring-1 focus:ring-rose-500 focus:border-rose-500" />
 
         <button id="btn-estadistica-fecha"
@@ -1861,7 +2099,7 @@
         <span class="text-[11px] text-slate-500 hidden md:inline">Ver por mes</span>
 
         <input type="month" id="estadistica-mes"
-          class="border border-slate-200 rounded-md px-2 py-1 text-xs text-slate-700
+          class="border border-slate-200 rounded-full px-2 py-1 text-xs text-slate-700
                  focus:outline-none focus:ring-1 focus:ring-slate-800 focus:border-slate-800" />
 
         <button id="btn-estadistica-mes"
@@ -2210,233 +2448,396 @@
 🟦 SECCIÓN: RESUMEN HISTÓRICO
 ========================== -->
 <div data-section="resumen-historico" class="hidden">
-  <!-- Header -->
-  <div class="mb-4 flex items-start justify-between gap-3">
-<p class="text-sm text-slate-500">
-  Vista consolidada del rendimiento del negocio a lo largo del tiempo.
-</p>
+
+  <!-- Filtro por mes -->
+<div class="mb-4 px-6 py-6">
+  <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
+    <div class="flex items-end gap-3">
+      <div class="min-w-[220px]">
+        <label for="filtro-mes" class="block text-xs font-extrabold text-slate-700 mb-1">
+          Buscar por mes
+        </label>
+        <input
+          id="filtro-mes"
+          type="month"
+          class="w-full h-8 px-3 rounded-full border border-slate-200 bg-white text-sm font-semibold text-slate-900
+                 focus:outline-none focus:ring-4 focus:ring-slate-200"
+        />
+      </div>
+
+      <button
+        id="btn-filtrar-mes"
+        type="button"
+        class="ml-auto
+    inline-flex items-center gap-2
+    rounded-full
+    bg-gradient-to-r from-rose-600 to-rose-500
+    px-4 py-2
+    text-xs font-semibold tracking-tight text-white
+    shadow-sm shadow-rose-500/40
+    hover:shadow-md hover:shadow-rose-500/60
+    hover:-translate-y-0.5
+    active:translate-y-0 active:scale-[0.98]
+    focus-visible:outline-none
+    focus-visible:ring-2 focus-visible:ring-rose-500/80
+    focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900
+    transition-all"
+      >
+        Ver mes
+      </button>
+
+      <button
+        id="btn-limpiar-mes"
+        type="button"
+        class="ml-auto
+    inline-flex items-center gap-2
+    rounded-full
+    bg-gradient-to-r from-rose-600 to-rose-500
+    px-4 py-2
+    text-xs font-semibold tracking-tight text-white
+    shadow-sm shadow-rose-500/40
+    hover:shadow-md hover:shadow-rose-500/60
+    hover:-translate-y-0.5
+    active:translate-y-0 active:scale-[0.98]
+    focus-visible:outline-none
+    focus-visible:ring-2 focus-visible:ring-rose-500/80
+    focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900
+    transition-all"
+      >
+        Ver total
+      </button>
+    </div>
+
+    <span class="text-[11px] text-slate-400">
+      * Si no elegís mes, se muestra el histórico (últimos 12 meses).
+    </span>
+  </div>
+</div>
 
 
-    <!-- Estado / actualizar -->
-    <div class="flex items-center gap-2">
-      <span id="resumen-historico-estado"
-            class="text-xs text-slate-500 bg-slate-100 border border-slate-200 px-2 py-1 rounded-lg">
-        Listo para cargar
+  <!-- NUEVO LAYOUT -->
+  <div class="grid grid-cols-1 xl:grid-cols-12 gap-4 px-7">
+
+    
+   <!-- =========================
+     ARRIBA: 3 KPIs GRANDES (estilo Estadísticas)
+     ========================= -->
+<div class="xl:col-span-12 grid grid-cols-1 md:grid-cols-3 gap-4 ">
+
+  <!-- TOTAL INGRESOS -->
+  <div class="relative overflow-hidden rounded-2xl bg-gradient-to-b from-red-600 to-red-800 border border-white/10 shadow-sm">
+    <div class="absolute inset-0 pointer-events-none opacity-70"
+         style="background: radial-gradient(circle at 80% 30%, rgba(255,255,255,.18), transparent 55%);"></div>
+
+    <div class="relative p-5">
+      <div class="flex items-start justify-between gap-3">
+        <div class="min-w-0">
+          <p class="text-sm font-extrabold text-white/95 truncate">Ingresos acumulados</p>
+          <p class="text-xs text-white/70 truncate">Efectivo + Transferencia + PedidosYa</p>
+        </div>
+
+        <!-- Mini gráfico -->
+        <svg class="w-20 h-10 opacity-75" viewBox="0 0 120 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M5 45 C20 40, 25 28, 38 30 C52 32, 55 18, 70 22 C85 26, 90 10, 115 16"
+                stroke="rgba(255,255,255,.85)" stroke-width="4" stroke-linecap="round"/>
+          <path d="M5 55 L5 45 C20 40, 25 28, 38 30 C52 32, 55 18, 70 22 C85 26, 90 10, 115 16 L115 55 Z"
+                fill="rgba(255,255,255,.10)"/>
+        </svg>
+      </div>
+
+      <p id="kpi-acum-total" class="mt-3 text-3xl font-extrabold tracking-tight text-white">
+        $0
+      </p>
+
+      <p class="mt-1 text-xs text-white/70">Bruto</p>
+    </div>
+  </div>
+
+  <!-- EGRESOS -->
+  <div class="relative overflow-hidden rounded-2xl bg-gradient-to-b from-red-600 to-red-800 border border-white/10 shadow-sm">
+    <div class="absolute inset-0 pointer-events-none opacity-70"
+         style="background: radial-gradient(circle at 80% 30%, rgba(255,255,255,.18), transparent 55%);"></div>
+
+    <div class="relative p-5">
+      <div class="flex items-start justify-between gap-3">
+        <div class="min-w-0">
+          <p class="text-sm font-extrabold text-white/95 truncate">Egresos acumulados</p>
+          <p class="text-xs text-white/70 truncate">Mermas + egresos (cajas cerradas)</p>
+        </div>
+
+        <!-- Mini gráfico -->
+        <svg class="w-20 h-10 opacity-75" viewBox="0 0 120 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M5 20 C25 26, 35 40, 50 38 C65 36, 70 52, 85 48 C98 45, 105 55, 115 50"
+                stroke="rgba(255,255,255,.85)" stroke-width="4" stroke-linecap="round"/>
+          <path d="M5 55 L5 20 C25 26, 35 40, 50 38 C65 36, 70 52, 85 48 C98 45, 105 55, 115 50 L115 55 Z"
+                fill="rgba(255,255,255,.10)"/>
+        </svg>
+      </div>
+
+      <p id="kpi-acum-egresos" class="mt-3 text-3xl font-extrabold tracking-tight text-white">
+        $0
+      </p>
+
+      <p class="mt-1 text-xs text-white/70">Costo</p>
+    </div>
+  </div>
+
+  <!-- BALANCE -->
+  <div class="relative overflow-hidden rounded-2xl bg-gradient-to-b from-red-600 to-red-800 border border-white/10 shadow-sm">
+    <div class="absolute inset-0 pointer-events-none opacity-70"
+         style="background: radial-gradient(circle at 80% 30%, rgba(255,255,255,.18), transparent 55%);"></div>
+
+    <div class="relative p-5">
+      <div class="flex items-start justify-between gap-3">
+        <div class="min-w-0">
+          <p class="text-sm font-extrabold text-white/95 truncate">Balance neto</p>
+          <p class="text-xs text-white/70 truncate">Ingresos − egresos</p>
+        </div>
+
+        <!-- Mini gráfico -->
+        <svg class="w-20 h-10 opacity-75" viewBox="0 0 120 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M5 40 C22 44, 32 28, 46 30 C60 32, 68 18, 82 22 C95 26, 104 16, 115 18"
+                stroke="rgba(255,255,255,.85)" stroke-width="4" stroke-linecap="round"/>
+          <path d="M5 55 L5 40 C22 44, 32 28, 46 30 C60 32, 68 18, 82 22 C95 26, 104 16, 115 18 L115 55 Z"
+                fill="rgba(255,255,255,.10)"/>
+        </svg>
+      </div>
+
+      <p id="kpi-acum-balance" class="mt-3 text-3xl font-extrabold tracking-tight text-white">
+        $0
+      </p>
+
+      <p class="mt-1 text-xs text-white/70">Neto</p>
+    </div>
+  </div>
+
+</div>
+
+
+    <!-- =========================
+         ABAJO IZQ: 3 KPIs CHICOS
+         ========================= -->
+ <div class="xl:col-span-4 space-y-3 ">
+
+  <!-- EFECTIVO -->
+  <div class="rounded-xl  bg-white px-4 py-3 kpi-pedidosya-ef">
+    <div class="flex items-start justify-between gap-3">
+      <div class="min-w-0">
+        <div class="flex items-center gap-3">
+          <!-- Logo (izquierda) -->
+          <div class="h-9 w-9 grid place-items-center rounded-xl bg-slate-50 border border-slate-200">
+            <img
+              id="img-kpi-efectivo"
+              src=""
+              alt="Efectivo"
+              class="h-7 w-7 object-contain"
+            />
+          </div>
+
+          <!-- Títulos -->
+          <div class="min-w-0">
+            <p class="text-xs font-extrabold text-slate-800 truncate">Efectivo acumulado</p>
+            <p class="text-[11px] text-slate-400 truncate">Cajas cerradas</p>
+          </div>
+        </div>
+      </div>
+
+      <span class="text-[10px] font-extrabold px-2 py-1 rounded-full bg-slate-100 text-slate-600 border border-slate-200">
+        EFECTIVO
       </span>
     </div>
+
+    <p id="kpi-acum-efectivo" class="mt-3 text-[22px] font-extrabold tracking-tight text-slate-900">
+      $0
+    </p>
+
+    <div class="mt-3 h-[2px] w-full rounded-full bg-slate-100"></div>
   </div>
 
-<!-- KPIs (Resumen histórico) — estilo premium + animaciones (mantiene IDs) -->
-<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-6 gap-4">
-
-    <!-- ABAJO: TOTAL (grande) -->
-  <div class="xl:col-span-3">
-    <!-- Total (VERDE premium) -->
-    <div class="group relative overflow-hidden rounded-2xl border border-emerald-200 bg-white p-4 shadow-sm
-                transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:border-emerald-300">
-      <div class="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-        <div class="absolute -left-1/2 top-0 h-full w-1/2 bg-gradient-to-r from-transparent via-white/50 to-transparent
-                    skew-x-[-20deg] animate-[shine_1.2s_ease-in-out_1]"></div>
-      </div>
-      <div class="pointer-events-none absolute -top-24 -right-24 h-44 w-44 rounded-full bg-emerald-300/30 blur-3xl
-                  opacity-0 transition-opacity duration-300 group-hover:opacity-100"></div>
-
-      <div class="flex items-start justify-between gap-3">
+  <!-- TRANSFERENCIA -->
+  <div class="rounded-xl  bg-white px-4 py-3 kpi-pedidosya-mp">
+    <div class="flex items-start justify-between gap-3">
+      <div class="min-w-0">
         <div class="flex items-center gap-3">
-          <div class="relative grid h-10 w-10 place-items-center rounded-2xl border border-emerald-200 bg-emerald-50">
-            <span class="text-base transition-transform duration-300 group-hover:scale-110">📈</span>
-            <span class="absolute inset-0 rounded-2xl ring-0 ring-emerald-200/60 transition-all duration-300 group-hover:ring-4"></span>
-          </div>
-
-          <div class="min-w-0">
-            <p class="text-xs font-semibold text-slate-600 truncate">Total acumulado</p>
-            <p class="text-[11px] text-slate-400 truncate">Efectivo + Transferencia + PedidosYa</p>
-          </div>
-        </div>
-
-        <span class="text-[10px] font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-1 rounded-full">
-          TOTAL
-        </span>
-      </div>
-
-      <p id="kpi-acum-total"
-         class="mt-3 text-[26px] leading-none font-extrabold tracking-tight
-                bg-gradient-to-r from-emerald-700 via-green-600 to-emerald-500 text-transparent bg-clip-text
-                transition-transform duration-300 group-hover:scale-[1.04] origin-left">
-        $0
-      </p>
-
-      <div class="mt-3 h-[3px] w-full rounded-full bg-emerald-50 overflow-hidden">
-        <div class="h-full w-1/2 rounded-full bg-gradient-to-r from-emerald-600 to-green-500
-                    transition-all duration-500 group-hover:w-full"></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ABAJO: EGRESOS (grande) -->
-  <div class="xl:col-span-3">
-    <!-- Egresos (ROJO premium) -->
-    <div class="group relative overflow-hidden rounded-2xl border border-rose-200 bg-white p-4 shadow-sm
-                transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:border-rose-300">
-      <div class="pointer-events-none absolute -top-24 -right-24 h-44 w-44 rounded-full bg-rose-300/25 blur-3xl
-                  opacity-0 transition-opacity duration-300 group-hover:opacity-100"></div>
-
-      <div class="flex items-start justify-between gap-3">
-        <div class="flex items-center gap-3">
-          <div class="relative grid h-10 w-10 place-items-center rounded-2xl border border-rose-200 bg-rose-50">
-            <span class="text-base transition-transform duration-300 group-hover:scale-110">📉</span>
-            <span class="absolute inset-0 rounded-2xl ring-0 ring-rose-200/60 transition-all duration-300 group-hover:ring-4"></span>
-          </div>
-
-          <div class="min-w-0">
-            <p class="text-xs font-semibold text-slate-600 truncate">Egresos acumulados</p>
-            <p class="text-[11px] text-slate-400 truncate">Mermas + egresos (cajas cerradas)</p>
-          </div>
-        </div>
-
-        <span class="text-[10px] font-semibold text-rose-700 bg-rose-50 border border-rose-200 px-2 py-1 rounded-full">
-          EGRESO
-        </span>
-      </div>
-
-      <p id="kpi-acum-egresos"
-         class="mt-3 text-[26px] leading-none font-extrabold tracking-tight
-                bg-gradient-to-r from-red-700 via-rose-600 to-rose-500 text-transparent bg-clip-text
-                transition-transform duration-300 group-hover:scale-[1.04] origin-left">
-        $0
-      </p>
-
-      <div class="mt-3 h-[3px] w-full rounded-full bg-rose-50 overflow-hidden">
-        <div class="h-full w-1/2 rounded-full bg-gradient-to-r from-red-600 to-rose-500
-                    transition-all duration-500 group-hover:w-full"></div>
-      </div>
-    </div>
-  </div>
-  <!-- ARRIBA: EFECTIVO -->
-  <div class="xl:col-span-2">
-    <!-- Efectivo -->
-    <div class="group relative overflow-hidden rounded-2xl border border-slate-200 bg-white p-4 shadow-sm
-                transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:border-slate-300">
-      <div class="pointer-events-none absolute -top-24 -right-24 h-44 w-44 rounded-full bg-slate-200/40 blur-3xl
-                  opacity-0 transition-opacity duration-300 group-hover:opacity-100"></div>
-
-      <div class="flex items-start justify-between gap-3">
-        <div class="flex items-center gap-3">
-          <div class="relative grid h-10 w-10 place-items-center rounded-2xl border border-slate-200 bg-slate-50">
-            <span class="text-base transition-transform duration-300 group-hover:scale-110">💵</span>
-            <span class="absolute inset-0 rounded-2xl ring-0 ring-slate-200/60 transition-all duration-300 group-hover:ring-4"></span>
-          </div>
-
-          <div class="min-w-0">
-            <p class="text-xs font-semibold text-slate-600 truncate">Efectivo acumulado</p>
-            <p class="text-[11px] text-slate-400 truncate">Cajas cerradas</p>
-          </div>
-        </div>
-
-      
-      </div>
-
-      <p id="kpi-acum-efectivo"
-         class="mt-3 text-[26px] leading-none font-extrabold tracking-tight text-slate-900
-                transition-transform duration-300 group-hover:scale-[1.03] origin-left">
-        $0
-      </p>
-
-      <div class="mt-3 h-[3px] w-full rounded-full bg-slate-100 overflow-hidden">
-        <div class="h-full w-1/2 rounded-full bg-slate-300 transition-all duration-500 group-hover:w-full"></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ARRIBA: TRANSFERENCIA -->
-  <div class="xl:col-span-2">
-    <!-- Transferencias -->
-    <div class="group relative overflow-hidden rounded-2xl border border-slate-200 bg-white p-4 shadow-sm
-                transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:border-slate-300">
-      <div class="pointer-events-none absolute -top-24 -right-24 h-44 w-44 rounded-full bg-indigo-200/30 blur-3xl
-                  opacity-0 transition-opacity duration-300 group-hover:opacity-100"></div>
-
-      <div class="flex items-start justify-between gap-3">
-        <div class="flex items-center gap-3">
-          <div class="relative grid h-10 w-10 place-items-center rounded-2xl border border-indigo-200 bg-indigo-50">
-           <img
-  src="https://upload.wikimedia.org/wikipedia/commons/9/98/Mercado_Pago.svg"
-  alt="Mercado Pago"
-  class="h-6 w-6 object-contain transition-transform duration-300 group-hover:scale-110"
-/>
-
-            <span class="absolute inset-0 rounded-2xl ring-0 ring-indigo-200/60 transition-all duration-300 group-hover:ring-4"></span>
-          </div>
-          <div class="min-w-0">
-            <p class="text-xs font-semibold text-slate-600 truncate">Transferencia acumulada</p>
-            <p class="text-[11px] text-slate-400 truncate">Cajas cerradas</p>
-          </div>
-        </div>
-
-      </div>
-
-      <p id="kpi-acum-transferencia"
-         class="mt-3 text-[26px] leading-none font-extrabold tracking-tight text-slate-900
-                transition-transform duration-300 group-hover:scale-[1.03] origin-left">
-        $0
-      </p>
-
-      <div class="mt-3 h-[3px] w-full rounded-full bg-slate-100 overflow-hidden">
-        <div class="h-full w-1/2 rounded-full bg-indigo-300 transition-all duration-500 group-hover:w-full"></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ARRIBA: PEDIDOSYA -->
-  <div class="xl:col-span-2">
-    <!-- PedidosYa -->
-    <div class="group relative overflow-hidden rounded-2xl border border-slate-200 bg-white p-4 shadow-sm
-                transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:border-slate-300">
-      <div class="pointer-events-none absolute -top-24 -right-24 h-44 w-44 rounded-full bg-emerald-200/25 blur-3xl
-                  opacity-0 transition-opacity duration-300 group-hover:opacity-100"></div>
-
-      <div class="flex items-start justify-between gap-3">
-        <div class="flex items-center gap-3">
-          <div class="relative grid h-10 w-10 place-items-center rounded-2xl border border-emerald-200 bg-emerald-50">
+          <!-- Logo (izquierda) -->
+          <div class="h-11 w-11 grid place-items-center ">
             <img
-  src="https://upload.wikimedia.org/wikipedia/commons/6/60/PedidosYa_logo.svg"
-  alt="PedidosYa"
-  class="h-6 w-6 object-contain transition-transform duration-300 group-hover:scale-110"
-/>
-
-
-            <span class="absolute inset-0 rounded-2xl ring-0 ring-emerald-200/60 transition-all duration-300 group-hover:ring-4"></span>
+              id="img-kpi-transferencia"
+              src="./icons/mercado-pago-seeklogo.png"
+              alt="Mercado Pago"
+              class="h-9 w-9 object-contain"
+            />
           </div>
+
+          <!-- Títulos -->
           <div class="min-w-0">
-            <p class="text-xs font-semibold text-slate-600 truncate">PedidosYa acumulado</p>
+            <p class="text-xs font-extrabold text-slate-800 truncate">Transferencia acumulada</p>
             <p class="text-[11px] text-slate-400 truncate">Cajas cerradas</p>
           </div>
         </div>
       </div>
 
-      <p id="kpi-acum-pedidosya"
-         class="mt-3 text-[26px] leading-none font-extrabold tracking-tight text-slate-900
-                transition-transform duration-300 group-hover:scale-[1.03] origin-left">
-        $0
-      </p>
-
-      <div class="mt-3 h-[3px] w-full rounded-full bg-slate-100 overflow-hidden">
-        <div class="h-full w-1/2 rounded-full bg-emerald-300 transition-all duration-500 group-hover:w-full"></div>
-      </div>
+      <span class="text-[10px] font-extrabold px-2 py-1 rounded-full bg-slate-100 text-slate-600 ">
+        MERCADO PAGO
+      </span>
     </div>
+
+    <p id="kpi-acum-transferencia" class="mt-3 text-[22px] font-extrabold tracking-tight text-slate-900">
+      $0
+    </p>
+
+    <div class="mt-3 h-[2px] w-full rounded-full bg-slate-100"></div>
   </div>
 
+  <!-- PEDIDOSYA -->
+  <div class="rounded-xl  bg-white px-4 py-3 kpi-pedidosya-resumen">
+    <div class="flex items-start justify-between gap-3">
+      <div class="min-w-0">
+        <div class="flex items-center gap-3">
+          <!-- Logo (izquierda) -->
+          <div class="h-11 w-11 grid place-items-center">
+            <img
+              id="img-kpi-pedidosya"
+              src="./icons/pedidos-ya-seeklogo.png"
+              alt="PedidosYa"
+              class="h-9 w-9 object-contain"
+            />
+          </div>
+
+          <!-- Títulos -->
+          <div class="min-w-0">
+            <p class="text-xs font-extrabold text-slate-800 truncate">PedidosYa acumulado</p>
+            <p class="text-[11px] text-slate-400 truncate">Cajas cerradas</p>
+          </div>
+        </div>
+      </div>
+
+      <span class="text-[10px] font-extrabold px-2 py-1 rounded-full bg-slate-100 text-slate-600 border border-slate-200">
+        PEDIDOS YA
+      </span>
+    </div>
+
+    <p id="kpi-acum-pedidosya" class="mt-3 text-[22px] font-extrabold tracking-tight text-slate-900">
+      $0
+    </p>
+
+    <div class="mt-3 h-[2px] w-full rounded-full bg-slate-100"></div>
+  </div>
+
+  <!-- TABLA LIQUIDACIONES PEDIDOSYA (angosta, mismo ancho que el KPI) -->
+<div class="w-full rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+  <!-- Header -->
+  <div class="flex items-center justify-between gap-3 px-4 py-3 border-b border-slate-200">
+    <div class="min-w-0">
+      <div class="text-sm font-extrabold text-slate-900 truncate">Liquidaciones PedidosYa</div>
+      <div class="text-[11px] text-slate-500">Pagos acreditados (caja real)</div>
+    </div>
+
+  </div>
+
+  <!-- Tabla -->
+  <div class="w-full overflow-x-auto">
+    <table class="w-full text-left">
+      <thead class="bg-slate-50">
+        <tr>
+          <th class="px-4 py-2 text-[11px] font-extrabold text-slate-600">Fecha</th>
+          <th class="px-4 py-2 text-[11px] font-extrabold text-slate-600 text-right">Monto</th>
+        </tr>
+      </thead>
+
+      <tbody id="tbodyLiquidacionesPya" class="divide-y divide-slate-200">
+        <!-- fila ejemplo -->
+        <tr class="hover:bg-slate-50/70 transition-colors">
+          <td class="px-4 py-3">
+            <div class="text-[13px] font-extrabold text-slate-900">2025-12-12</div>
+          </td>
+          <td class="px-4 py-3 text-right">
+            <div class="text-[13px] font-extrabold text-slate-900">$120.000,00</div>
+          </td>
+        </tr>
+
+        <!-- Empty state (si no hay datos) -->
+        <!--
+        <tr>
+          <td colspan="2" class="px-4 py-10 text-center text-sm text-slate-400">
+            No hay liquidaciones cargadas para este período.
+          </td>
+        </tr>
+        -->
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Footer (opcional) -->
+  <div class="flex items-center justify-between gap-3 px-4 py-3 border-t border-slate-200 bg-white">
+    <div class="text-[11px] text-slate-500">
+      Mostrando <span id="pyaCantFilas" class="font-extrabold text-slate-700">0</span> liquidaciones
+    </div>
+
+    <!-- Botón opcional -->
+    <button id="btnVerTodasLiquidaciones"
+            class="text-[11px] font-extrabold px-3 py-1.5 rounded-full border border-slate-200 text-slate-700 hover:bg-slate-50">
+      Ver todas
+    </button>
+  </div>
+</div>
 
 
 </div>
 
 
-<!-- Animación "shine" (Tailwind arbitrary animation). Si no tenés keyframes, agregá este CSS 1 vez en tu CSS global:
-@keyframes shine { from { transform: translateX(-120%) skewX(-20deg); } to { transform: translateX(220%) skewX(-20deg); } }
--->
 
+   <!-- =========================
+     ABAJO DER: GRÁFICO GRANDE
+     ========================= -->
+<div class="xl:col-span-8">
+  <div class="group relative overflow-hidden bg-transparent p-4 transition-all duration-300">
+    <div class="pointer-events-none absolute -top-24 -right-24 h-44 w-44 rounded-full bg-slate-200/30 blur-3xl
+                opacity-0 transition-opacity duration-300 group-hover:opacity-100"></div>
 
+    <div class="flex items-start justify-between gap-3">
+      <div class="min-w-0">
+        <p class="text-sm font-extrabold text-slate-900 truncate">Gráfico mensual por año</p>
+        <p class="text-[11px] text-slate-400 truncate">Balance por mes (últimos 12 meses)</p>
+      </div>
+
+      <!-- ✅ Acciones derecha: filtro año + actualizar -->
+      <div class="flex items-center gap-2">
+        <!-- Filtro por año (mini) -->
+        <div class="flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1.5 shadow-sm">
+          <span class="text-[11px] font-extrabold text-slate-600">Año</span>
+          <input
+            id="filtro-anio-grafico"
+            type="number"
+            inputmode="numeric"
+            min="2020"
+            max="2099"
+            placeholder="2026"
+            class="w-16 bg-transparent text-[12px] font-extrabold text-slate-900 outline-none placeholder:text-slate-300"
+          />
+        </div>
+
+        <!-- botón refrescar -->
+        <button
+          id="btn-refresh-grafico-mensual"
+          type="button"
+          class="text-xs font-extrabold px-3 py-1.5 rounded-full bg-slate-900 text-white hover:bg-slate-800 active:scale-[0.98] transition"
+        >
+          Actualizar
+        </button>
+      </div>
+    </div>
+
+    <div class="mt-4 h-[340px]">
+      <canvas id="chart-balance-mensual" class="w-full h-full"></canvas>
+    </div>
+  </div>
 </div>
+
+  </div>
+</div>
+
+
 
 
 <!-- SECCION HORARIOS EMPLEADOS -->
@@ -3321,29 +3722,6 @@
   </div>
 </div>
 
-<!-- Modal PedidosYa -->
-<div id="modal-pedidosya" class="hidden fixed inset-0 bg-black/40 flex items-center justify-center">
-  <div class="bg-white rounded-xl p-5 w-80 shadow-lg">
-
-    <h2 class="text-sm font-semibold text-slate-800 mb-3">Registrar liquidación PedidosYa</h2>
-
-    <label class="text-xs text-slate-600">Fecha recibida:</label>
-    <input id="py-fecha" type="date" class="w-full border rounded-full px-2 py-1 mt-1 mb-3 text-xs">
-
-    <label class="text-xs text-slate-600">Monto recibido:</label>
-    <input id="py-monto" type="number" min="0" class="w-full border rounded-full px-2 py-1 mt-1 mb-4 text-xs">
-
-    <div class="flex justify-end gap-2">
-      <button id="py-cancelar" class="text-xs px-3 py-1 rounded-full bg-slate-300 hover:bg-slate-400">
-        Cancelar
-      </button>
-      <button id="py-guardar" class="text-xs px-3 py-1 rounded-full bg-purple-600 text-white hover:bg-red-500">
-        Guardar
-      </button>
-    </div>
-
-  </div>
-</div>
 
 <!-- Modal tipo de pago -->
 <div id="modalPago" class="fixed inset-0 hidden items-center justify-center bg-black/40 z-[9999]">

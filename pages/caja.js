@@ -1,12 +1,16 @@
 // ============================================================================
-// ✅ CAJA.JS (adaptado a backend)
+// ✅ CAJA.JS (limpio + tablas de pedidos)
 // - Fecha "hoy" local (sin UTC / sin toISOString)
 // - Bloqueo coherente (basado en backend):
 //    * Futuro: no permite operar
 //    * Pasado: solo lectura
 //    * Hoy: habilitado si estado != CERRADA
 // - Al cerrar: bloquea PedidosYa + Egresos + Cerrar caja (por estado backend)
-// - Al refrescar: mantiene estado (ya no usa localStorage)
+// - Al refrescar: mantiene estado (no usa localStorage)
+// - ✅ NUEVO: consume /api/caja/pedidos?estado=ENTREGADO&fecha=... y pinta 3 tablas:
+//    * Particular EFECTIVO
+//    * Particular TRANSFERENCIA
+//    * PEDIDOS_YA
 // ============================================================================
 
 // -------------------------------
@@ -25,6 +29,39 @@ function setDisabled(el, disabled) {
   el.disabled = disabled;
   el.classList.toggle("opacity-40", disabled);
   el.classList.toggle("cursor-not-allowed", disabled);
+}
+
+// -------------------------------
+// Helpers formato
+// -------------------------------
+function fmtMoneyAR(n) {
+  const v = Number(n ?? 0);
+  return `$${v.toLocaleString("es-AR", { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
+}
+function fmtHora(hhmmss) {
+  if (!hhmmss) return "—";
+  // "21:13:00" -> "21:13"
+  return String(hhmmss).slice(0, 5);
+}
+function fmtPedidoId(id) {
+  if (id == null) return "—";
+  const s = String(id);
+  // #0007
+  return `#${s.padStart(4, "0")}`;
+}
+function setText(id, value) {
+  const el = $(id);
+  if (el) el.textContent = value;
+}
+
+// -------------------------------
+// Fetch helpers (maneja 204 No Content)
+// -------------------------------
+async function fetchJsonOrEmpty(url, options) {
+  const r = await fetch(url, options);
+  if (r.status === 204) return null;
+  if (!r.ok) throw new Error(`HTTP ${r.status}`);
+  return await r.json();
 }
 
 // -------------------------------
@@ -65,9 +102,8 @@ async function fetchCajaMeta(fechaISO) {
 
   // 1) Endpoint recomendado: meta/estado
   try {
-    const r1 = await fetch(`${base}/api/caja/meta?fecha=${fechaISO}`);
-    if (r1.ok) {
-      const d = await r1.json();
+    const d = await fetchJsonOrEmpty(`${base}/api/caja/meta?fecha=${fechaISO}`);
+    if (d) {
       return {
         estado: d?.estado ?? null,
         cerradaEn: d?.cerradaEn ?? d?.cerradoEn ?? null
@@ -77,9 +113,8 @@ async function fetchCajaMeta(fechaISO) {
 
   // 2) Fallback: intentar leer "estado" desde ingresos (si lo devolvés ahí)
   try {
-    const r2 = await fetch(`${base}/api/caja/ingresos?fecha=${fechaISO}`);
-    if (r2.ok) {
-      const d = await r2.json();
+    const d = await fetchJsonOrEmpty(`${base}/api/caja/ingresos?fecha=${fechaISO}`);
+    if (d) {
       return {
         estado: d?.estado ?? null,
         cerradaEn: d?.cerradaEn ?? d?.cerradoEn ?? null
@@ -87,7 +122,6 @@ async function fetchCajaMeta(fechaISO) {
     }
   } catch (_) {}
 
-  // 3) Si no hay forma de saber el estado, devolvemos null
   return { estado: null, cerradaEn: null };
 }
 
@@ -127,7 +161,7 @@ async function aplicarEstadoUI(fechaISO) {
   const hoy = esHoy(fechaISO);
   const { estado } = await getCajaMeta(fechaISO);
 
-  // PASADO: solo lectura (independiente de estado)
+  // PASADO: solo lectura
   if (!hoy) {
     setDisabled(btnCerrar, true);
     setDisabled(btnEgreso, true);
@@ -175,19 +209,18 @@ async function aplicarEstadoUI(fechaISO) {
 function animarNumero(elemento, valorFinal, duracion = 800) {
   if (!elemento) return;
 
-  let inicio = 0;
-  let rango = valorFinal - inicio;
+  const inicio = 0;
+  const rango = valorFinal - inicio;
   let tiempoInicial = null;
 
   function animar(timestamp) {
     if (!tiempoInicial) tiempoInicial = timestamp;
-    let progreso = timestamp - tiempoInicial;
+    const progreso = timestamp - tiempoInicial;
 
-    let porcentaje = Math.min(progreso / duracion, 1);
-    let valorActual = Math.floor(porcentaje * rango);
+    const porcentaje = Math.min(progreso / duracion, 1);
+    const valorActual = Math.floor(porcentaje * rango);
 
-    elemento.textContent = `$${valorActual.toLocaleString("es-AR")}`;
-
+    elemento.textContent = fmtMoneyAR(valorActual);
     if (porcentaje < 1) requestAnimationFrame(animar);
   }
 
@@ -225,7 +258,6 @@ function toastOk(msg) {
     style: { background: "#10B981" }
   }).showToast();
 }
-
 function toastError(msg) {
   if (typeof Toastify === "undefined") return alert(msg);
   Toastify({
@@ -236,7 +268,6 @@ function toastError(msg) {
     style: { background: "#EF4444" }
   }).showToast();
 }
-
 function mostrarToastCajaCerrada() {
   const t = $("toast-caja");
   if (!t) return;
@@ -258,9 +289,7 @@ on("btn-ver-caja", "click", cargarCajaPorFecha);
 async function cargarCajaPorFecha() {
   const fecha = $("caja-fecha")?.value;
 
-  if ($("caja-modo")) {
-    $("caja-modo").textContent = "Mostrando resultados filtrados por fecha seleccionada";
-  }
+  setText("caja-modo", "Mostrando resultados filtrados por fecha seleccionada");
 
   if (!fecha) {
     toastError("Seleccioná una fecha para buscar la caja.");
@@ -273,15 +302,18 @@ async function cargarCajaPorFecha() {
     return;
   }
 
-  if ($("caja-dia-actual")) {
-    $("caja-dia-actual").textContent = `Caja del día: ${formatearFechaVisual(fecha)}`;
-  }
+  setText("caja-dia-actual", `Caja del día: ${formatearFechaVisual(fecha)}`);
 
   // refrescar estado desde backend cada vez que cambias de fecha
   await getCajaMeta(fecha, { force: true });
   await aplicarEstadoUI(fecha);
 
-  await Promise.allSettled([cargarIngresos(fecha), cargarEgresos(fecha), cargarBalance(fecha)]);
+  await Promise.allSettled([
+    cargarIngresos(fecha),
+    cargarEgresos(fecha),
+    cargarBalance(fecha),
+    cargarPedidosParaTablas(fecha)
+  ]);
 }
 
 // ============================================================================
@@ -289,9 +321,7 @@ async function cargarCajaPorFecha() {
 // ============================================================================
 function pintarFechaActual() {
   const hoyISO = obtenerFechaHoy();
-  if ($("caja-dia-actual")) {
-    $("caja-dia-actual").textContent = `Caja del día: ${formatearFechaVisual(hoyISO)}`;
-  }
+  setText("caja-dia-actual", `Caja del día: ${formatearFechaVisual(hoyISO)}`);
 }
 
 // ============================================================================
@@ -299,33 +329,21 @@ function pintarFechaActual() {
 // ============================================================================
 async function cargarIngresos(fecha) {
   try {
-    const response = await fetch(`${window.API_BASE_URL}/api/caja/ingresos?fecha=${fecha}`);
-    if (!response.ok) throw new Error("Error consultando ingresos");
+    const base = window.API_BASE_URL;
+    const data = await fetchJsonOrEmpty(`${base}/api/caja/ingresos?fecha=${fecha}`);
+    if (!data) return;
 
-    const data = await response.json();
-
-    // ✅ con los cambios nuevos, "transferencia" YA debería incluir PedidosYa
     const ingresosTotales = Number(data.ingresosTotales ?? 0);
     const efectivo = Number(data.ingresosEfectivo ?? 0);
-    const transferencia = Number(
-      data.ingresosTransferencia ?? data.ingresosTransferencias ?? 0
-    );
+    const transferencia = Number(data.ingresosTransferencia ?? data.ingresosTransferencias ?? 0);
     const egresosTotales = Number(data.totalEgresos ?? 0);
 
-    if ($("kpi-ingresos-totales")) {
-      $("kpi-ingresos-totales").textContent = `$${ingresosTotales.toLocaleString("es-AR")}`;
-    }
-    if ($("kpi-ingresos-efectivo")) {
-      $("kpi-ingresos-efectivo").textContent = `$${efectivo.toLocaleString("es-AR")}`;
-    }
-    if ($("kpi-ingresos-transferencias")) {
-      $("kpi-ingresos-transferencias").textContent = `$${transferencia.toLocaleString("es-AR")}`;
-    }
-    if ($("kpi-mermas")) {
-      $("kpi-mermas").textContent = `$${egresosTotales.toLocaleString("es-AR")}`;
-    }
+    setText("kpi-ingresos-totales", fmtMoneyAR(ingresosTotales));
+    setText("kpi-ingresos-efectivo", fmtMoneyAR(efectivo));
+    setText("kpi-ingresos-transferencias", fmtMoneyAR(transferencia));
+    setText("kpi-mermas", fmtMoneyAR(egresosTotales));
 
-    // Si tu backend devuelve estado acá, cachealo (así no hace falta otro fetch)
+    // Si tu backend devuelve estado acá, cachealo
     if (data?.estado) {
       CAJA_META_CACHE.set(fecha, {
         estado: data.estado,
@@ -342,17 +360,17 @@ async function cargarIngresos(fecha) {
 // ============================================================================
 async function cargarEgresos(fecha) {
   try {
-    const response = await fetch(`${window.API_BASE_URL}/api/caja/egresos?fecha=${fecha}`);
-    if (!response.ok) throw new Error("Error consultando egresos");
-
-    const data = await response.json();
-
+    const base = window.API_BASE_URL;
+    const data = await fetchJsonOrEmpty(`${base}/api/caja/egresos?fecha=${fecha}`);
     const tbody = $("tabla-egresos-body");
     if (!tbody) return;
 
     tbody.innerHTML = "";
 
-    (data || []).forEach((e) => {
+    const lista = Array.isArray(data) ? data : [];
+    if (lista.length === 0) return;
+
+    lista.forEach((e) => {
       const monto = Number(e.monto ?? 0);
 
       const tr = document.createElement("tr");
@@ -361,17 +379,17 @@ async function cargarEgresos(fecha) {
       tr.innerHTML = `
         <td class="px-4 py-3 text-slate-700 flex items-center gap-2">
           <span class="text-red-500 text-sm">💸</span>
-          <span>${e.descripcion ?? ""}</span>
+          <span>${String(e.descripcion ?? "")}</span>
         </td>
 
         <td class="px-4 py-3 text-right">
           <span class="text-red-600 font-semibold bg-red-50 px-2 py-1 rounded-lg">
-            -$${monto.toLocaleString("es-AR")}
+            -${fmtMoneyAR(monto)}
           </span>
         </td>
 
         <td class="px-4 py-3 text-right text-slate-500">
-          ${e.hora ?? ""}
+          ${String(e.hora ?? "")}
         </td>
       `;
 
@@ -387,17 +405,171 @@ async function cargarEgresos(fecha) {
 // ============================================================================
 async function cargarBalance(fecha) {
   try {
-    const response = await fetch(`${window.API_BASE_URL}/api/caja/balance?fecha=${fecha}`);
-    if (!response.ok) throw new Error("Error obteniendo balance");
+    const base = window.API_BASE_URL;
+    const data = await fetchJsonOrEmpty(`${base}/api/caja/balance?fecha=${fecha}`);
+    if (!data) return;
 
-    const data = await response.json();
     const balance = Number(data.balance ?? data.balanceFinal ?? 0);
-
-    const balanceEl = $("caja-balance");
-    animarNumero(balanceEl, balance);
+    animarNumero($("caja-balance"), balance);
     pintarColorBalance(balance);
-  } catch (error) {
-    console.error("Error cargando balance:", error);
+  } catch (err) {
+    console.error("Error cargando balance:", err);
+  }
+}
+
+// ============================================================================
+// ⭐ PEDIDOS → 3 TABLAS (EFECTIVO / TRANSFERENCIA / PEDIDOS_YA)
+// ============================================================================
+function vaciarTablaConEmptyState(tbody, cols, msg) {
+  if (!tbody) return;
+  tbody.innerHTML = "";
+
+  const tr = document.createElement("tr");
+  const td = document.createElement("td");
+  td.colSpan = cols;
+  td.className = "px-3 py-10 text-center text-slate-400";
+  td.textContent = msg;
+
+  tr.appendChild(td);
+  tbody.appendChild(tr);
+}
+
+function renderTablaPedidos(tbodyId, rows, { tipo }) {
+  const tbody = $(tbodyId);
+  if (!tbody) return;
+
+  // ✅ Ahora todas tus tablas tienen 3 columnas
+  const cols = 3;
+  tbody.innerHTML = "";
+
+  if (!rows || rows.length === 0) {
+    const msg =
+      tipo === "pedidosya"
+        ? "Sin pedidos de PedidosYa."
+        : tipo === "transferencia"
+          ? "Sin pedidos por transferencia."
+          : "Sin pedidos en efectivo.";
+    vaciarTablaConEmptyState(tbody, cols, msg);
+    return;
+  }
+
+  rows.forEach((p) => {
+    const tr = document.createElement("tr");
+    tr.className = "border-b border-slate-50 hover:bg-slate-50 transition-colors";
+
+    // ✅ EFECTIVO / TRANSFERENCIA: Hora + Cliente + Total
+    if (tipo !== "pedidosya") {
+      const tdHora = document.createElement("td");
+      tdHora.className = "px-3 py-2 font-extrabold text-slate-700";
+      tdHora.textContent = fmtHora(p.horaEntrega);
+
+      const tdCliente = document.createElement("td");
+      tdCliente.className = "px-3 py-2 text-slate-700 truncate max-w-[220px]";
+      tdCliente.textContent = p.cliente ?? "";
+
+      const tdTotal = document.createElement("td");
+      tdTotal.className = "px-3 py-2 text-right font-black text-slate-900";
+      tdTotal.textContent = fmtMoneyAR(p.totalPedido);
+
+      tr.appendChild(tdHora);
+      tr.appendChild(tdCliente);
+      tr.appendChild(tdTotal);
+    }
+
+    // ✅ PEDIDOS_YA: N° plataforma + Cliente + Total (sin hora)
+    else {
+      const tdNro = document.createElement("td");
+      tdNro.className = "px-3 py-2 font-extrabold text-slate-700";
+      tdNro.textContent = p.numeroPedidoPedidosYa ?? "—";
+
+      const tdCliente = document.createElement("td");
+      tdCliente.className = "px-3 py-2 text-slate-700 truncate max-w-[220px]";
+      tdCliente.textContent = p.cliente ?? "";
+
+      const tdTotal = document.createElement("td");
+      tdTotal.className = "px-3 py-2 text-right font-black text-slate-900";
+      tdTotal.textContent = fmtMoneyAR(p.totalPedido);
+
+      tr.appendChild(tdNro);
+      tr.appendChild(tdCliente);
+      tr.appendChild(tdTotal);
+    }
+
+    tbody.appendChild(tr);
+  });
+}
+
+
+function sumarTotal(rows) {
+  return (rows || []).reduce((acc, p) => acc + Number(p?.totalPedido ?? 0), 0);
+}
+
+async function cargarPedidosParaTablas(fecha) {
+  // IDs usados en tu HTML de tablas:
+  // tbody-efectivo, tbody-transferencia, tbody-pedidosya
+  // total-efectivo, count-efectivo, total-transferencia, count-transferencia,
+  // total-pedidosya, count-pedidosya, total-listado-global, count-global
+
+  try {
+    const base = window.API_BASE_URL;
+    const url = `${base}/api/caja/pedidos?estado=ENTREGADO&fecha=${fecha}&page=0&size=500`;
+    const data = await fetchJsonOrEmpty(url);
+
+    const pedidos = Array.isArray(data?.content) ? data.content : [];
+    // normalizamos por las dudas
+    const norm = pedidos.map((p) => ({
+      idPedido: p.idPedido ?? null,
+      cliente: p.cliente ?? "",
+      tipoVenta: p.tipoVenta ?? "",
+      tipoPago: p.tipoPago ?? "",
+      numeroPedidoPedidosYa: p.numeroPedidoPedidosYa ?? null,
+      horaEntrega: p.horaEntrega ?? null,
+      totalPedido: Number(p.totalPedido ?? 0),
+      estadoPedido: p.estadoPedido ?? ""
+    }));
+
+    const efectivo = norm.filter((p) => p.tipoVenta === "PARTICULAR" && p.tipoPago === "EFECTIVO");
+    const transferencia = norm.filter(
+      (p) => p.tipoVenta === "PARTICULAR" && p.tipoPago === "TRANSFERENCIA"
+    );
+    const pedidosya = norm.filter((p) => p.tipoVenta === "PEDIDOS_YA");
+
+    renderTablaPedidos("tbody-efectivo", efectivo, { tipo: "efectivo" });
+    renderTablaPedidos("tbody-transferencia", transferencia, { tipo: "transferencia" });
+    renderTablaPedidos("tbody-pedidosya", pedidosya, { tipo: "pedidosya" });
+
+    const tEfe = sumarTotal(efectivo);
+    const tTra = sumarTotal(transferencia);
+    const tPy = sumarTotal(pedidosya);
+    const tGlobal = tEfe + tTra + tPy;
+
+    setText("total-efectivo", fmtMoneyAR(tEfe));
+    setText("count-efectivo", String(efectivo.length));
+
+    setText("total-transferencia", fmtMoneyAR(tTra));
+    setText("count-transferencia", String(transferencia.length));
+
+    setText("total-pedidosya", fmtMoneyAR(tPy));
+    setText("count-pedidosya", String(pedidosya.length));
+
+    setText("total-listado-global", fmtMoneyAR(tGlobal));
+    setText("count-global", String(norm.length));
+  } catch (err) {
+    console.error("Error cargando pedidos para tablas:", err);
+
+    // fallback visual si falla
+    renderTablaPedidos("tbody-efectivo", [], { tipo: "efectivo" });
+    renderTablaPedidos("tbody-transferencia", [], { tipo: "transferencia" });
+    renderTablaPedidos("tbody-pedidosya", [], { tipo: "pedidosya" });
+
+    setText("total-efectivo", "$0");
+    setText("count-efectivo", "0");
+    setText("total-transferencia", "$0");
+    setText("count-transferencia", "0");
+    setText("total-pedidosya", "$0");
+    setText("count-pedidosya", "0");
+    setText("total-listado-global", "$0");
+    setText("count-global", "0");
   }
 }
 
@@ -450,92 +622,224 @@ async function registrarEgreso() {
   const payload = { descripcion, monto, fecha };
 
   try {
-    const response = await fetch(`${window.API_BASE_URL}/api/caja/registrar`, {
+    const base = window.API_BASE_URL;
+    await fetchJsonOrEmpty(`${base}/api/caja/registrar`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload)
     });
 
-    if (!response.ok) throw new Error();
-
     cerrarModalEgreso();
-
-    await Promise.allSettled([cargarEgresos(fecha), cargarBalance(fecha)]);
+    await Promise.allSettled([cargarEgresos(fecha), cargarBalance(fecha), cargarIngresos(fecha)]);
     toastOk("Egreso registrado");
-  } catch (err) {
+  } catch (_) {
     toastError("No se pudo registrar el egreso");
   }
 }
 
 // ============================================================================
-// ⭐ MODAL PEDIDOS YA
+// ⭐ PEDIDOS YA (INLINE PRO, SIN MODAL)
+// - Botón cambia texto según toggle
+// - Spinner + bloqueo mientras guarda
+// - Enter para guardar desde monto
 // ============================================================================
-on("btn-pedidosya", "click", async () => {
-  const fechaVista = getFechaVista();
 
-  if (esFechaFutura(fechaVista)) return toastError("No podés operar una fecha futura.");
-  if (!esHoy(fechaVista)) return toastError("Solo podés cargar PedidosYa en el día de hoy.");
+function setPyInlineVisible(visible) {
+  const wrap = $("py-inline");
+  const fecha = $("py-fecha");
+  const monto = $("py-monto");
 
-  await getCajaMeta(fechaVista, { force: true });
-  if (await estaCerradaBackend(fechaVista)) return toastError("La caja de hoy está cerrada.");
+  if (!wrap || !fecha || !monto) return;
 
-  const pyFecha = $("py-fecha");
-  if (pyFecha && !pyFecha.value) pyFecha.value = fechaVista;
+  wrap.classList.toggle("hidden", !visible);
+  wrap.classList.toggle("inline-flex", visible);
 
-  $("modal-pedidosya")?.classList.remove("hidden");
-});
+  fecha.disabled = !visible;
+  monto.disabled = !visible;
 
-on("py-cancelar", "click", cerrarModalPY);
-
-function cerrarModalPY() {
-  $("modal-pedidosya")?.classList.add("hidden");
-  if ($("py-fecha")) $("py-fecha").value = "";
-  if ($("py-monto")) $("py-monto").value = "";
+  if (visible) {
+    if (!fecha.value) fecha.value = getFechaVista();
+    setTimeout(() => monto.focus(), 0);
+  }
 }
 
-on("py-guardar", "click", registrarPedidosYa);
+function setPyButtonMode(mode) {
+  // mode: "idle" | "edit" | "saving"
+  const btn = $("btn-pedidosya");
+  const label = $("py-btn-label");
+  const spinner = $("py-btn-spinner");
+  const toggle = $("py-toggle");
+  const fecha = $("py-fecha");
+  const monto = $("py-monto");
 
-async function registrarPedidosYa() {
-  const fechaVista = getFechaVista();
+  if (!btn || !label || !spinner) return;
 
-  if (esFechaFutura(fechaVista)) return toastError("No podés operar una fecha futura.");
-  if (!esHoy(fechaVista)) return toastError("Solo podés cargar PedidosYa en el día de hoy.");
+  if (mode === "idle") {
+    btn.disabled = false;
+    spinner.classList.add("hidden");
+    label.classList.remove("hidden");
+    label.textContent = "PedidosYa";
+    btn.classList.remove("bg-rose-600", "text-white", "border-rose-600");
+    btn.classList.add("bg-white", "text-rose-600", "border-rose-200");
+    btn.classList.add("hover:bg-rose-50");
+  }
+
+  if (mode === "edit") {
+    btn.disabled = false;
+    spinner.classList.add("hidden");
+    label.classList.remove("hidden");
+    label.textContent = "Guardar PedidosYa";
+    btn.classList.remove("bg-white", "text-rose-600", "border-rose-200");
+    btn.classList.add("bg-rose-600", "text-white", "border-rose-600");
+    btn.classList.remove("hover:bg-rose-50");
+    btn.classList.add("hover:opacity-95");
+  }
+
+  if (mode === "saving") {
+    btn.disabled = true;
+    label.classList.add("hidden");
+    spinner.classList.remove("hidden");
+    spinner.classList.add("inline-flex");
+
+    // bloquear inputs mientras guarda
+    if (toggle) toggle.disabled = true;
+    if (fecha) fecha.disabled = true;
+    if (monto) monto.disabled = true;
+  }
+}
+
+function unlockPyInputs() {
+  const toggle = $("py-toggle");
+  const fecha = $("py-fecha");
+  const monto = $("py-monto");
+
+  if (toggle) toggle.disabled = false;
+
+  // si el toggle sigue ON, inputs quedan habilitados
+  if (toggle?.checked) {
+    if (fecha) fecha.disabled = false;
+    if (monto) monto.disabled = false;
+  } else {
+    if (fecha) fecha.disabled = true;
+    if (monto) monto.disabled = true;
+  }
+}
+
+async function validarPuedeOperarPY(fechaVista) {
+  if (esFechaFutura(fechaVista)) {
+    toastError("No podés operar una fecha futura.");
+    return false;
+  }
+  if (!esHoy(fechaVista)) {
+    toastError("Solo podés cargar PedidosYa en el día de hoy.");
+    return false;
+  }
 
   await getCajaMeta(fechaVista, { force: true });
-  if (await estaCerradaBackend(fechaVista)) return toastError("La caja de hoy está cerrada.");
+  if (await estaCerradaBackend(fechaVista)) {
+    toastError("La caja de hoy está cerrada.");
+    return false;
+  }
+  return true;
+}
+
+async function registrarPedidosYaInline() {
+  const fechaVista = getFechaVista();
+  if (!(await validarPuedeOperarPY(fechaVista))) return;
 
   const fecha = $("py-fecha")?.value;
   const monto = Number($("py-monto")?.value ?? 0);
 
   if (!fecha || monto <= 0) {
-    toastError("Completá la fecha y el monto");
+    toastError("Completá fecha y monto.");
     return;
   }
-
   if (esFechaFutura(fecha)) {
     toastError("No podés cargar PedidosYa en una fecha futura.");
     return;
   }
 
-  const payload = { fecha, monto };
+  setPyButtonMode("saving");
 
   try {
-    const response = await fetch(`${window.API_BASE_URL}/api/caja/registrar-py`, {
+    const base = window.API_BASE_URL;
+    await fetchJsonOrEmpty(`${base}/api/caja/registrar-py`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload)
+      body: JSON.stringify({ fecha, monto }),
     });
 
-    if (!response.ok) throw new Error();
-
-    cerrarModalPY();
     toastOk("PedidosYa registrado");
 
-    await Promise.allSettled([cargarIngresos(fecha), cargarBalance(fecha)]);
-  } catch (err) {
+    // reset UI
+    const toggle = $("py-toggle");
+    if (toggle) toggle.checked = false;
+    setPyInlineVisible(false);
+    if ($("py-monto")) $("py-monto").value = "";
+
+    // refrescar KPIs / balance / tablas
+    await Promise.allSettled([
+      cargarIngresos(fechaVista),
+      cargarBalance(fechaVista),
+      cargarPedidosParaTablas(fechaVista),
+    ]);
+
+    setPyButtonMode("idle");
+    unlockPyInputs();
+  } catch (e) {
+    console.error(e);
     toastError("No se pudo registrar PedidosYa");
+    // volver al modo edit (porque el toggle seguía ON)
+    setPyButtonMode("edit");
+    unlockPyInputs();
   }
 }
+
+// Toggle ON/OFF
+on("py-toggle", "change", async (ev) => {
+  const checked = ev.target.checked;
+  const fechaVista = getFechaVista();
+
+  if (checked && !(await validarPuedeOperarPY(fechaVista))) {
+    ev.target.checked = false;
+    setPyInlineVisible(false);
+    setPyButtonMode("idle");
+    return;
+  }
+
+  setPyInlineVisible(checked);
+  setPyButtonMode(checked ? "edit" : "idle");
+});
+
+// Botón: si toggle OFF -> activar edición; si ON -> guardar
+on("btn-pedidosya", "click", async () => {
+  const toggle = $("py-toggle");
+  if (!toggle) return;
+
+  const fechaVista = getFechaVista();
+
+  if (!toggle.checked) {
+    if (!(await validarPuedeOperarPY(fechaVista))) return;
+    toggle.checked = true;
+    setPyInlineVisible(true);
+    setPyButtonMode("edit");
+    return;
+  }
+
+  await registrarPedidosYaInline();
+});
+
+// Enter en monto => guardar
+on("py-monto", "keydown", async (e) => {
+  if (e.key === "Enter") {
+    const toggle = $("py-toggle");
+    if (toggle?.checked) await registrarPedidosYaInline();
+  }
+});
+
+// (Opcional) inicializar en modo idle por si el HTML carga con toggle apagado
+setPyButtonMode("idle");
+setPyInlineVisible(false);
 
 // ============================================================================
 // ⭐ CERRAR CAJA (modal confirmación)
@@ -572,15 +876,9 @@ async function cerrarCajaDiaria() {
   }
 
   try {
-    const response = await fetch(`${window.API_BASE_URL}/api/caja/cierre?fecha=${fecha}`, {
-      method: "POST"
-    });
+    const base = window.API_BASE_URL;
+    const data = await fetchJsonOrEmpty(`${base}/api/caja/cierre?fecha=${fecha}`, { method: "POST" });
 
-    if (!response.ok) throw new Error();
-
-    const data = await response.json();
-
-    // cachear estado cerrado si viene, o forzar refresco de meta
     if (data?.estado) {
       CAJA_META_CACHE.set(fecha, {
         estado: data.estado,
@@ -590,7 +888,6 @@ async function cerrarCajaDiaria() {
       await getCajaMeta(fecha, { force: true });
     }
 
-    // balance
     if (data?.balanceFinal != null) {
       animarNumero($("caja-balance"), Number(data.balanceFinal));
       pintarColorBalance(Number(data.balanceFinal));
@@ -600,66 +897,30 @@ async function cerrarCajaDiaria() {
 
     await aplicarEstadoUI(fecha);
     mostrarToastCajaCerrada();
-  } catch (err) {
+  } catch (_) {
     toastError("No se pudo cerrar la caja");
   }
 }
-
 
 // ============================================================================
 // ⭐ INICIALIZACIÓN
 // ============================================================================
 export function initCaja() {
-  if ($("caja-modo")) {
-    $("caja-modo").textContent = "Mostrando caja del día de hoy (automático)";
-  }
-
+  setText("caja-modo", "Mostrando caja del día de hoy (automático)");
   pintarFechaActual();
 
   const hoy = obtenerFechaHoy();
 
-  // ✅ No permitir fecha futura desde el input
+  // No permitir fecha futura desde el input
   const input = $("caja-fecha");
   if (input) input.max = hoy;
 
-  // Cargar estado + aplicar UI (sin depender de localStorage)
+  // Estado + UI
   getCajaMeta(hoy, { force: true }).finally(() => aplicarEstadoUI(hoy));
 
+  // Cargas iniciales
   cargarIngresos(hoy);
   cargarEgresos(hoy);
   cargarBalance(hoy);
-}
-
-
-function animarKPI(id, nuevoValor) {
-  const el = document.getElementById(id);
-  if (!el) return;
-
-  const actual = parseFloat(el.innerText.replace(/[^\d.-]/g, "")) || 0;
-  const duracion = 500;
-  const inicio = performance.now();
-
-  function frame(t) {
-    const progreso = Math.min((t - inicio) / duracion, 1);
-    const valor = actual + (nuevoValor - actual) * progreso;
-    el.innerText = `$${valor.toFixed(0)}`;
-    if (progreso < 1) requestAnimationFrame(frame);
-  }
-
-  requestAnimationFrame(frame);
-}
-
-function actualizarBadge(idBadge, porcentaje) {
-  const badge = document.getElementById(idBadge);
-  if (!badge) return;
-
-  if (porcentaje >= 0) {
-    badge.innerHTML = `▲ +${porcentaje}%`;
-    badge.classList.remove("bg-rose-500/30");
-    badge.classList.add("bg-emerald-500/30");
-  } else {
-    badge.innerHTML = `▼ ${porcentaje}%`;
-    badge.classList.remove("bg-emerald-500/30");
-    badge.classList.add("bg-rose-500/30");
-  }
+  cargarPedidosParaTablas(hoy);
 }

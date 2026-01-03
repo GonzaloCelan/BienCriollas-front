@@ -47,7 +47,7 @@ export function cambiarSeccion(target) {
     },
     
     "resumen-historico": {
-    titulo: "Resumen histórico",
+    titulo: "Totales acumulados",
     sub: "Acumulado general de cajas cerradas: efectivo, transferencias, PedidosYa, egresos y total."
     },
 
@@ -58,6 +58,10 @@ export function cambiarSeccion(target) {
     egreso: {
       titulo: "Control de egresos",
       sub: "Registrá gastos y mirá cómo impactan en el mes"
+    },
+    configuracion: {
+      titulo: "Configuración",
+      sub: "Cards dinámicas · Editás costos/estado · Abajo tabla de precio unitario"
     }
   };
 
@@ -169,6 +173,15 @@ document.addEventListener("DOMContentLoaded", () => {
         import("../pages/egresos.js").then(mod => {
   if (mod.initEgresos) mod.initEgresos();
 });
+      }
+
+       // ======================
+      // 🆕 📌 SECCION: CONFIG
+      // ======================
+      if (target === "configuracion") {
+        import("../pages/configuracion.js").then(mod => {
+          if (mod.initSeccionConfiguracion) mod.initSeccionConfiguracion();
+        });
       }
 
     });

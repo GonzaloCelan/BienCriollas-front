@@ -49,7 +49,7 @@ function mostrarAvisoStockBajo(cantidad) {
   // Crear el toast
   const toast = document.createElement("div");
   toast.classList.add("toast-alert");
-  toast.textContent = `⚠️ Hay ${cantidad} variedades con stock bajo. Por favor revisar.`;
+  toast.textContent = `⚠️ Hay ${cantidad} variedades con stock bajo.`;
   document.body.appendChild(toast);
 
   // Animación
@@ -313,18 +313,12 @@ function pintarPedidosEnTabla(pedidos) {
         <td colspan="9" class="py-10 text-center text-sm text-slate-400 bg-slate-50">
           <div class="flex flex-col items-center gap-2">
             <span class="inline-flex items-center justify-center h-40 w-40">
-              <svg width="600" height="600" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-                <ellipse cx="100" cy="160" rx="60" ry="10" fill="#e0e0e0" />
-                <path d="M40,140 Q40,60 100,60 Q160,60 160,140 Z" fill="#F4C578" stroke="#D9A654" stroke-width="4" />
-                <path d="M40,140 Q35,125 45,120 Q55,115 65,122 Q75,110 85,118 Q100,105 115,118 Q125,110 135,122 Q145,115 155,120 Q165,125 160,140" fill="none" stroke="#D9A654" stroke-width="4" stroke-linecap="round" />
-                <path d="M75,110 Q85,100 95,110" fill="none" stroke="#5C4033" stroke-width="3" stroke-linecap="round" />
-                <path d="M105,110 Q115,100 125,110" fill="none" stroke="#5C4033" stroke-width="3" stroke-linecap="round" />
-                <path d="M90,135 Q100,128 110,135" fill="none" stroke="#5C4033" stroke-width="2.5" stroke-linecap="round" />
-                <circle cx="120" cy="120" r="4" fill="#A5D8FF">
-                  <animate attributeName="cy" from="120" to="135" dur="2s" repeatCount="indefinite" />
-                  <animate attributeName="opacity" from="1" to="0" dur="2s" repeatCount="indefinite" />
-                </circle>
-              </svg>
+               <img
+    src="/variedades/iaEmpanada.png"
+    alt="Sin pedidos"
+    class="h-65 w-65 object-contain opacity-90 drop-shadow-sm"
+    loading="lazy"
+  />
             </span>
             <p class="font-medium text-slate-600">No hay pedidos cargados todavía</p>
             <p class="text-xs text-slate-400">Cuando registres un pedido aparecerá en esta tabla.</p>
@@ -1175,7 +1169,7 @@ async function crearPedido() {
     // volver al inicio después de un pequeño delay
     setTimeout(() => {
       window.location.reload();
-    }, 300);
+    }, 100);
 
   } catch (e) {
     console.error(e);
