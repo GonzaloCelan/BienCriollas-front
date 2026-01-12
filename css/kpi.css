@@ -4,16 +4,27 @@
 
 
 .kpi-pendientes-p, .kpi-preparados-p, .kpi-entregados-p{
-box-shadow: rgba(240, 46, 46, 0.4) 0px 5px, rgba(240, 46, 46, 0.3) 0px 10px, rgba(240, 46, 46, 0.2) 0px 15px, rgba(240, 46, 46, 0.1) 0px 20px, rgba(240, 46, 170, 0.05) 0px 25px;
+box-shadow: rgba(255, 0, 0, 0.397) 0px 5px, rgba(240, 46, 46, 0.3) 0px 10px, rgba(240, 46, 46, 0.2) 0px 15px, rgba(240, 46, 46, 0.1) 0px 20px, rgba(240, 46, 170, 0.05) 0px 25px;
 }
 
 .kpi-pedidosya-ef, .kpi-pedidosya-mp, .kpi-pedidosya-resumen{
     border: none;
-    box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 5px 0px, rgba(0, 0, 0, 0.1) 0px 0px 1px 0px;
 }
 
 
 .div-caja-ef, .div-caja-tf , .div-caja-py{
     border: none;
-    box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset;
+}
+
+.caja-div{
+    box-shadow: rgba(241, 3, 3, 0.192) 0px 3px 8px;
+}
+
+.caja-div p{
+    font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+}
+
+.caja-div #kpi-mermas{
+    color: rgb(187, 12, 12);
 }

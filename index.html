@@ -14,6 +14,10 @@
    <link rel="stylesheet" href="./css/estadistica.css">
    <link rel="stylesheet" href="./css/kpi.css">
   <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800;900&family=Sora:wght@600;700;800&display=swap" rel="stylesheet">
+
  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&display=swap" rel="stylesheet">
  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600&family=Pacifico&display=swap" rel="stylesheet">
@@ -1460,13 +1464,9 @@
  <!-- TÍTULO DE LA CAJA -->
 <div class="w-full flex flex-col items-start gap-1 text-left ">
   <h2 id="caja-dia-actual"
-      class="text-[20px] font-semibold text-slate-700 tracking-tight caja-h2">
+      class="text-[18px] font-bold text-slate-700 tracking-tight caja-h2">
   </h2>
 
-  <p id="caja-modo"
-     class="text-[12px] text-slate-400 mt-1">
-     Mostrando caja del día de hoy (automático)
-  </p>
 
   <!-- FILTRO POR FECHA (MÁS COMPACTO) -->
 <div class="inline-flex">
@@ -1479,25 +1479,22 @@
       <input 
         type="date" 
         id="caja-fecha"
-        class="h-9 w-44 border border-slate-200 rounded-full px-2.5 text-xs bg-slate-50
+        class="h-8 w-44 border border-slate-200 rounded-full px-2.5 text-xs bg-slate-50
                focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 outline-none">
 
       <button
         id="btn-ver-caja"
-        class="h-9 inline-flex items-center justify-center gap-2
+        class="h-8 inline-flex items-center justify-center gap-2
                rounded-full
                bg-gradient-to-r from-rose-600 to-rose-500
                px-4 text-xs font-semibold text-white
                shadow-sm hover:shadow-md hover:shadow-rose-500/40
                hover:-translate-y-0.5 active:translate-y-0
                transition-all">
-        🔎 Ver caja
+         Ver caja
       </button>
     </div>
 
-    <p class="text-[11px] text-slate-500">
-      Elegí una fecha y tocá <b>Ver caja</b>.
-    </p>
   </div>
 </div>
 </div>
@@ -1508,224 +1505,143 @@
 
 
 
-  <!-- KPIs -->
-<div class="grid grid-cols-1 md:grid-cols-4 gap-4 ">
+<!-- KPIs (compactos) -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-3">
 
-  <!-- INGRESOS TOTALES -->
-  <div class="group relative overflow-hidden rounded-[26px] p-5
-              bg-gradient-to-b from-red-500 via-red-600 to-red-700
-              border border-white/15 ring-1 ring-white/10
-              shadow-[0_18px_45px_-30px_rgba(0,0,0,.65)]
-              transform-gpu transition-all duration-300 ease-out
-              hover:-translate-y-1 hover:scale-[1.03]
-              hover:from-red-400 hover:via-red-600 hover:to-red-800
-              hover:ring-2 hover:ring-white/20
-              hover:shadow-[0_26px_70px_-38px_rgba(0,0,0,.85)]">
+<!-- INGRESOS TOTALES (ROJO / HERO COMPACTO) -->
+<div class="caja-div group relative overflow-hidden rounded-[10px] p-6
+            bg-gradient-to-b from-rose-500 via-red-600 to-red-800
+            transition-all duration-300 ease-out">
 
-    <!-- brillo glass (más fuerte al hover) -->
-    <span class="pointer-events-none absolute inset-0
-                 bg-gradient-to-br from-white/14 via-white/6 to-transparent
-                 opacity-80 transition-opacity duration-300
-                 group-hover:opacity-100"></span>
+  <span class="pointer-events-none absolute inset-0
+               bg-gradient-to-br from-white/16 via-white/6 to-transparent
+               opacity-90 transition-opacity duration-300
+               group-hover:opacity-100"></span>
+  <span class="pointer-events-none absolute inset-x-0 top-0 h-px bg-white/25"></span>
 
-    <div class="relative flex items-center justify-between gap-4">
-      <div class="min-w-0">
-        <p class="text-[12px] font-semibold text-white/85">
-          Ingresos totales (pedidos particulares)
-        </p>
+  <div class="relative flex items-center justify-between gap-3">
+    <div class="min-w-0">
+      <p class="text-[13px] font-semibold tracking-wide uppercase text-white/90 font-sans">INGRESOS TOTALES</p>
 
-        <h2 id="kpi-ingresos-totales"
-            class="mt-2 text-4xl font-extrabold tracking-tight text-white tabular-nums">
-          $0
-        </h2>
-
-        <p id="badge-ingresos" class="mt-2 text-[11px] font-semibold text-white/75">
-          ▲ +0%
-        </p>
-      </div>
-
-      <!-- SVG (línea / ingresos) -->
-      <svg viewBox="0 0 120 44"
-           class="h-10 w-24 opacity-70 transition-all duration-300
-                  group-hover:opacity-90 group-hover:scale-[1.06]">
-        <path d="M2 34 C 18 28, 30 18, 44 22 S 74 26, 92 14 S 106 22, 118 10"
-              fill="none" stroke="rgba(255,255,255,.65)" stroke-width="3" stroke-linecap="round"/>
-        <path d="M2 42 L2 34 C 18 28, 30 18, 44 22 S 74 26, 92 14 S 106 22, 118 10 L118 42 Z"
-              fill="rgba(255,255,255,.10)"/>
-      </svg>
+      <h2 id="kpi-ingresos-totales"
+          class="mt-1 text-[25px] leading-none font-extrabold tracking-tight text-white tabular-nums">
+        $0
+      </h2>
     </div>
-  </div>
 
-  <!-- EFECTIVO -->
-  <div class="group relative overflow-hidden rounded-[26px] p-5
-              bg-gradient-to-b from-red-500 via-red-600 to-red-700
-              border border-white/15 ring-1 ring-white/10
-              shadow-[0_18px_45px_-30px_rgba(0,0,0,.65)]
-              transform-gpu transition-all duration-300 ease-out
-              hover:-translate-y-1 hover:scale-[1.03]
-              hover:from-red-400 hover:via-red-600 hover:to-red-800
-              hover:ring-2 hover:ring-white/20
-              hover:shadow-[0_26px_70px_-38px_rgba(0,0,0,.85)]">
+    <!-- IMAGEN (reemplaza al SVG) -->
+    <img
+      src="/images/icons8-income-64.png"
+      alt="Tendencia"
+      class="h-9 w-20 object-contain opacity-80 transition-opacity duration-300 group-hover:opacity-95"
+    />
+  </div>
+</div>
+
+  <!-- EFECTIVO (BLANCO COMPACTO) -->
+  <div class="caja-div group relative overflow-hidden rounded-[10px] p-6
+              bg-white
+
+              transition-all duration-300 ease-out
+              hover:border-slate-300">
 
     <span class="pointer-events-none absolute inset-0
-                 bg-gradient-to-br from-white/14 via-white/6 to-transparent
-                 opacity-80 transition-opacity duration-300
-                 group-hover:opacity-100"></span>
+                 bg-gradient-to-br from-black/3 via-transparent to-transparent
+                 opacity-100"></span>
+    <span class="pointer-events-none absolute inset-x-0 top-0 h-px bg-black/5"></span>
 
-    <div class="relative flex items-center justify-between gap-4">
+    <div class="relative flex items-center justify-between gap-3">
       <div class="min-w-0">
-        <p class="text-[12px] font-semibold text-white/85">
-          Ingresos en efectivo (particulares)
+        <p class="text-[12px] font-bold text-slate-700">
+          INGRESOS EN EFECTIVO
         </p>
 
         <h2 id="kpi-ingresos-efectivo"
-            class="mt-2 text-4xl font-extrabold tracking-tight text-white tabular-nums">
+            class="mt-2 text-[25px] leading-none font-extrabold tracking-tight text-slate-900 tabular-nums">
           $0
         </h2>
 
-        <p id="badge-efectivo" class="mt-2 text-[11px] font-semibold text-white/75">
-          ▲ +0%
-        </p>
+      
       </div>
 
-      <!-- SVG (billete / efectivo) -->
-      <svg viewBox="0 0 120 44"
-           class="h-10 w-24 opacity-80 transition-all duration-300
-                  group-hover:opacity-95 group-hover:scale-[1.06]">
-        <rect x="10" y="10" width="100" height="24" rx="8"
-              fill="rgba(255,255,255,.14)"
-              stroke="rgba(255,255,255,.28)" stroke-width="2"/>
-        <g stroke="rgba(255,255,255,.22)" stroke-width="2" stroke-linecap="round">
-          <line x1="18" y1="16" x2="46" y2="16"></line>
-          <line x1="18" y1="28" x2="46" y2="28"></line>
-          <line x1="74" y1="16" x2="102" y2="16"></line>
-          <line x1="74" y1="28" x2="102" y2="28"></line>
-        </g>
-        <circle cx="60" cy="22" r="7"
-                fill="rgba(255,255,255,.18)"
-                stroke="rgba(255,255,255,.45)" stroke-width="2"/>
-        <text x="60" y="25" text-anchor="middle"
-              font-size="10" font-weight="800"
-              fill="rgba(255,255,255,.75)"
-              font-family="system-ui, -apple-system, Segoe UI, Roboto, Arial">
-          $
-        </text>
-        <path d="M16 12 H104 Q110 12 110 18 V18 H10 V18 Q10 12 16 12 Z"
-              fill="rgba(255,255,255,.10)"/>
-      </svg>
+      <!-- IMAGEN (reemplaza al SVG) -->
+    <img
+      src="/images/icons8-get-cash-50.png"
+      alt="Tendencia"
+      class="h-9 w-20 object-contain opacity-80 transition-opacity duration-300 group-hover:opacity-95"
+    />
     </div>
   </div>
 
-  <!-- TRANSFERENCIA -->
-  <div class="group relative overflow-hidden rounded-[26px] p-5
-              bg-gradient-to-b from-red-500 via-red-600 to-red-700
-              border border-white/15 ring-1 ring-white/10
-              shadow-[0_18px_45px_-30px_rgba(0,0,0,.65)]
-              transform-gpu transition-all duration-300 ease-out
-              hover:-translate-y-1 hover:scale-[1.03]
-              hover:from-red-400 hover:via-red-600 hover:to-red-800
-              hover:ring-2 hover:ring-white/20
-              hover:shadow-[0_26px_70px_-38px_rgba(0,0,0,.85)]">
+  <!-- TRANSFERENCIA (BLANCO COMPACTO) -->
+  <div class="caja-div group relative overflow-hidden rounded-[10px] p-6
+              bg-white
+
+              transition-all duration-300 ease-out
+              hover:border-slate-300">
 
     <span class="pointer-events-none absolute inset-0
-                 bg-gradient-to-br from-white/14 via-white/6 to-transparent
-                 opacity-80 transition-opacity duration-300
-                 group-hover:opacity-100"></span>
+                 bg-gradient-to-br from-black/3 via-transparent to-transparent"></span>
+    <span class="pointer-events-none absolute inset-x-0 top-0 h-px bg-black/5"></span>
 
-    <div class="relative flex items-center justify-between gap-4">
+    <div class="relative flex items-center justify-between gap-3">
       <div class="min-w-0">
-        <p class="text-[12px] font-semibold text-white/85">
-          Ingresos por transferencia (particular y pedidos ya)
+        <p class="text-[12px] font-bold text-slate-700">
+          INGRESOS POR TRANSFERENCIA
         </p>
 
         <h2 id="kpi-ingresos-transferencias"
-            class="mt-2 text-4xl font-extrabold tracking-tight text-white tabular-nums">
+            class="mt-2 text-[25px] leading-none font-extrabold tracking-tight text-slate-900 tabular-nums">
           $0
         </h2>
 
-        <p id="badge-transferencias" class="mt-2 text-[11px] font-semibold text-white/75">
-          ▲ +0%
-        </p>
       </div>
 
-      <!-- SVG (wallet / billetera virtual) -->
-      <svg viewBox="0 0 120 44"
-           class="h-10 w-24 opacity-80 transition-all duration-300
-                  group-hover:opacity-95 group-hover:scale-[1.06]">
-        <rect x="10" y="8" width="34" height="28" rx="8"
-              fill="rgba(255,255,255,.12)"
-              stroke="rgba(255,255,255,.28)" stroke-width="2"/>
-        <rect x="16" y="14" width="22" height="14" rx="4"
-              fill="rgba(255,255,255,.10)"/>
-        <circle cx="27" cy="32" r="2" fill="rgba(255,255,255,.45)"/>
-
-        <rect x="44" y="12" width="66" height="22" rx="10"
-              fill="rgba(255,255,255,.14)"
-              stroke="rgba(255,255,255,.28)" stroke-width="2"/>
-        <rect x="50" y="17" width="34" height="4" rx="2"
-              fill="rgba(255,255,255,.20)"/>
-        <rect x="50" y="24" width="14" height="7" rx="2"
-              fill="rgba(255,255,255,.18)"
-              stroke="rgba(255,255,255,.25)" stroke-width="1.5"/>
-
-        <text x="96" y="27" text-anchor="middle"
-              font-size="12" font-weight="900"
-              fill="rgba(255,255,255,.75)"
-              font-family="system-ui, -apple-system, Segoe UI, Roboto, Arial">
-          $
-        </text>
-
-        <path d="M18 10 H104 Q110 10 110 16 V16 H10 V16 Q10 10 18 10 Z"
-              fill="rgba(255,255,255,.10)"/>
-      </svg>
+      <!-- IMAGEN (reemplaza al SVG) -->
+    <img
+      src="/images/icons8-credit-card-transfer-50.png"
+      alt="Tendencia"
+      class="h-9 w-20 object-contain opacity-80 transition-opacity duration-300 group-hover:opacity-95"
+    />
     </div>
   </div>
 
-  <!-- EGRESOS -->
-  <div class="group relative overflow-hidden rounded-[26px] p-5
-              bg-gradient-to-b from-red-500 via-red-600 to-red-700
-              border border-white/15 ring-1 ring-white/10
-              shadow-[0_18px_45px_-30px_rgba(0,0,0,.65)]
-              transform-gpu transition-all duration-300 ease-out
-              hover:-translate-y-1 hover:scale-[1.03]
-              hover:from-red-400 hover:via-red-600 hover:to-red-800
-              hover:ring-2 hover:ring-white/20
-              hover:shadow-[0_26px_70px_-38px_rgba(0,0,0,.85)]">
+  <!-- EGRESOS (BLANCO COMPACTO) -->
+  <div class="caja-div group relative overflow-hidden rounded-[10px] p-6
+              bg-white
+              transition-all duration-300 ease-out
+              hover:border-slate-300">
 
     <span class="pointer-events-none absolute inset-0
-                 bg-gradient-to-br from-white/14 via-white/6 to-transparent
-                 opacity-80 transition-opacity duration-300
-                 group-hover:opacity-100"></span>
+                 bg-gradient-to-br from-black/3 via-transparent to-transparent"></span>
+    <span class="pointer-events-none absolute inset-x-0 top-0 h-px bg-black/5"></span>
 
-    <div class="relative flex items-center justify-between gap-4">
+    <div class="relative flex items-center justify-between gap-3">
       <div class="min-w-0">
-        <p class="text-[12px] font-semibold text-white/85">
-          Egresos Totales (perdidas y egresos varios)
+        <p class="text-[12px] font-bold text-slate-700">
+          EGRESOS TOTALES
         </p>
 
         <h2 id="kpi-mermas"
-            class="mt-2 text-4xl font-extrabold tracking-tight text-white tabular-nums">
+            class="mt-2 text-[25px] leading-none font-extrabold tracking-tight text-slate-900 tabular-nums">
           $0
         </h2>
 
-        <p id="badge-mermas" class="mt-2 text-[11px] font-semibold text-white/75">
-          ▼ -0%
-        </p>
       </div>
 
-      <!-- SVG (línea bajando / egresos) -->
-      <svg viewBox="0 0 120 44"
-           class="h-10 w-24 opacity-70 transition-all duration-300
-                  group-hover:opacity-90 group-hover:scale-[1.06]">
-        <path d="M2 14 C 18 16, 30 18, 44 20 S 74 24, 92 28 S 106 30, 118 34"
-              fill="none" stroke="rgba(255,255,255,.60)" stroke-width="3" stroke-linecap="round"/>
-        <path d="M2 42 L2 14 C 18 16, 30 18, 44 20 S 74 24, 92 28 S 106 30, 118 34 L118 42 Z"
-              fill="rgba(255,255,255,.10)"/>
-      </svg>
+       <!-- IMAGEN (reemplaza al SVG) -->
+    <img
+      src="/images/icons8-downtrend-64.png"
+      alt="Tendencia"
+      class="h-9 w-20 object-contain opacity-80 transition-opacity duration-300 group-hover:opacity-95"
+    />
     </div>
   </div>
 
 </div>
+
+
+
 
 
 
@@ -1764,7 +1680,7 @@
     </label>
 
     <!-- Inputs (aparecen cuando toggle ON) -->
-    <div id="py-inline" class="hidden items-center gap-2">
+    <div id="py-inline" class=" items-center gap-2">
       <input id="py-fecha" type="date"
              class="h-8 rounded-full border border-slate-200 bg-white px-3 text-sm font-semibold text-slate-700
                     focus:outline-none focus:ring-4 focus:ring-rose-100" />
@@ -1780,6 +1696,74 @@
   </div>
 </div>
 
+
+<!-- BALANCE FINAL (Premium / Banco) -->
+<div
+  class="relative overflow-hidden p-7 
+          flex flex-col items-center gap-1
+         
+         "
+>
+
+
+  <p class="relative z-10 text-[13px] text-slate-600 font-semibold tracking-wide mt-2">
+    Balance final del día
+  </p>
+
+  <!-- Número premium -->
+  <h2
+    id="caja-balance"
+    class="relative z-10 text-5xl font-extrabold mt-1 tracking-tight
+           bg-gradient-to-b from-slate-900 to-slate-700 bg-clip-text text-transparent
+           drop-shadow-[0_1px_0_rgba(255,255,255,0.75)]
+           transition-all duration-300"
+  >
+    $0
+  </h2>
+
+  <p class="relative z-10 text-[12px] text-slate-500 mt-1">
+    Ingresos <span class="text-slate-400">–</span> Egresos
+  </p>
+
+  <!-- micro-detalle decorativo -->
+  <div class="relative z-10 mt-3 h-[1px] w-24 bg-gradient-to-r from-transparent via-emerald-200/70 to-transparent"></div>
+</div>
+
+
+  <!-- BOTÓN CERRAR CAJA -->
+  <div class="text-right">
+    <button
+  id="btn-cerrar-caja"
+  class="relative group inline-flex items-center justify-center gap-2
+         rounded-full
+         px-6 py-3
+         text-sm font-semibold tracking-tight
+         text-white
+         bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900
+         border border-white/10
+         shadow-[0_10px_24px_rgba(0,0,0,.25)]
+         hover:shadow-[0_16px_34px_rgba(0,0,0,.35)]
+         hover:-translate-y-0.5
+         active:translate-y-0 active:shadow-[0_10px_24px_rgba(0,0,0,.25)]
+         transition-all duration-200
+         focus:outline-none focus-visible:ring-4 focus-visible:ring-sky-500/30">
+
+
+  <span>Cerrar caja </span>
+
+  <!-- Glow suave -->
+  <span class="pointer-events-none absolute -inset-0.5 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity
+               blur-md bg-white/10"></span>
+
+  <!-- Shine al hover -->
+  <span class="pointer-events-none absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-200
+               bg-gradient-to-r from-transparent via-white/20 to-transparent"></span>
+
+  <!-- Puntito “importante” -->
+  <span class="ml-1 h-2 w-2 rounded-full bg-emerald-400 shadow-[0_0_12px_rgba(52,211,153,.8)]"></span>
+</button>
+
+  </div>
 
 <!-- ====== BLOQUE 3 TABLAS (pegable dentro de tu sección actual) ====== -->
 <div class="mt-6 space-y-4">
@@ -1805,7 +1789,7 @@
         <div class="flex items-start justify-between gap-3">
           <div>
             <div class="flex items-center gap-2">
-              <span class="inline-flex h-2.5 w-2.5 rounded-full bg-emerald-500"></span>
+              
               <h4 class="text-sm font-extrabold text-slate-900">Particular · Efectivo</h4>
             </div>
             <p class="mt-1 text-xs text-slate-500">Pedidos particulares pagados en efectivo.</p>
@@ -1855,7 +1839,7 @@
         <div class="flex items-start justify-between gap-3">
           <div>
             <div class="flex items-center gap-2">
-              <span class="inline-flex h-2.5 w-2.5 rounded-full bg-sky-500"></span>
+          
               <h4 class="text-sm font-extrabold text-slate-900">Particular · Transferencia</h4>
             </div>
             <p class="mt-1 text-xs text-slate-500">Pedidos particulares pagados por transferencia.</p>
@@ -1872,7 +1856,7 @@
       </div>
 
       <div class="p-0">
-        <div class="max-h-[420px] overflow-auto rounded-xl border border-slate-100">
+        <div class="max-h-[420px] overflow-auto rounded-xl">
           <table class="w-full text-left">
             <thead class="sticky top-0 bg-white/95 backdrop-blur border-b border-slate-100">
               <tr class="text-[11px] uppercase tracking-wide text-slate-500">
@@ -1903,7 +1887,7 @@
         <div class="flex items-start justify-between gap-3">
           <div>
             <div class="flex items-center gap-2">
-              <span class="inline-flex h-2.5 w-2.5 rounded-full bg-rose-500"></span>
+             
               <h4 class="text-sm font-extrabold text-slate-900">PedidosYa</h4>
             </div>
             <p class="mt-1 text-xs text-slate-500">Pedidos del canal PedidosYa (N° plataforma).</p>
@@ -1946,120 +1930,10 @@
 </div>
 
 
-<!-- BALANCE FINAL (Premium / Banco) -->
-<div
-  class="relative overflow-hidden p-7 
-          flex flex-col items-center gap-1
-         
-         "
->
-
-  <!-- Icono circular premium -->
-  <div
-    class="relative z-10 w-12 h-12 flex items-center justify-center rounded-full
-           bg-gradient-to-br from-emerald-50 to-white
-           border border-emerald-200/60
-           shadow-[inset_0_1px_0_rgba(255,255,255,0.9),0_10px_25px_-18px_rgba(16,185,129,0.6)]"
-  >
-    <!-- SVG dinero -->
-    <svg
-      class="h-6 w-6 text-emerald-700"
-      viewBox="0 0 24 24"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      aria-hidden="true"
-    >
-      <!-- billete -->
-      <path
-        d="M4 7.5C4 6.67 4.67 6 5.5 6H18.5C19.33 6 20 6.67 20 7.5V16.5C20 17.33 19.33 18 18.5 18H5.5C4.67 18 4 17.33 4 16.5V7.5Z"
-        stroke="currentColor"
-        stroke-width="1.8"
-        stroke-linejoin="round"
-      />
-      <!-- borde interno -->
-      <path
-        d="M6.2 8.6C7.1 8.6 7.8 7.9 7.8 7M17.8 8.6C16.9 8.6 16.2 7.9 16.2 7M6.2 15.4C7.1 15.4 7.8 16.1 7.8 17M17.8 15.4C16.9 15.4 16.2 16.1 16.2 17"
-        stroke="currentColor"
-        stroke-width="1.8"
-        stroke-linecap="round"
-      />
-      <!-- moneda / centro -->
-      <path
-        d="M12 9.2C13.55 9.2 14.8 10.45 14.8 12C14.8 13.55 13.55 14.8 12 14.8C10.45 14.8 9.2 13.55 9.2 12C9.2 10.45 10.45 9.2 12 9.2Z"
-        stroke="currentColor"
-        stroke-width="1.8"
-      />
-      <path
-        d="M11.1 12.9C11.35 13.25 11.75 13.4 12.2 13.4C12.85 13.4 13.3 13.05 13.3 12.55C13.3 12.1 12.98 11.82 12.35 11.7L11.95 11.62C11.35 11.5 11.05 11.25 11.05 10.8C11.05 10.3 11.5 9.95 12.15 9.95C12.55 9.95 12.9 10.08 13.15 10.35"
-        stroke="currentColor"
-        stroke-width="1.6"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-      />
-    </svg>
-  </div>
-
-  <p class="relative z-10 text-[13px] text-slate-600 font-semibold tracking-wide mt-2">
-    Balance final del día
-  </p>
-
-  <!-- Número premium -->
-  <h2
-    id="caja-balance"
-    class="relative z-10 text-5xl font-extrabold mt-1 tracking-tight
-           bg-gradient-to-b from-slate-900 to-slate-700 bg-clip-text text-transparent
-           drop-shadow-[0_1px_0_rgba(255,255,255,0.75)]
-           transition-all duration-300"
-  >
-    $0
-  </h2>
-
-  <p class="relative z-10 text-[12px] text-slate-500 mt-1">
-    Ingresos <span class="text-slate-400">–</span> Egresos
-  </p>
-
-  <!-- micro-detalle decorativo -->
-  <div class="relative z-10 mt-3 h-[1px] w-24 bg-gradient-to-r from-transparent via-emerald-200/70 to-transparent"></div>
-</div>
 
 
 
-  <!-- BOTÓN CERRAR CAJA -->
-  <div class="text-right">
-    <button
-  id="btn-cerrar-caja"
-  class="relative group inline-flex items-center justify-center gap-2
-         rounded-full
-         px-6 py-3
-         text-sm font-semibold tracking-tight
-         text-white
-         bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900
-         border border-white/10
-         shadow-[0_10px_24px_rgba(0,0,0,.25)]
-         hover:shadow-[0_16px_34px_rgba(0,0,0,.35)]
-         hover:-translate-y-0.5
-         active:translate-y-0 active:shadow-[0_10px_24px_rgba(0,0,0,.25)]
-         transition-all duration-200
-         focus:outline-none focus-visible:ring-4 focus-visible:ring-sky-500/30">
 
-  <!-- Icono (opcional pero ayuda a “entender” la acción) -->
-  <span class="text-base group-hover:scale-110 transition-transform">🔒</span>
-
-  <span>Cerrar caja </span>
-
-  <!-- Glow suave -->
-  <span class="pointer-events-none absolute -inset-0.5 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity
-               blur-md bg-white/10"></span>
-
-  <!-- Shine al hover -->
-  <span class="pointer-events-none absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-200
-               bg-gradient-to-r from-transparent via-white/20 to-transparent"></span>
-
-  <!-- Puntito “importante” -->
-  <span class="ml-1 h-2 w-2 rounded-full bg-emerald-400 shadow-[0_0_12px_rgba(52,211,153,.8)]"></span>
-</button>
-
-  </div>
 
 
 
@@ -2116,7 +1990,7 @@
 
  
 <!-- KPIs — estilo “pill unidos” (Bien Criollas rojo) -->
-<div class="rounded-[28px] p-2
+<div class="rounded-[10px] p-2
             bg-gradient-to-b from-red-500 via-red-600 to-red-700
             shadow-[0_16px_40px_-24px_rgba(0,0,0,.55)]
             ring-1 ring-white/15">
@@ -2124,7 +1998,7 @@
   <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2">
 
     <!-- Empanadas -->
-    <div class="rounded-[22px] p-4
+    <div class="rounded-[10px] p-4
                 bg-black/15 ring-1 ring-white/15
                 hover:bg-black/20 transition-colors">
       <div class="flex items-center justify-between gap-4">
@@ -2164,7 +2038,7 @@
     </div>
 
     <!-- Pedidos -->
-    <div class="rounded-[22px] p-4
+    <div class="rounded-[10px] p-4
                 bg-black/15 ring-1 ring-white/15
                 hover:bg-black/20 transition-colors">
       <div class="flex items-center justify-between gap-4">
@@ -2202,7 +2076,7 @@
     </div>
 
     <!-- Ingresos -->
-    <div class="rounded-[22px] p-4
+    <div class="rounded-[10px] p-4
                 bg-black/15 ring-1 ring-white/15
                 hover:bg-black/20 transition-colors">
       <div class="flex items-center justify-between gap-4">
@@ -2222,7 +2096,7 @@
     </div>
 
     <!-- PedidosYa -->
-    <div class="rounded-[22px] p-4
+    <div class="rounded-[10px] p-4
                 bg-black/15 ring-1 ring-white/15
                 hover:bg-black/20 transition-colors">
       <div class="flex items-center justify-between gap-4">
@@ -2244,7 +2118,7 @@
     </div>
 
     <!-- Mermas -->
-    <div class="rounded-[22px] p-4
+    <div class="rounded-[10px] p-4
                 bg-black/15 ring-1 ring-white/15
                 hover:bg-black/20 transition-colors">
       <div class="flex items-center justify-between gap-4">
@@ -2525,7 +2399,7 @@
 <div class="xl:col-span-12 grid grid-cols-1 md:grid-cols-3 gap-4 ">
 
   <!-- TOTAL INGRESOS -->
-  <div class="relative overflow-hidden rounded-2xl bg-gradient-to-b from-red-600 to-red-800 border border-white/10 shadow-sm">
+  <div class="relative overflow-hidden rounded-[10px] bg-gradient-to-b from-red-600 to-red-800 border border-white/10 shadow-sm">
     <div class="absolute inset-0 pointer-events-none opacity-70"
          style="background: radial-gradient(circle at 80% 30%, rgba(255,255,255,.18), transparent 55%);"></div>
 
@@ -2554,7 +2428,7 @@
   </div>
 
   <!-- EGRESOS -->
-  <div class="relative overflow-hidden rounded-2xl bg-gradient-to-b from-red-600 to-red-800 border border-white/10 shadow-sm">
+  <div class="relative overflow-hidden rounded-[10px] bg-gradient-to-b from-red-600 to-red-800 border border-white/10 shadow-sm">
     <div class="absolute inset-0 pointer-events-none opacity-70"
          style="background: radial-gradient(circle at 80% 30%, rgba(255,255,255,.18), transparent 55%);"></div>
 
@@ -2583,7 +2457,7 @@
   </div>
 
   <!-- BALANCE -->
-  <div class="relative overflow-hidden rounded-2xl bg-gradient-to-b from-red-600 to-red-800 border border-white/10 shadow-sm">
+  <div class="relative overflow-hidden rounded-[10px] bg-gradient-to-b from-red-600 to-red-800 border border-white/10 shadow-sm">
     <div class="absolute inset-0 pointer-events-none opacity-70"
          style="background: radial-gradient(circle at 80% 30%, rgba(255,255,255,.18), transparent 55%);"></div>
 
@@ -2620,7 +2494,7 @@
  <div class="xl:col-span-4 space-y-3 ">
 
   <!-- EFECTIVO -->
-  <div class="rounded-xl  bg-white px-4 py-3 kpi-pedidosya-ef">
+  <div class="rounded-[10px] bg-white px-4 py-3 kpi-pedidosya-ef">
     <div class="flex items-start justify-between gap-3">
       <div class="min-w-0">
         <div class="flex items-center gap-3">
@@ -2655,7 +2529,7 @@
   </div>
 
   <!-- TRANSFERENCIA -->
-  <div class="rounded-xl  bg-white px-4 py-3 kpi-pedidosya-mp">
+  <div class="rounded-[10px] bg-white px-4 py-3 kpi-pedidosya-mp">
     <div class="flex items-start justify-between gap-3">
       <div class="min-w-0">
         <div class="flex items-center gap-3">
@@ -2690,7 +2564,7 @@
   </div>
 
   <!-- PEDIDOSYA -->
-  <div class="rounded-xl  bg-white px-4 py-3 kpi-pedidosya-resumen">
+  <div class="rounded-[10px] bg-white px-4 py-3 kpi-pedidosya-resumen">
     <div class="flex items-start justify-between gap-3">
       <div class="min-w-0">
         <div class="flex items-center gap-3">

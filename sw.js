@@ -44,6 +44,10 @@ const FRONT_ASSETS = [
 
   "/icons/icon-192.png",
   "/icons/icon-512.png",
+   "./images/icons8-credit-card-transfer-50.png",
+  "./images/icons8-downtrend-64.png",
+  "./images/icons8-get-cash-50.png",
+  "./images/icons8-income-64.png",
 ];
 
 

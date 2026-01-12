@@ -910,7 +910,6 @@ function initModalCambioPago() {
 // Llamada segura (si el modal no existe, no hace nada)
 document.addEventListener("DOMContentLoaded", initModalCambioPago);
 
-
 function imprimirTicket() {
   if (!ultimoDetallePedido || ultimoDetallePedido.length === 0) {
     alert("Primero abrí el detalle de un pedido para imprimir la comanda.");
@@ -918,14 +917,56 @@ function imprimirTicket() {
   }
 
   const numeroPedido = ultimoIdPedido ?? "";
-  const cliente = ultimoNombreCliente || ultimoDetallePedido[0]?.cliente || "";
+  const cliente = (ultimoNombreCliente || ultimoDetallePedido[0]?.cliente || "")
+    .toString()
+    .trim()
+    .toLocaleUpperCase("es-AR");
+
   const totalPedido = Number(ultimoDetallePedido[0]?.subtotal || 0);
 
   const tipoVentaRaw = (ultimoDetallePedido[0]?.tipoVenta || "").toString().trim();
+  const tipoVentaLabel = /pedidos[\s_]*ya|pya/i.test(tipoVentaRaw) ? "PEDIDOSYA" : "PARTICULAR";
 
-  const tipoVentaLabel = /pedidos[\s_]*ya|pya/i.test(tipoVentaRaw)
-    ? "PEDIDOSYA"
-    : "PARTICULAR";
+  // ✅ Pago: solo para PEDIDOSYA
+  const pagoRaw = (ultimoDetallePedido[0]?.tipoPago ?? "").toString().trim();
+  const pagoLabel = pagoRaw ? pagoRaw.toUpperCase() : "ONLINE";
+  const pagoHtml =
+    tipoVentaLabel === "PEDIDOSYA"
+      ? `<p class="pago"><strong>Pago:</strong> ${pagoLabel}</p>`
+      : "";
+
+  // ✅ Fecha/Hora del pedido (intenta varios nombres de campo comunes)
+  const fechaRaw =
+    ultimoDetallePedido[0]?.fechaPedido ??
+    ultimoDetallePedido[0]?.fecha_pedido ??
+    ultimoDetallePedido[0]?.fechaHora ??
+    ultimoDetallePedido[0]?.fecha_hora ??
+    ultimoDetallePedido[0]?.fecha ??
+    ultimoDetallePedido[0]?.createdAt ??
+    ultimoDetallePedido[0]?.created_at ??
+    ultimoDetallePedido[0]?.fechaCreacion ??
+    ultimoDetallePedido[0]?.fecha_creacion ??
+    null;
+
+  const fechaObj = fechaRaw ? new Date(fechaRaw) : null;
+  const fechaValida = fechaObj && !isNaN(fechaObj.getTime());
+
+  const fechaPedidoFmt = (fechaValida ? fechaObj : new Date()).toLocaleString("es-AR", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false
+  });
+
+  const fechaHtml = `<p class="fecha">${fechaPedidoFmt}</p>`;
+
+  // ✅ Total empanadas (para calcular cajas rápido)
+  const totalEmpanadas = ultimoDetallePedido.reduce(
+    (acc, d) => acc + Number(d?.cantidad || 0),
+    0
+  );
 
   const totalPedidoFmt = totalPedido.toLocaleString("es-AR", {
     minimumFractionDigits: 2,
@@ -942,7 +983,6 @@ function imprimirTicket() {
     .join("");
 
   const w = window.open("", "_blank", "width=400,height=600");
-
   const PRINTABLE_MM = 52;
 
   const html = `
@@ -961,6 +1001,8 @@ function imprimirTicket() {
           font-family: Arial, sans-serif;
           font-size: 11px;
           font-weight: 800;
+          -webkit-print-color-adjust: exact;
+          print-color-adjust: exact;
         }
 
         .ticket { width: ${PRINTABLE_MM}mm; }
@@ -973,14 +1015,43 @@ function imprimirTicket() {
           height: auto;
           object-fit: contain;
           display: inline-block;
-          
         }
 
-        .titulo { text-align: center; font-weight: 800; margin: 0 0 2mm 0; font-size: 16px; }
-        .subtitulo { text-align: center; font-size: 10px; margin: 0 0 2mm 0; }
+        .titulo {
+          text-align: center;
+          font-weight: 900;
+          margin: 0 0 1.5mm 0;
+          font-size: 16px;
+          letter-spacing: 0.2px;
+        }
 
-        .cliente { margin: 0 0 1mm 0; ont-size: 12px; }
-        .tipo { margin: 0 0 2mm 0; }
+        .subtitulo {
+          text-align: center;
+          font-size: 10px;
+          margin: 0 0 1.2mm 0;
+          font-weight: 800;
+        }
+
+        /* ✅ fecha/hora */
+        .fecha{
+          text-align: center;
+          margin: 0 0 2mm 0;
+          font-size: 11px;
+          font-weight: 700;
+        }
+
+        .cliente {
+          margin: 0 0 1mm 0;
+          font-size: 12px;
+          font-weight: 900;
+        }
+
+        /* ✅ pago */
+        .pago{
+          margin: 0 0 1mm 0;
+          font-size: 10px;
+          font-weight: 700;
+        }
 
         table {
           width: 100%;
@@ -994,17 +1065,64 @@ function imprimirTicket() {
         .col-var { width: calc(100% - 14mm); word-break: break-word; }
         .col-cant { width: 14mm; text-align: right; white-space: nowrap; }
 
-        tfoot td { border-top: 1px solid #000; font-weight: 700; padding-top: 2mm; }
+        /* ✅ total empanadas (debajo del listado) */
+        tr.total-emp td{
+          border-top: 1px solid #000;
+          padding-top: 1.5mm;
+          font-weight: 900;
+        }
+        .total-emp-label{
+          font-size: 11px;
+          letter-spacing: 0.2px;
+        }
+        .total-emp-value{
+          font-size: 11px;
+          font-weight: 900;
+        }
+
+        /* ✅ TOTAL $ (apilado, centrado, no se sale) */
+        tfoot tr.total-block td{
+          border-top: 2px solid #000;
+          padding-top: 2mm;
+        }
+
+        .total-wrap{
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          text-align: center;
+          width: 100%;
+        }
+
+        .total-wrap .total-label{
+          font-size: 14px;
+          font-weight: 900;
+          letter-spacing: 0.8px;
+          text-transform: uppercase;
+          line-height: 1.05;
+        }
+
+        .total-wrap .total-value{
+          margin-top: 1.2mm;
+          font-size: 22px;
+          font-weight: 900;
+          letter-spacing: 0.2px;
+          line-height: 1.05;
+          white-space: nowrap;
+        }
 
         /* ✅ leyenda fiscal */
         .nota-wrap { margin-top: 3mm; }
-        .nota-sep { border-top: 1px dotted #000000ff margin: 0 0 1.5mm 0; }
+        .nota-sep {
+          border-top: 1px dotted #000;
+          margin: 0 0 1.5mm 0;
+        }
         .nota-fiscal {
-           text-align: center;
-        font-size: 8px;
-        font-weight: 700;
-        color: #000000ff;
-        letter-spacing: 0.2px;
+          text-align: center;
+          font-size: 10px;
+          font-weight: 700;
+          color: #000;
+          letter-spacing: 0.2px;
         }
       </style>
     </head>
@@ -1019,7 +1137,9 @@ function imprimirTicket() {
           Pedido ${numeroPedido}<span class="badge"> - ${tipoVentaLabel}</span>
         </div>
 
+        ${fechaHtml}
         <p class="cliente"><strong>Cliente:</strong> ${cliente}</p>
+        ${pagoHtml}
 
         <table>
           <thead>
@@ -1028,18 +1148,29 @@ function imprimirTicket() {
               <th class="col-cant">Cant.</th>
             </tr>
           </thead>
+
           <tbody>
             ${filasHtml}
+
+            <!-- ✅ Total empanadas -->
+            <tr class="total-emp">
+              <td class="col-var total-emp-label">Cant. total</td>
+              <td class="col-cant total-emp-value">${totalEmpanadas}</td>
+            </tr>
           </tbody>
+
           <tfoot>
-            <tr>
-              <td class="col-var">Total</td>
-              <td class="col-cant">$${totalPedidoFmt}</td>
+            <tr class="total-block">
+              <td colspan="2">
+                <div class="total-wrap">
+                  <div class="total-label">TOTAL</div>
+                  <div class="total-value">$${totalPedidoFmt}</div>
+                </div>
+              </td>
             </tr>
           </tfoot>
         </table>
 
-        
         <div class="nota-wrap">
           <div class="nota-sep"></div>
           <div class="nota-fiscal">NO VÁLIDO COMO FACTURA</div>
@@ -1047,7 +1178,7 @@ function imprimirTicket() {
       </div>
 
       <script>
-        setTimeout(() => { window.print(); window.close(); }, 200);
+        setTimeout(() => { window.print(); window.close(); }, 100);
       </script>
     </body>
   </html>
@@ -1057,6 +1188,10 @@ function imprimirTicket() {
   w.document.write(html);
   w.document.close();
 }
+
+
+
+
 
 
 
