@@ -9,13 +9,13 @@ let graficoVariedades = null;
 let graficoIngresos = null;
 let graficoMermas = null;
 
-// ✅ NUEVO: tabla pedidos
+// 📊 ESTADÍSTICAS
+// (IMPORTANTE: asegurate que esta línea tenga // y no un / suelto)
+
+// ✅ NUEVO: tabla pedidos (DISEÑO GLASS + ORDEN + ESTADO FIJO)
 const PEDIDOS_TABLE = {
   tbodyId: "tabla-pedidos-estadisticas",
   countId: "pedidos-count",
-  // Si tenés un <select> para estado de pedidos, poné ese id (opcional).
-  // Si no existe, el endpoint se llamará sin estado.
-  estadoSelectId: "estadistica-estado-pedidos",
   page: 0,
   size: 200,
 };
@@ -31,54 +31,18 @@ function escHtml(s) {
 
 function fmtMoneyAR(n) {
   const num = Number(n) || 0;
-  return (
-    "$" +
-    num.toLocaleString("es-AR", {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    })
-  );
+  return "$" + num.toLocaleString("es-AR", { minimumFractionDigits: 0, maximumFractionDigits: 0 });
 }
 
 function normalizarTipoVenta(tv) {
   const t = String(tv ?? "").trim().toUpperCase();
-  if (/PEDIDOS[\s_]*YA|PYA/.test(t)) return "PEDIDOSYA";
+  if (/PEDIDOS[\s_]*YA|PEDIDOS_YA|PYA/.test(t)) return "PEDIDOSYA";
   if (t === "PARTICULAR") return "PARTICULAR";
   return t || "—";
 }
 
 function normalizarPago(tp) {
-  const t = String(tp ?? "").trim().toUpperCase();
-  return t || "—";
-}
-
-function badgeClassesEstado(estado) {
-  const e = String(estado ?? "").trim().toUpperCase();
-  // Ajustá acá a tus estados reales si querés
-  if (/(ENTREGADO|ENTREGADA|COMPLETADO|COMPLETADA)/.test(e))
-    return "bg-emerald-50 text-emerald-700 border border-emerald-100";
-  if (/(CANCELADO|CANCELADA)/.test(e))
-    return "bg-rose-50 text-rose-700 border border-rose-100";
-  if (/(EN_PREPARACION|EN PREPARACION|PREPARANDO)/.test(e))
-    return "bg-amber-50 text-amber-700 border border-amber-100";
-  if (/(PENDIENTE|NUEVO|NUEVA)/.test(e))
-    return "bg-sky-50 text-sky-700 border border-sky-100";
-  return "bg-slate-100 text-slate-700";
-}
-
-function badgeClassesPago(pago) {
-  const p = String(pago ?? "").trim().toUpperCase();
-  if (/EFECTIVO/.test(p)) return "bg-emerald-50 text-emerald-700 border border-emerald-100";
-  if (/TRANSFER/.test(p)) return "bg-indigo-50 text-indigo-700 border border-indigo-100";
-  if (/MERCADO|MP/.test(p)) return "bg-fuchsia-50 text-fuchsia-700 border border-fuchsia-100";
-  return "bg-slate-100 text-slate-700";
-}
-
-function badgeClassesVenta(venta) {
-  const v = String(venta ?? "").trim().toUpperCase();
-  if (/PEDIDOSYA/.test(v)) return "bg-rose-50 text-rose-700 border border-rose-100";
-  if (/PARTICULAR/.test(v)) return "bg-slate-100 text-slate-700";
-  return "bg-slate-100 text-slate-700";
+  return String(tp ?? "").trim().toUpperCase() || "—";
 }
 
 function setPedidosCount(n) {
@@ -86,79 +50,128 @@ function setPedidosCount(n) {
   if (el) el.textContent = String(Number(n) || 0);
 }
 
+/** ✅ Badge premium para FONDO CLARO (NO usa text-white) */
+function pill(label, dotClass) {
+  return `
+    <span class="inline-flex items-center gap-2 rounded-full px-2.5 py-[3px]
+                 text-[10px] font-black tracking-wide
+                 bg-slate-900/5 border border-slate-200/80 ring-1 ring-slate-900/5
+                 backdrop-blur text-slate-700">
+      <span class="h-1.5 w-1.5 rounded-full ${dotClass}"></span>
+      ${escHtml(label)}
+    </span>
+  `;
+}
+
+function badgeVenta(tipoVenta) {
+  const v = String(tipoVenta ?? "").toUpperCase();
+  if (v === "PEDIDOSYA") return pill("PEDIDOSYA", "bg-rose-500/90");
+  if (v === "PARTICULAR") return pill("PARTICULAR", "bg-slate-400/90");
+  return pill(v || "—", "bg-slate-400/80");
+}
+
+function badgePago(tipoPago) {
+  const p = String(tipoPago ?? "").toUpperCase();
+  if (p.includes("EFECTIVO")) return pill("EFECTIVO", "bg-emerald-500/90");
+  if (p.includes("TRANSFER")) return pill("TRANSFERENCIA", "bg-indigo-500/90");
+  if (p.includes("MP") || p.includes("MERCADO")) return pill("MERCADO PAGO", "bg-fuchsia-500/90");
+  return pill(p || "—", "bg-slate-400/80");
+}
+
+function badgeEstado(estado) {
+  const eRaw = String(estado ?? "").trim().toUpperCase();
+  if (/ENTREG/.test(eRaw)) return pill("ENTREGADO", "bg-emerald-500/90");
+  if (/CANCEL/.test(eRaw)) return pill("CANCELADO", "bg-rose-500/90");
+  if (/PREPAR/.test(eRaw)) return pill("EN PREPARACIÓN", "bg-amber-500/90");
+  if (/PEND/.test(eRaw)) return pill("PENDIENTE", "bg-sky-500/90");
+  return pill(eRaw.replaceAll("_", " ") || "—", "bg-slate-400/80");
+}
+
+// ✅ ORDEN: particulares primero, particulares A→Z, luego pedidosya
+function ordenarPedidosParaTabla(items) {
+  const arr = Array.isArray(items) ? [...items] : [];
+
+  const esParticular = (p) => String(p?.tipoVenta ?? "").toUpperCase() === "PARTICULAR";
+  const esPedidosYa = (p) => /PEDIDOS[\s_]*YA|PEDIDOS_YA|PYA/.test(String(p?.tipoVenta ?? "").toUpperCase());
+
+  const nombreCliente = (p) => String(p?.cliente ?? "").trim().toLocaleUpperCase("es-AR");
+
+  arr.sort((a, b) => {
+    const ga = esParticular(a) ? 0 : esPedidosYa(a) ? 1 : 2;
+    const gb = esParticular(b) ? 0 : esPedidosYa(b) ? 1 : 2;
+    if (ga !== gb) return ga - gb;
+
+    if (ga === 0 && gb === 0) {
+      return nombreCliente(a).localeCompare(nombreCliente(b), "es", { sensitivity: "base" });
+    }
+    return 0;
+  });
+
+  return arr;
+}
+
 function renderizarTablaPedidos(items) {
   const tbody = document.getElementById(PEDIDOS_TABLE.tbodyId);
   if (!tbody) return;
 
-  const arr = Array.isArray(items) ? items : [];
-
+  const arr = ordenarPedidosParaTabla(items);
   setPedidosCount(arr.length);
 
   if (arr.length === 0) {
     tbody.innerHTML = `
       <tr>
-        <td colspan="6" class="px-5 py-8 text-center text-[12px] text-slate-500">
-          No hay pedidos para mostrar con estos filtros.
+        <td colspan="6" class="px-5 py-7 text-center text-[12px] text-slate-500">
+          No hay pedidos para mostrar.
         </td>
       </tr>
     `;
     return;
   }
 
-  tbody.innerHTML = arr
-    .map((p) => {
-      const cliente = escHtml(String(p.cliente ?? "").trim().toLocaleUpperCase("es-AR"));
-      const tipoVenta = normalizarTipoVenta(p.tipoVenta);
-      const tipoPago = normalizarPago(p.tipoPago);
-      const estado = String(p.estadoPedido ?? "").trim().toUpperCase() || "—";
+  tbody.innerHTML = arr.map((p) => {
+    const cliente = String(p?.cliente ?? "").trim().toLocaleUpperCase("es-AR");
+    const tipoVenta = normalizarTipoVenta(p?.tipoVenta);
+    const tipoPago = normalizarPago(p?.tipoPago);
+    const estado = String(p?.estadoPedido ?? "").trim().toUpperCase() || "—";
 
-      const esPya = tipoVenta === "PEDIDOSYA" || /PEDIDOS[\s_]*YA/.test(String(p.tipoVenta ?? "").toUpperCase());
-      const numPya = esPya ? String(p.numeroPedidoPedidosYa ?? "").trim() : "";
-      const numPyaShow = numPya ? escHtml(numPya) : "—";
+    const esPya = tipoVenta === "PEDIDOSYA";
+    const numPya = esPya ? String(p?.numeroPedidoPedidosYa ?? "").trim() : "";
+    const numPyaShow = numPya ? escHtml(numPya) : "—";
 
-      const total = fmtMoneyAR(p.totalPedido);
+    const total = fmtMoneyAR(p?.totalPedido);
 
-      return `
-        <tr class="hover:bg-slate-50 transition-colors">
-          <td class="px-5 py-3">
-            <div class="font-extrabold text-[13px] text-slate-900 truncate max-w-[260px]">
-              ${cliente || "—"}
-            </div>
-          </td>
+    return `
+      <tr class="group transition-colors duration-150 hover:bg-slate-900/[0.03]">
+        <td class="px-5 py-1.5 relative">
+          <span class="absolute left-0 top-2 bottom-2 w-[2px] rounded-full
+                       bg-rose-500/0 group-hover:bg-rose-500/70"></span>
 
-          <td class="px-5 py-3">
-            <span class="inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-extrabold ${badgeClassesVenta(tipoVenta)}">
-              ${escHtml(tipoVenta)}
-            </span>
-          </td>
+          <div class="font-black text-[12px] text-slate-900 truncate max-w-[260px] group-hover:text-slate-950">
+            ${escHtml(cliente || "—")}
+          </div>
+        </td>
 
-          <td class="px-5 py-3">
-            <span class="inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-extrabold ${badgeClassesPago(tipoPago)}">
-              ${escHtml(tipoPago)}
-            </span>
-          </td>
+        <td class="px-5 py-1.5">${badgeVenta(tipoVenta)}</td>
+        <td class="px-5 py-1.5">${badgePago(tipoPago)}</td>
 
-          <td class="px-5 py-3">
-            <span class="text-[12px] font-extrabold text-slate-700 tabular-nums">
-              ${numPyaShow}
-            </span>
-          </td>
+        <td class="px-5 py-1.5">
+          <span class="text-[12px] font-extrabold text-slate-600 tabular-nums">
+            ${numPyaShow}
+          </span>
+        </td>
 
-          <td class="px-5 py-3 text-right">
-            <span class="text-[13px] font-extrabold text-slate-900 tabular-nums">
-              ${escHtml(total)}
-            </span>
-          </td>
+        <td class="px-5 py-1.5 text-right">
+          <span class="text-[12px] font-black text-slate-900 tabular-nums group-hover:text-slate-950">
+            ${escHtml(total)}
+          </span>
+        </td>
 
-          <td class="px-5 py-3 text-center">
-            <span class="inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-extrabold ${badgeClassesEstado(estado)}">
-              ${escHtml(estado.replaceAll("_", " "))}
-            </span>
-          </td>
-        </tr>
-      `;
-    })
-    .join("");
+        <td class="px-5 py-1.5 text-center">
+          ${badgeEstado(estado)}
+        </td>
+      </tr>
+    `;
+  }).join("");
 }
 
 function limpiarTablaPedidos(mensaje) {
@@ -168,7 +181,7 @@ function limpiarTablaPedidos(mensaje) {
   setPedidosCount(0);
   tbody.innerHTML = `
     <tr>
-      <td colspan="6" class="px-5 py-8 text-center text-[12px] text-slate-500">
+      <td colspan="6" class="px-5 py-7 text-center text-[12px] text-slate-500">
         ${escHtml(mensaje || "No hay datos para mostrar.")}
       </td>
     </tr>
@@ -176,18 +189,17 @@ function limpiarTablaPedidos(mensaje) {
 }
 
 async function cargarPedidosDelDia(fecha) {
-  const tbody = document.getElementById("tabla-pedidos-estadisticas");
+  const tbody = document.getElementById(PEDIDOS_TABLE.tbodyId);
   if (!tbody) return;
 
   try {
-    // ✅ Estado fijo
-    const estado = "ENTREGADO";
+    const estado = "ENTREGADO"; // ✅ fijo
 
     const params = new URLSearchParams();
     params.set("estado", estado);
-    params.set("fecha", fecha); // YYYY-MM-DD
-    params.set("page", "0");
-    params.set("size", "200");
+    params.set("fecha", fecha);
+    params.set("page", String(PEDIDOS_TABLE.page));
+    params.set("size", String(PEDIDOS_TABLE.size));
 
     const url = `${window.API_BASE_URL}/estadistica/pedidos?${params.toString()}`;
     console.log("📦 URL pedidos:", url);
@@ -206,6 +218,7 @@ async function cargarPedidosDelDia(fecha) {
     limpiarTablaPedidos("No se pudieron cargar los pedidos para esa fecha.");
   }
 }
+
 
 
 // 👉 se llama desde sidebar.js cuando entras a la sección
