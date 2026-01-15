@@ -191,11 +191,34 @@ function renderGraficoMensual(data) {
   const labels = (data ?? []).map((x) => x.mes);
   const values = (data ?? []).map((x) => Number(x.balance ?? 0));
 
+  const hasNeg = values.some(v => v < 0);
+  const hasPos = values.some(v => v > 0);
+
+  const minV = Math.min(...values, 0);
+  const maxV = Math.max(...values, 0);
+
+  // ✅ padding para que la barra nunca quede pegada arriba/abajo
+  let yMin, yMax;
+  if (!hasNeg) {
+    yMin = 0;
+    yMax = (maxV === 0 ? 1 : maxV) * 1.12;
+  } else if (!hasPos) {
+    yMax = 0;
+    yMin = (minV === 0 ? -1 : minV) * 1.12;
+  } else {
+    const range = (maxV - minV) || 1;
+    const pad = range * 0.12;
+    yMin = minV - pad;
+    yMax = maxV + pad;
+  }
+
   const ctx = canvas.getContext("2d");
 
   if (_chartMensual) {
     _chartMensual.data.labels = labels;
     _chartMensual.data.datasets[0].data = values;
+    _chartMensual.options.scales.y.min = yMin;
+    _chartMensual.options.scales.y.max = yMax;
     _chartMensual.update();
     return;
   }
@@ -209,8 +232,17 @@ function renderGraficoMensual(data) {
           label: "Balance",
           data: values,
           borderWidth: 0,
-          borderRadius: 10,
           backgroundColor: "rgba(239, 68, 68, 0.85)",
+
+          // ✅ redondeo correcto según signo
+          borderRadius: (c) => {
+            const v = Number(c.raw ?? 0);
+            const r = 10;
+            return v >= 0
+              ? { topLeft: r, topRight: r, bottomLeft: 0, bottomRight: 0 }
+              : { topLeft: 0, topRight: 0, bottomLeft: r, bottomRight: r };
+          },
+          borderSkipped: false,
 
           barPercentage: 0.45,
           categoryPercentage: 0.6,
@@ -241,7 +273,15 @@ function renderGraficoMensual(data) {
           ticks: { font: { weight: "700" } }
         },
         y: {
-          grid: { display: false },
+          min: yMin,
+          max: yMax,
+
+          // (opcional) si querés que sea obvio el “0” aunque no muestres ticks:
+          grid: {
+            display: false,
+            color: (c) => (c.tick?.value === 0 ? "rgba(15,23,42,0.18)" : "transparent"),
+            drawBorder: false
+          },
           border: { display: false },
           ticks: { display: false }
         }
@@ -249,6 +289,7 @@ function renderGraficoMensual(data) {
     }
   });
 }
+
 
 async function cargarGraficoMensualPorAnio(anio) {
   const res = await fetch(buildUrlGrafico(anio), { headers: { Accept: "application/json" } });
