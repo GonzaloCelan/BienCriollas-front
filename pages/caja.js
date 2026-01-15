@@ -1,16 +1,14 @@
 // ============================================================================
-// ✅ CAJA.JS (limpio + tablas de pedidos)
+// ✅ CAJA.JS (corregido)
 // - Fecha "hoy" local (sin UTC / sin toISOString)
 // - Bloqueo coherente (basado en backend):
 //    * Futuro: no permite operar
 //    * Pasado: solo lectura
 //    * Hoy: habilitado si estado != CERRADA
-// - Al cerrar: bloquea PedidosYa + Egresos + Cerrar caja (por estado backend)
-// - Al refrescar: mantiene estado (no usa localStorage)
-// - ✅ NUEVO: consume /api/caja/pedidos?estado=ENTREGADO&fecha=... y pinta 3 tablas:
-//    * Particular EFECTIVO
-//    * Particular TRANSFERENCIA
-//    * PEDIDOS_YA
+// - Al cerrar: ✅ cachea CERRADA en front sí o sí (aunque el back no devuelva estado)
+// - ✅ FIX: normaliza estado (trim/upper) para que compare bien
+// - ✅ FIX: al cerrar/bloquear, también desactiva toggle PedidosYa y cierra el inline
+// - ✅ NUEVO: consume /api/caja/pedidos?estado=ENTREGADO&fecha=... y pinta 3 tablas
 // ============================================================================
 
 // -------------------------------
@@ -30,6 +28,10 @@ function setDisabled(el, disabled) {
   el.classList.toggle("opacity-40", disabled);
   el.classList.toggle("cursor-not-allowed", disabled);
 }
+function setText(id, value) {
+  const el = $(id);
+  if (el) el.textContent = value;
+}
 
 // -------------------------------
 // Helpers formato
@@ -40,18 +42,10 @@ function fmtMoneyAR(n) {
 }
 function fmtHora(hhmmss) {
   if (!hhmmss) return "—";
-  // "21:13:00" -> "21:13"
-  return String(hhmmss).slice(0, 5);
+  return String(hhmmss).slice(0, 5); // "21:13:00" -> "21:13"
 }
-function fmtPedidoId(id) {
-  if (id == null) return "—";
-  const s = String(id);
-  // #0007
-  return `#${s.padStart(4, "0")}`;
-}
-function setText(id, value) {
-  const el = $(id);
-  if (el) el.textContent = value;
+function formatearFechaVisual(fechaISO) {
+  return String(fechaISO ?? "").split("-").reverse().join("/");
 }
 
 // -------------------------------
@@ -78,24 +72,120 @@ function esHoy(fechaISO) {
   return fechaISO === obtenerFechaHoy();
 }
 function esFechaFutura(fechaISO) {
-  // Comparación segura porque es YYYY-MM-DD
-  return fechaISO > obtenerFechaHoy();
-}
-function formatearFechaVisual(fechaISO) {
-  return fechaISO.split("-").reverse().join("/");
+  return fechaISO > obtenerFechaHoy(); // YYYY-MM-DD compara seguro
 }
 function getFechaVista() {
   return $("caja-fecha")?.value || obtenerFechaHoy();
 }
 
-// -------------------------------
-// Estado de caja (BACKEND)
-// -------------------------------
+// ============================================================================
+// ✅ PEDIDOS YA (INLINE PRO, SIN MODAL)
+// ============================================================================
+
+function setPyInlineVisible(visible) {
+  const wrap = $("py-inline");
+  const fecha = $("py-fecha");
+  const monto = $("py-monto");
+
+  if (!wrap || !fecha || !monto) return;
+
+  wrap.classList.toggle("hidden", !visible);
+  wrap.classList.toggle("inline-flex", visible);
+
+  fecha.disabled = !visible;
+  monto.disabled = !visible;
+
+  if (visible) {
+    if (!fecha.value) fecha.value = getFechaVista();
+    setTimeout(() => monto.focus(), 0);
+  }
+}
+
+function setPyButtonMode(mode) {
+  // mode: "idle" | "edit" | "saving"
+  const btn = $("btn-pedidosya");
+  const label = $("py-btn-label");
+  const spinner = $("py-btn-spinner");
+  const toggle = $("py-toggle");
+  const fecha = $("py-fecha");
+  const monto = $("py-monto");
+
+  if (!btn || !label || !spinner) return;
+
+  if (mode === "idle") {
+    btn.disabled = false;
+    spinner.classList.add("hidden");
+    label.classList.remove("hidden");
+    label.textContent = "PedidosYa";
+    btn.classList.remove("bg-rose-600", "text-white", "border-rose-600");
+    btn.classList.add("bg-white", "text-rose-600", "border-rose-200");
+    btn.classList.add("hover:bg-rose-50");
+  }
+
+  if (mode === "edit") {
+    btn.disabled = false;
+    spinner.classList.add("hidden");
+    label.classList.remove("hidden");
+    label.textContent = "Guardar PedidosYa";
+    btn.classList.remove("bg-white", "text-rose-600", "border-rose-200");
+    btn.classList.add("bg-rose-600", "text-white", "border-rose-600");
+    btn.classList.remove("hover:bg-rose-50");
+    btn.classList.add("hover:opacity-95");
+  }
+
+  if (mode === "saving") {
+    btn.disabled = true;
+    label.classList.add("hidden");
+    spinner.classList.remove("hidden");
+    spinner.classList.add("inline-flex");
+
+    if (toggle) toggle.disabled = true;
+    if (fecha) fecha.disabled = true;
+    if (monto) monto.disabled = true;
+  }
+}
+
+function unlockPyInputs() {
+  const toggle = $("py-toggle");
+  const fecha = $("py-fecha");
+  const monto = $("py-monto");
+
+  if (toggle) toggle.disabled = false;
+
+  if (toggle?.checked) {
+    if (fecha) fecha.disabled = false;
+    if (monto) monto.disabled = false;
+  } else {
+    if (fecha) fecha.disabled = true;
+    if (monto) monto.disabled = true;
+  }
+}
+
+function hardResetPyUI({ disableToggle = false } = {}) {
+  const toggle = $("py-toggle");
+  if (toggle) {
+    toggle.checked = false;
+    toggle.disabled = !!disableToggle;
+  }
+  setPyInlineVisible(false);
+  setPyButtonMode("idle");
+  if ($("py-monto")) $("py-monto").value = "";
+}
+
+// ============================================================================
+// ✅ ESTADO DE CAJA (BACKEND) + NORMALIZACIÓN
+// ============================================================================
+
 const CAJA_META_CACHE = new Map(); // fechaISO -> { estado, cerradaEn }
 const ESTADO = {
   ABIERTA: "ABIERTA",
   CERRADA: "CERRADA"
 };
+
+function normEstado(v) {
+  const s = String(v ?? "").trim().toUpperCase();
+  return s || null;
+}
 
 async function fetchCajaMeta(fechaISO) {
   const base = window.API_BASE_URL;
@@ -105,18 +195,18 @@ async function fetchCajaMeta(fechaISO) {
     const d = await fetchJsonOrEmpty(`${base}/api/caja/meta?fecha=${fechaISO}`);
     if (d) {
       return {
-        estado: d?.estado ?? null,
+        estado: normEstado(d?.estado),
         cerradaEn: d?.cerradaEn ?? d?.cerradoEn ?? null
       };
     }
   } catch (_) {}
 
-  // 2) Fallback: intentar leer "estado" desde ingresos (si lo devolvés ahí)
+  // 2) Fallback: intentar leer "estado" desde ingresos
   try {
     const d = await fetchJsonOrEmpty(`${base}/api/caja/ingresos?fecha=${fechaISO}`);
     if (d) {
       return {
-        estado: d?.estado ?? null,
+        estado: normEstado(d?.estado),
         cerradaEn: d?.cerradaEn ?? d?.cerradoEn ?? null
       };
     }
@@ -134,22 +224,27 @@ async function getCajaMeta(fechaISO, { force = false } = {}) {
 
 async function estaCerradaBackend(fechaISO) {
   const meta = await getCajaMeta(fechaISO);
-  return meta?.estado === ESTADO.CERRADA;
+  return normEstado(meta?.estado) === ESTADO.CERRADA;
 }
 
-// -------------------------------
-// UI: aplicar estado según fecha + estado backend
-// -------------------------------
+// ============================================================================
+// ✅ UI: aplicar estado según fecha + estado backend
+// ============================================================================
+
 async function aplicarEstadoUI(fechaISO) {
   const btnCerrar = $("btn-cerrar-caja");
   const btnEgreso = $("btn-abrir-egreso");
   const btnPy = $("btn-pedidosya");
+  const pyToggle = $("py-toggle");
 
   // FUTURO: no operar
   if (esFechaFutura(fechaISO)) {
     setDisabled(btnCerrar, true);
     setDisabled(btnEgreso, true);
     setDisabled(btnPy, true);
+    setDisabled(pyToggle, true);
+
+    hardResetPyUI({ disableToggle: true });
 
     if (btnCerrar) {
       btnCerrar.textContent = "🚫 Fecha futura";
@@ -159,13 +254,17 @@ async function aplicarEstadoUI(fechaISO) {
   }
 
   const hoy = esHoy(fechaISO);
-  const { estado } = await getCajaMeta(fechaISO);
+  const meta = await getCajaMeta(fechaISO);
+  const estado = normEstado(meta?.estado);
 
   // PASADO: solo lectura
   if (!hoy) {
     setDisabled(btnCerrar, true);
     setDisabled(btnEgreso, true);
     setDisabled(btnPy, true);
+    setDisabled(pyToggle, true);
+
+    hardResetPyUI({ disableToggle: true });
 
     if (btnCerrar) {
       if (estado === ESTADO.CERRADA) {
@@ -184,6 +283,9 @@ async function aplicarEstadoUI(fechaISO) {
     setDisabled(btnCerrar, true);
     setDisabled(btnEgreso, true);
     setDisabled(btnPy, true);
+    setDisabled(pyToggle, true);
+
+    hardResetPyUI({ disableToggle: true });
 
     if (btnCerrar) {
       btnCerrar.textContent = "✔ Caja cerrada";
@@ -196,6 +298,10 @@ async function aplicarEstadoUI(fechaISO) {
   setDisabled(btnCerrar, false);
   setDisabled(btnEgreso, false);
   setDisabled(btnPy, false);
+  setDisabled(pyToggle, false);
+
+  // PedidosYa queda en modo idle, no te lo dejo “abierto” si venías de cerrado
+  hardResetPyUI({ disableToggle: false });
 
   if (btnCerrar) {
     btnCerrar.textContent = "Cerrar caja del día";
@@ -203,9 +309,9 @@ async function aplicarEstadoUI(fechaISO) {
   }
 }
 
-// -------------------------------
+// ============================================================================
 // Animación / UI balance
-// -------------------------------
+// ============================================================================
 function animarNumero(elemento, valorFinal, duracion = 800) {
   if (!elemento) return;
 
@@ -245,9 +351,9 @@ function pintarColorBalance(balance) {
   else el.classList.add("text-red-600");
 }
 
-// -------------------------------
+// ============================================================================
 // Toastify
-// -------------------------------
+// ============================================================================
 function toastOk(msg) {
   if (typeof Toastify === "undefined") return alert(msg);
   Toastify({
@@ -304,7 +410,6 @@ async function cargarCajaPorFecha() {
 
   setText("caja-dia-actual", `Caja del día: ${formatearFechaVisual(fecha)}`);
 
-  // refrescar estado desde backend cada vez que cambias de fecha
   await getCajaMeta(fecha, { force: true });
   await aplicarEstadoUI(fecha);
 
@@ -343,10 +448,10 @@ async function cargarIngresos(fecha) {
     setText("kpi-ingresos-transferencias", fmtMoneyAR(transferencia));
     setText("kpi-mermas", fmtMoneyAR(egresosTotales));
 
-    // Si tu backend devuelve estado acá, cachealo
+    // ✅ Si el backend devuelve estado acá, cachealo normalizado
     if (data?.estado) {
       CAJA_META_CACHE.set(fecha, {
-        estado: data.estado,
+        estado: normEstado(data.estado),
         cerradaEn: data?.cerradaEn ?? data?.cerradoEn ?? null
       });
     }
@@ -438,7 +543,6 @@ function renderTablaPedidos(tbodyId, rows, { tipo }) {
   const tbody = $(tbodyId);
   if (!tbody) return;
 
-  // ✅ Ahora todas tus tablas tienen 3 columnas
   const cols = 3;
   tbody.innerHTML = "";
 
@@ -457,7 +561,6 @@ function renderTablaPedidos(tbodyId, rows, { tipo }) {
     const tr = document.createElement("tr");
     tr.className = "border-b border-slate-50 hover:bg-slate-50 transition-colors";
 
-    // ✅ EFECTIVO / TRANSFERENCIA: Hora + Cliente + Total
     if (tipo !== "pedidosya") {
       const tdHora = document.createElement("td");
       tdHora.className = "px-3 py-2 font-extrabold text-slate-700";
@@ -474,10 +577,7 @@ function renderTablaPedidos(tbodyId, rows, { tipo }) {
       tr.appendChild(tdHora);
       tr.appendChild(tdCliente);
       tr.appendChild(tdTotal);
-    }
-
-    // ✅ PEDIDOS_YA: N° plataforma + Cliente + Total (sin hora)
-    else {
+    } else {
       const tdNro = document.createElement("td");
       tdNro.className = "px-3 py-2 font-extrabold text-slate-700";
       tdNro.textContent = p.numeroPedidoPedidosYa ?? "—";
@@ -499,24 +599,17 @@ function renderTablaPedidos(tbodyId, rows, { tipo }) {
   });
 }
 
-
 function sumarTotal(rows) {
   return (rows || []).reduce((acc, p) => acc + Number(p?.totalPedido ?? 0), 0);
 }
 
 async function cargarPedidosParaTablas(fecha) {
-  // IDs usados en tu HTML de tablas:
-  // tbody-efectivo, tbody-transferencia, tbody-pedidosya
-  // total-efectivo, count-efectivo, total-transferencia, count-transferencia,
-  // total-pedidosya, count-pedidosya, total-listado-global, count-global
-
   try {
     const base = window.API_BASE_URL;
     const url = `${base}/api/caja/pedidos?estado=ENTREGADO&fecha=${fecha}&page=0&size=500`;
     const data = await fetchJsonOrEmpty(url);
 
     const pedidos = Array.isArray(data?.content) ? data.content : [];
-    // normalizamos por las dudas
     const norm = pedidos.map((p) => ({
       idPedido: p.idPedido ?? null,
       cliente: p.cliente ?? "",
@@ -529,9 +622,7 @@ async function cargarPedidosParaTablas(fecha) {
     }));
 
     const efectivo = norm.filter((p) => p.tipoVenta === "PARTICULAR" && p.tipoPago === "EFECTIVO");
-    const transferencia = norm.filter(
-      (p) => p.tipoVenta === "PARTICULAR" && p.tipoPago === "TRANSFERENCIA"
-    );
+    const transferencia = norm.filter((p) => p.tipoVenta === "PARTICULAR" && p.tipoPago === "TRANSFERENCIA");
     const pedidosya = norm.filter((p) => p.tipoVenta === "PEDIDOS_YA");
 
     renderTablaPedidos("tbody-efectivo", efectivo, { tipo: "efectivo" });
@@ -557,7 +648,6 @@ async function cargarPedidosParaTablas(fecha) {
   } catch (err) {
     console.error("Error cargando pedidos para tablas:", err);
 
-    // fallback visual si falla
     renderTablaPedidos("tbody-efectivo", [], { tipo: "efectivo" });
     renderTablaPedidos("tbody-transferencia", [], { tipo: "transferencia" });
     renderTablaPedidos("tbody-pedidosya", [], { tipo: "pedidosya" });
@@ -638,93 +728,8 @@ async function registrarEgreso() {
 }
 
 // ============================================================================
-// ⭐ PEDIDOS YA (INLINE PRO, SIN MODAL)
-// - Botón cambia texto según toggle
-// - Spinner + bloqueo mientras guarda
-// - Enter para guardar desde monto
+// ⭐ PEDIDOS YA (INLINE) - validaciones + guardar
 // ============================================================================
-
-function setPyInlineVisible(visible) {
-  const wrap = $("py-inline");
-  const fecha = $("py-fecha");
-  const monto = $("py-monto");
-
-  if (!wrap || !fecha || !monto) return;
-
-  wrap.classList.toggle("hidden", !visible);
-  wrap.classList.toggle("inline-flex", visible);
-
-  fecha.disabled = !visible;
-  monto.disabled = !visible;
-
-  if (visible) {
-    if (!fecha.value) fecha.value = getFechaVista();
-    setTimeout(() => monto.focus(), 0);
-  }
-}
-
-function setPyButtonMode(mode) {
-  // mode: "idle" | "edit" | "saving"
-  const btn = $("btn-pedidosya");
-  const label = $("py-btn-label");
-  const spinner = $("py-btn-spinner");
-  const toggle = $("py-toggle");
-  const fecha = $("py-fecha");
-  const monto = $("py-monto");
-
-  if (!btn || !label || !spinner) return;
-
-  if (mode === "idle") {
-    btn.disabled = false;
-    spinner.classList.add("hidden");
-    label.classList.remove("hidden");
-    label.textContent = "PedidosYa";
-    btn.classList.remove("bg-rose-600", "text-white", "border-rose-600");
-    btn.classList.add("bg-white", "text-rose-600", "border-rose-200");
-    btn.classList.add("hover:bg-rose-50");
-  }
-
-  if (mode === "edit") {
-    btn.disabled = false;
-    spinner.classList.add("hidden");
-    label.classList.remove("hidden");
-    label.textContent = "Guardar PedidosYa";
-    btn.classList.remove("bg-white", "text-rose-600", "border-rose-200");
-    btn.classList.add("bg-rose-600", "text-white", "border-rose-600");
-    btn.classList.remove("hover:bg-rose-50");
-    btn.classList.add("hover:opacity-95");
-  }
-
-  if (mode === "saving") {
-    btn.disabled = true;
-    label.classList.add("hidden");
-    spinner.classList.remove("hidden");
-    spinner.classList.add("inline-flex");
-
-    // bloquear inputs mientras guarda
-    if (toggle) toggle.disabled = true;
-    if (fecha) fecha.disabled = true;
-    if (monto) monto.disabled = true;
-  }
-}
-
-function unlockPyInputs() {
-  const toggle = $("py-toggle");
-  const fecha = $("py-fecha");
-  const monto = $("py-monto");
-
-  if (toggle) toggle.disabled = false;
-
-  // si el toggle sigue ON, inputs quedan habilitados
-  if (toggle?.checked) {
-    if (fecha) fecha.disabled = false;
-    if (monto) monto.disabled = false;
-  } else {
-    if (fecha) fecha.disabled = true;
-    if (monto) monto.disabled = true;
-  }
-}
-
 async function validarPuedeOperarPY(fechaVista) {
   if (esFechaFutura(fechaVista)) {
     toastError("No podés operar una fecha futura.");
@@ -766,7 +771,7 @@ async function registrarPedidosYaInline() {
     await fetchJsonOrEmpty(`${base}/api/caja/registrar-py`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ fecha, monto }),
+      body: JSON.stringify({ fecha, monto })
     });
 
     toastOk("PedidosYa registrado");
@@ -777,11 +782,10 @@ async function registrarPedidosYaInline() {
     setPyInlineVisible(false);
     if ($("py-monto")) $("py-monto").value = "";
 
-    // refrescar KPIs / balance / tablas
     await Promise.allSettled([
       cargarIngresos(fechaVista),
       cargarBalance(fechaVista),
-      cargarPedidosParaTablas(fechaVista),
+      cargarPedidosParaTablas(fechaVista)
     ]);
 
     setPyButtonMode("idle");
@@ -789,7 +793,6 @@ async function registrarPedidosYaInline() {
   } catch (e) {
     console.error(e);
     toastError("No se pudo registrar PedidosYa");
-    // volver al modo edit (porque el toggle seguía ON)
     setPyButtonMode("edit");
     unlockPyInputs();
   }
@@ -837,7 +840,7 @@ on("py-monto", "keydown", async (e) => {
   }
 });
 
-// (Opcional) inicializar en modo idle por si el HTML carga con toggle apagado
+// Inicializar modo idle
 setPyButtonMode("idle");
 setPyInlineVisible(false);
 
@@ -879,15 +882,13 @@ async function cerrarCajaDiaria() {
     const base = window.API_BASE_URL;
     const data = await fetchJsonOrEmpty(`${base}/api/caja/cierre?fecha=${fecha}`, { method: "POST" });
 
-    if (data?.estado) {
-      CAJA_META_CACHE.set(fecha, {
-        estado: data.estado,
-        cerradaEn: data?.cerradaEn ?? data?.cerradoEn ?? null
-      });
-    } else {
-      await getCajaMeta(fecha, { force: true });
-    }
+    // ✅ FIX CLAVE: si el POST salió OK, en front lo damos por CERRADO (aunque el back no devuelva estado)
+    CAJA_META_CACHE.set(fecha, {
+      estado: ESTADO.CERRADA,
+      cerradaEn: data?.cerradaEn ?? data?.cerradoEn ?? null
+    });
 
+    // pintar balance final (si vino)
     if (data?.balanceFinal != null) {
       animarNumero($("caja-balance"), Number(data.balanceFinal));
       pintarColorBalance(Number(data.balanceFinal));
@@ -897,7 +898,8 @@ async function cerrarCajaDiaria() {
 
     await aplicarEstadoUI(fecha);
     mostrarToastCajaCerrada();
-  } catch (_) {
+  } catch (e) {
+    console.error(e);
     toastError("No se pudo cerrar la caja");
   }
 }
