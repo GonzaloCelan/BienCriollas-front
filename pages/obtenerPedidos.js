@@ -962,7 +962,7 @@ function imprimirTicket() {
 
   const fechaHtml = `<p class="fecha">${fechaPedidoFmt}</p>`;
 
-  // ✅ Total empanadas (para calcular cajas rápido)
+  // ✅ Total empanadas
   const totalEmpanadas = ultimoDetallePedido.reduce(
     (acc, d) => acc + Number(d?.cantidad || 0),
     0
@@ -984,6 +984,10 @@ function imprimirTicket() {
 
   const w = window.open("", "_blank", "width=400,height=600");
   const PRINTABLE_MM = 52;
+
+  // ✅ Datos del local
+  const DIRECCION_LOCAL = "Brasil Oeste 2388";
+  const CEL_LOCAL = "+549244449895";
 
   const html = `
   <!DOCTYPE html>
@@ -1020,9 +1024,21 @@ function imprimirTicket() {
         .titulo {
           text-align: center;
           font-weight: 900;
-          margin: 0 0 1.5mm 0;
+          margin: 0 0 1mm 0;
           font-size: 16px;
           letter-spacing: 0.2px;
+        }
+
+        /* ✅ NUEVO: datos del local */
+        .datos-local{
+          text-align: center;
+          margin: 0 0 1.2mm 0;
+          font-size: 10px;
+          font-weight: 700;
+          line-height: 1.15;
+        }
+        .datos-local .linea{
+          margin: 0.2mm 0;
         }
 
         .subtitulo {
@@ -1032,7 +1048,6 @@ function imprimirTicket() {
           font-weight: 800;
         }
 
-        /* ✅ fecha/hora */
         .fecha{
           text-align: center;
           margin: 0 0 2mm 0;
@@ -1046,7 +1061,6 @@ function imprimirTicket() {
           font-weight: 900;
         }
 
-        /* ✅ pago */
         .pago{
           margin: 0 0 1mm 0;
           font-size: 10px;
@@ -1065,7 +1079,6 @@ function imprimirTicket() {
         .col-var { width: calc(100% - 14mm); word-break: break-word; }
         .col-cant { width: 14mm; text-align: right; white-space: nowrap; }
 
-        /* ✅ total empanadas (debajo del listado) */
         tr.total-emp td{
           border-top: 1px solid #000;
           padding-top: 1.5mm;
@@ -1080,7 +1093,6 @@ function imprimirTicket() {
           font-weight: 900;
         }
 
-        /* ✅ TOTAL $ (apilado, centrado, no se sale) */
         tfoot tr.total-block td{
           border-top: 2px solid #000;
           padding-top: 2mm;
@@ -1111,7 +1123,6 @@ function imprimirTicket() {
           white-space: nowrap;
         }
 
-        /* ✅ leyenda fiscal */
         .nota-wrap { margin-top: 3mm; }
         .nota-sep {
           border-top: 1px dotted #000;
@@ -1133,6 +1144,13 @@ function imprimirTicket() {
         </div>
 
         <div class="titulo">Bien Criollas</div>
+
+        <!-- ✅ NUEVO: Dirección + Cel -->
+        <div class="datos-local">
+          <div class="linea">${DIRECCION_LOCAL}</div>
+          <div class="linea">Cel: ${CEL_LOCAL}</div>
+        </div>
+
         <div class="subtitulo">
           Pedido ${numeroPedido}<span class="badge"> - ${tipoVentaLabel}</span>
         </div>
@@ -1152,7 +1170,6 @@ function imprimirTicket() {
           <tbody>
             ${filasHtml}
 
-            <!-- ✅ Total empanadas -->
             <tr class="total-emp">
               <td class="col-var total-emp-label">Cant. total</td>
               <td class="col-cant total-emp-value">${totalEmpanadas}</td>
@@ -1188,6 +1205,7 @@ function imprimirTicket() {
   w.document.write(html);
   w.document.close();
 }
+
 
 
 

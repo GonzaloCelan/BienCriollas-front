@@ -2268,17 +2268,16 @@
 
 </div>
 
-<div class="mt-6 rounded-2xl border border-slate-200/70
-            bg-white/70 backdrop-blur-xl
-            shadow-[0_20px_60px_-35px_rgba(0,0,0,0.22)]
+<div class="mt-6 rounded-2xl 
+            bg-transparent backdrop-blur-xl
             overflow-hidden
             text-slate-900">  <!-- 👈 CLAVE: corta el text-white heredado -->
 
-  <div class="px-5 py-3 border-b border-slate-200/70
-              bg-gradient-to-b from-white/80 to-white/50
+  <div class="px-5 py-3 
+              bg-transparent
               flex items-center justify-between gap-3">
     <div class="min-w-0">
-      <h3 class="text-[13px] font-black tracking-tight text-slate-900">
+      <h3 class="text-[15px] font-black tracking-tight text-slate-900">
         Pedidos
       </h3>
       <p class="text-[11px] text-slate-500 mt-0.5">
@@ -2287,7 +2286,7 @@
     </div>
 
     <span class="inline-flex items-center gap-2 rounded-full px-3 py-1 text-[10px] font-black tracking-wide
-                 bg-slate-900/5 border border-slate-200/70 ring-1 ring-slate-900/5
+                 bg-slate-900/5 border border-slate-200/85 ring-1 ring-slate-900/5
                  text-slate-600">
       <span class="h-1.5 w-1.5 rounded-full bg-rose-500/90"></span>
       <span id="pedidos-count">0</span> pedidos
@@ -2296,18 +2295,20 @@
 
   <div class="overflow-x-auto">
     <table class="min-w-[980px] w-full text-left">
-      <thead class="sticky top-0 z-10 bg-white/85 backdrop-blur-xl">
-        <tr class="text-[10px] uppercase tracking-[0.18em] font-extrabold text-slate-500">
-          <th class="px-5 py-2.5">CLIENTE</th>
-          <th class="px-5 py-2.5">TIPO DE VENTA</th>
-          <th class="px-5 py-2.5">TIPO DE PAGO</th>
-          <th class="px-5 py-2.5">N° PEDIDO (PYA)</th>
-          <th class="px-5 py-2.5 text-right">TOTAL</th>
-          <th class="px-5 py-2.5 text-center">ESTADO</th>
-        </tr>
-      </thead>
+     <thead class="sticky top-0 z-10 bg-red-500/90 text-white backdrop-blur-xl">
+  <tr class="text-[10px] uppercase tracking-[0.18em] font-extrabold text-white">
+    <th class="px-5 py-2.5">CLIENTE</th>
+    <th class="px-5 py-2.5">TIPO DE VENTA</th>
+    <th class="px-5 py-2.5">TIPO DE PAGO</th>
+    <th class="px-5 py-2.5">N° PEDIDO (PEDIDOSYA)</th>
+    <th class="px-5 py-2.5 text-right">TOTAL</th>
+    <th class="px-5 py-2.5 text-center">ESTADO</th>
+  </tr>
+</thead>
 
-      <tbody id="tabla-pedidos-estadisticas" class="divide-y divide-slate-200/70"></tbody>
+
+
+      <tbody id="tabla-pedidos-estadisticas" class="bg-white"></tbody>
     </table>
   </div>
 </div>

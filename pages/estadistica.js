@@ -50,14 +50,18 @@ function setPedidosCount(n) {
   if (el) el.textContent = String(Number(n) || 0);
 }
 
-/** ✅ Badge premium para FONDO CLARO (NO usa text-white) */
-function pill(label, dotClass) {
+/** ✅ Pill premium (con "tema" opcional) */
+function pill(label, theme = "") {
+  const base =
+    "inline-flex items-center gap-2 rounded-full px-2.5 py-[3px] " +
+    "text-[10px] font-black tracking-wide " +
+    "border ring-1 backdrop-blur";
+
+  const def =
+    "bg-slate-900/5 border-slate-200/80 ring-slate-900/5 text-slate-700";
+
   return `
-    <span class="inline-flex items-center gap-2 rounded-full px-2.5 py-[3px]
-                 text-[10px] font-black tracking-wide
-                 bg-slate-900/5 border border-slate-200/80 ring-1 ring-slate-900/5
-                 backdrop-blur text-slate-700">
-      <span class="h-1.5 w-1.5 rounded-full ${dotClass}"></span>
+    <span class="${base} ${theme || def}">
       ${escHtml(label)}
     </span>
   `;
@@ -65,27 +69,75 @@ function pill(label, dotClass) {
 
 function badgeVenta(tipoVenta) {
   const v = String(tipoVenta ?? "").toUpperCase();
-  if (v === "PEDIDOSYA") return pill("PEDIDOSYA", "bg-rose-500/90");
-  if (v === "PARTICULAR") return pill("PARTICULAR", "bg-slate-400/90");
-  return pill(v || "—", "bg-slate-400/80");
+
+  // ✅ PEDIDOSYA: pill roja + letra roja
+  if (v === "PEDIDOSYA") {
+    return pill(
+      "PEDIDOSYA",
+      "bg-red-50 text-red-700 border-red-200/80 ring-red-600/10"
+    );
+  }
+
+  // ✅ PARTICULAR: normal (default)
+  if (v === "PARTICULAR") return pill("PARTICULAR");
+
+  // Otros: neutra
+  return pill(v || "—", "bg-slate-50 text-slate-700 border-slate-200/80 ring-slate-900/5");
 }
 
 function badgePago(tipoPago) {
   const p = String(tipoPago ?? "").toUpperCase();
-  if (p.includes("EFECTIVO")) return pill("EFECTIVO", "bg-emerald-500/90");
-  if (p.includes("TRANSFER")) return pill("TRANSFERENCIA", "bg-indigo-500/90");
-  if (p.includes("MP") || p.includes("MERCADO")) return pill("MERCADO PAGO", "bg-fuchsia-500/90");
-  return pill(p || "—", "bg-slate-400/80");
+
+  // ✅ Libres y bien diferenciadas
+  if (p.includes("EFECTIVO")) {
+    return pill("EFECTIVO", "bg-emerald-50 text-emerald-700 border-emerald-200/80 ring-emerald-600/10");
+  }
+
+  if (p.includes("TRANSFER")) {
+    return pill("TRANSFERENCIA", "bg-indigo-50 text-indigo-700 border-indigo-200/80 ring-indigo-600/10");
+  }
+
+  if (p.includes("MP") || p.includes("MERCADO")) {
+    return pill("MERCADO PAGO", "bg-fuchsia-50 text-fuchsia-700 border-fuchsia-200/80 ring-fuchsia-600/10");
+  }
+
+  if (p.includes("DEBIT") || p.includes("DÉBIT")) {
+    return pill("DÉBITO", "bg-sky-50 text-sky-700 border-sky-200/80 ring-sky-600/10");
+  }
+
+  if (p.includes("CRED") || p.includes("CRÉD")) {
+    return pill("CRÉDITO", "bg-amber-50 text-amber-700 border-amber-200/80 ring-amber-600/10");
+  }
+
+  return pill(p || "—", "bg-slate-50 text-slate-700 border-slate-200/80 ring-slate-900/5");
 }
 
 function badgeEstado(estado) {
   const eRaw = String(estado ?? "").trim().toUpperCase();
-  if (/ENTREG/.test(eRaw)) return pill("ENTREGADO", "bg-emerald-500/90");
-  if (/CANCEL/.test(eRaw)) return pill("CANCELADO", "bg-rose-500/90");
-  if (/PREPAR/.test(eRaw)) return pill("EN PREPARACIÓN", "bg-amber-500/90");
-  if (/PEND/.test(eRaw)) return pill("PENDIENTE", "bg-sky-500/90");
-  return pill(eRaw.replaceAll("_", " ") || "—", "bg-slate-400/80");
+
+  // ✅ ENTREGADO: pill toda verde + letra verde
+  if (/ENTREG/.test(eRaw)) {
+    return pill(
+      "ENTREGADO",
+      "bg-emerald-50 text-emerald-700 border-emerald-200/80 ring-emerald-600/10"
+    );
+  }
+
+  if (/CANCEL/.test(eRaw)) {
+    return pill("CANCELADO", "bg-rose-50 text-rose-700 border-rose-200/80 ring-rose-600/10");
+  }
+
+  if (/PREPAR/.test(eRaw)) {
+    return pill("EN PREPARACIÓN", "bg-amber-50 text-amber-700 border-amber-200/80 ring-amber-600/10");
+  }
+
+  if (/PEND/.test(eRaw)) {
+    return pill("PENDIENTE", "bg-sky-50 text-sky-700 border-sky-200/80 ring-sky-600/10");
+  }
+
+  return pill(eRaw.replaceAll("_", " ") || "—", "bg-slate-50 text-slate-700 border-slate-200/80 ring-slate-900/5");
 }
+
 
 // ✅ ORDEN: particulares primero, particulares A→Z, luego pedidosya
 function ordenarPedidosParaTabla(items) {
@@ -128,20 +180,24 @@ function renderizarTablaPedidos(items) {
     return;
   }
 
-  tbody.innerHTML = arr.map((p) => {
-    const cliente = String(p?.cliente ?? "").trim().toLocaleUpperCase("es-AR");
-    const tipoVenta = normalizarTipoVenta(p?.tipoVenta);
-    const tipoPago = normalizarPago(p?.tipoPago);
-    const estado = String(p?.estadoPedido ?? "").trim().toUpperCase() || "—";
+  tbody.innerHTML = arr
+    .map((p, i) => {
+      const cliente = String(p?.cliente ?? "").trim().toLocaleUpperCase("es-AR");
+      const tipoVenta = normalizarTipoVenta(p?.tipoVenta);
+      const tipoPago = normalizarPago(p?.tipoPago);
+      const estado = String(p?.estadoPedido ?? "").trim().toUpperCase() || "—";
 
-    const esPya = tipoVenta === "PEDIDOSYA";
-    const numPya = esPya ? String(p?.numeroPedidoPedidosYa ?? "").trim() : "";
-    const numPyaShow = numPya ? escHtml(numPya) : "—";
+      const esPya = tipoVenta === "PEDIDOSYA";
+      const numPya = esPya ? String(p?.numeroPedidoPedidosYa ?? "").trim() : "";
+      const numPyaShow = numPya ? escHtml(numPya) : "—";
 
-    const total = fmtMoneyAR(p?.totalPedido);
+      const total = fmtMoneyAR(p?.totalPedido);
 
-    return `
-      <tr class="group transition-colors duration-150 hover:bg-slate-900/[0.03]">
+      // ✅ Zebra: rojo clarito / blanco (sin bordes)
+      const zebraClass = i % 2 === 0 ? "bg-red-100/70" : "bg-white";
+
+      return `
+      <tr class="group ${zebraClass} transition-colors duration-150 hover:bg-red-100/70">
         <td class="px-5 py-1.5 relative">
           <span class="absolute left-0 top-2 bottom-2 w-[2px] rounded-full
                        bg-rose-500/0 group-hover:bg-rose-500/70"></span>
@@ -171,8 +227,11 @@ function renderizarTablaPedidos(items) {
         </td>
       </tr>
     `;
-  }).join("");
+    })
+    .join("");
 }
+
+
 
 function limpiarTablaPedidos(mensaje) {
   const tbody = document.getElementById(PEDIDOS_TABLE.tbodyId);
