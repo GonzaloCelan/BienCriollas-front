@@ -13,6 +13,7 @@
   <link rel="stylesheet" href="./css/seccion.css">
    <link rel="stylesheet" href="./css/estadistica.css">
    <link rel="stylesheet" href="./css/kpi.css">
+   <link rel="stylesheet" href="./css/stock.css">
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1022,7 +1023,7 @@
   <div id="vista-stock-normal" class="space-y-5 px-7">
 
     <!-- 🔹 FORMULARIO PARA CARGAR PRODUCCIÓN -->
-    <div id="seccion-produccion" class="p-4 space-y-4 formulario-produccion-css">
+    <div id="seccion-produccion" class="p-4 space-y-4 bg-transparent">
       <div class="flex flex-wrap items-center justify-between gap-3 ">
         <div>
           <h4 class="text-sm font-semibold text-slate-800">Cargar producción del día</h4>
@@ -1030,6 +1031,20 @@
             Elegí la fecha y la cantidad producida por variedad. Las que queden en 0 se toman como no producidas.
           </p>
         </div>
+
+        <!-- Stock total -->
+  <div
+    class="inline-flex items-center gap-2 px-1 py-1 "
+  >
+    <span class="text-[13px] font-semibold tracking-wide text-slate-500">
+      Stock total:
+    </span>
+
+    <span
+      id="stock-total-num"
+      class="text-[18px] font-extrabold "
+    >0</span>
+  </div>
 
         <div class="flex items-center gap-2 text-xs">
           <label for="fecha-produccion" class="text-slate-600">Fecha de producción</label>
@@ -1047,308 +1062,302 @@
       </div>
 
       <!-- Grid de variedades (PRODUCCIÓN) -->
-      <div class="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-4 gap-3 text-xs">
-        <!-- 1: Criolla -->
-        <div class="card-variedad group flex flex-col justify-between gap-3 rounded-2xl border border-slate-200 bg-slate-50/80 px-3 py-3
-                    hover:bg-white hover:shadow-md hover:-translate-y-0.5 transition-all cursor-pointer"
-             data-variedad-card="1"
-          >
-          <div class="flex items-center gap-3">
-            <div class="h-10 w-10 rounded-full overflow-hidden bg-slate-200 flex items-center justify-center">
-              <img src="./variedades/carne.png" alt="Criolla" class="h-full w-full object-cover">
-            </div>
-            <div>
-              <p class="text-sm font-semibold text-slate-800">Criolla</p>
-              <p class="text-[11px] text-slate-400">Carne cortada a cuchillo</p>
-            </div>
-          </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-4 gap-5 text-xs">
 
-          <div class="mt-2 flex items-center justify-between">
-            <span class="text-[11px] text-slate-500">Cantidad</span>
-            <div class="inline-flex items-center gap-1">
-              <input type="number"
-                     min="0"
-                     value="0"
-                     data-variedad-id="1"
-                     class="input-cantidad-variedad w-20 text-right border border-slate-200 rounded-md px-2 py-1 text-[12px] bg-white" />
-            </div>
-          </div>
-        </div>
+       <!-- 1: Criolla -->
+<div class="card-variedad group flex items-stretch gap-4
+            rounded-[10px] px-2 py-2 min-h-[120px] div-stock-variedad"
+     data-variedad-card="1">
 
-        <!-- 2: Verdura -->
-        <div class=" card-variedad group flex flex-col justify-between gap-3 rounded-2xl border border-slate-200 bg-slate-50/80 px-3 py-3
-                    hover:bg-white hover:shadow-md hover:-translate-y-0.5 transition-all cursor-pointer"
-             data-variedad-card="2">
-          <div class="flex items-center gap-3">
-            <div class="h-10 w-10 rounded-full overflow-hidden bg-slate-200 flex items-center justify-center">
-              <img src="./variedades/verdura.png" alt="Verdura" class="h-full w-full object-cover">
-            </div>
-            <div>
-              <p class="text-sm font-semibold text-slate-800">Verdura</p>
-              <p class="text-[11px] text-slate-400">Acelga y salsa blanca</p>
-            </div>
-          </div>
-          <div class="mt-2 flex items-center justify-between">
-            <span class="text-[11px] text-slate-500">Cantidad</span>
-            <div class="inline-flex items-center gap-1">
-              <input type="number"
-                     min="0"
-                     value="0"
-                     data-variedad-id="2"
-                     class="input-cantidad-variedad w-20 text-right border border-slate-200 rounded-md px-2 py-1 text-[12px] bg-white" />
-            </div>
-          </div>
-        </div>
+  <!-- Imagen -->
+  <div class="shrink-0 w-24 h-[116px] overflow-hidden rounded-[10px] bg-slate-100 div-stock-imagen-variedad">
+    <img src="./variedades/carne.jpeg" alt="Criolla"
+         class="block h-full w-full object-cover rounded-none !rounded-none" />
+  </div>
 
-        <!-- 3: Choclo -->
-        <div class="card-variedad group flex flex-col justify-between gap-3 rounded-2xl border border-slate-200 bg-slate-50/80 px-3 py-3
-                    hover:bg-white hover:shadow-md hover:-translate-y-0.5 transition-all cursor-pointer"
-             data-variedad-card="3">
-          <div class="flex items-center gap-3">
-            <div class="h-10 w-10 rounded-full overflow-hidden bg-slate-200 flex items-center justify-center">
-              <img src="./variedades/choclo.png" alt="Choclo" class="h-full w-full object-cover">
-            </div>
-            <div>
-              <p class="text-sm font-semibold text-slate-800">Choclo</p>
-              <p class="text-[11px] text-slate-400">Humita cremosa</p>
-            </div>
-          </div>
-          <div class="mt-2 flex items-center justify-between">
-            <span class="text-[11px] text-slate-500">Cantidad</span>
-            <div class="inline-flex items-center gap-1">
-              <input type="number"
-                     min="0"
-                     value="0"
-                     data-variedad-id="3"
-                     class="input-cantidad-variedad w-20 text-right border border-slate-200 rounded-md px-2 py-1 text-[12px] bg-white" />
-            </div>
-          </div>
-        </div>
+  <!-- Contenido -->
+  <div class="min-w-0 flex-1 flex flex-col justify-between py-1">
 
-        <!-- 4: Pollo -->
-        <div class="card-variedad group flex flex-col justify-between gap-3 rounded-2xl border border-slate-200 bg-slate-50/80 px-3 py-3
-                    hover:bg-white hover:shadow-md hover:-translate-y-0.5 transition-all cursor-pointer"
-             data-variedad-card="4">
-          <div class="flex items-center gap-3">
-            <div class="h-10 w-10 rounded-full overflow-hidden bg-slate-200 flex items-center justify-center">
-              <img src="./variedades/pollo.png" alt="Pollo" class="h-full w-full object-cover">
-            </div>
-            <div>
-              <p class="text-sm font-semibold text-slate-800">Pollo</p>
-              <p class="text-[11px] text-slate-400">Pollo desmenuzado</p>
-            </div>
-          </div>
-          <div class="mt-2 flex items-center justify-between">
-            <span class="text-[11px] text-slate-500">Cantidad</span>
-            <div class="inline-flex items-center gap-1">
-              <input type="number"
-                     min="0"
-                     value="0"
-                     data-variedad-id="4"
-                     class="input-cantidad-variedad w-20 text-right border border-slate-200 rounded-md px-2 py-1 text-[12px] bg-white" />
-            </div>
-          </div>
-        </div>
+    <!-- Top: título/desc + badge derecha -->
+    <div class="flex items-start justify-between gap-3">
+      <div class="min-w-0">
+        <p class="truncate text-[16px] font-extrabold text-slate-900">Criolla</p>
+        <p class="mt-1 line-clamp-2 text-[12px] text-slate-500">Carne picada con cebolla, huevo y condimentos criollos</p>
+      </div>
 
-        <!-- 5: Atún -->
-        <div class="card-variedad group flex flex-col justify-between gap-3 rounded-2xl border border-slate-200 bg-slate-50/80 px-3 py-3
-                    hover:bg-white hover:shadow-md hover:-translate-y-0.5 transition-all cursor-pointer"
-             data-variedad-card="5">
-          <div class="flex items-center gap-3">
-            <div class="h-10 w-10 rounded-full overflow-hidden bg-slate-200 flex items-center justify-center">
-              <img src="./variedades/atun.png" alt="Atún" class="h-full w-full object-cover">
-            </div>
-            <div>
-              <p class="text-sm font-semibold text-slate-800">Atún</p>
-              <p class="text-[11px] text-slate-400">Atún y cebolla</p>
-            </div>
-          </div>
-          <div class="mt-2 flex items-center justify-between">
-            <span class="text-[11px] text-slate-500">Cantidad</span>
-            <div class="inline-flex items-center gap-1">
-              <input type="number"
-                     min="0"
-                     value="0"
-                     data-variedad-id="5"
-                     class="input-cantidad-variedad w-20 text-right border border-slate-200 rounded-md px-2 py-1 text-[12px] bg-white" />
-            </div>
-          </div>
-        </div>
+      
+    </div>
 
-        <!-- 6: Capresse -->
-        <div class="card-variedad group flex flex-col justify-between gap-3 rounded-2xl border border-slate-200 bg-slate-50/80 px-3 py-3
-                    hover:bg-white hover:shadow-md hover:-translate-y-0.5 transition-all cursor-pointer"
-             data-variedad-card="6">
-          <div class="flex items-center gap-3">
-            <div class="h-10 w-10 rounded-full overflow-hidden bg-slate-200 flex items-center justify-center">
-              <img src="./variedades/capresse.png" alt="Capresse" class="h-full w-full object-cover">
-            </div>
-            <div>
-              <p class="text-sm font-semibold text-slate-800">Capresse</p>
-              <p class="text-[11px] text-slate-400">Tomate, albahaca y muzza</p>
-            </div>
-          </div>
-          <div class="mt-2 flex items-center justify-between">
-            <span class="text-[11px] text-slate-500">Cantidad</span>
-            <div class="inline-flex items-center gap-1">
-              <input type="number"
-                     min="0"
-                     value="0"
-                     data-variedad-id="6"
-                     class="input-cantidad-variedad w-20 text-right border border-slate-200 rounded-md px-2 py-1 text-[12px] bg-white" />
-            </div>
-          </div>
-        </div>
+    <!-- Bottom: cantidad -->
+    <div class="mt-3">
+      <p class="text-[12px] font-bold text-slate-700">Cantidad</p>
+      <input type="number" min="0" value="0" data-variedad-id="1"
+             class="input-cantidad-variedad mt-2 w-40 h-8
+                    rounded-full border-2 border-slate-300 bg-white
+                    px-4 text-center text-[14px] font-extrabold text-slate-900
+                    shadow-sm
+                    focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-300" />
+    </div>
 
-        <!-- 7: Fugazza -->
-        <div class="card-variedad group flex flex-col justify-between gap-3 rounded-2xl border border-slate-200 bg-slate-50/80 px-3 py-3
-                    hover:bg-white hover:shadow-md hover:-translate-y-0.5 transition-all cursor-pointer"
-             data-variedad-card="7">
-          <div class="flex items-center gap-3">
-            <div class="h-10 w-10 rounded-full overflow-hidden bg-slate-200 flex items-center justify-center">
-              <img src="./variedades/fugazza.png" alt="Fugazza" class="h-full w-full object-cover">
-            </div>
-            <div>
-              <p class="text-sm font-semibold text-slate-800">Fugazza</p>
-              <p class="text-[11px] text-slate-400">Cebolla y queso</p>
-            </div>
-          </div>
-          <div class="mt-2 flex items-center justify-between">
-            <span class="text-[11px] text-slate-500">Cantidad</span>
-            <div class="inline-flex items-center gap-1">
-              <input type="number"
-                     min="0"
-                     value="0"
-                     data-variedad-id="7"
-                     class="input-cantidad-variedad w-20 text-right border border-slate-200 rounded-md px-2 py-1 text-[12px] bg-white" />
-            </div>
-          </div>
-        </div>
+  </div>
+</div>
 
-        <!-- 8: Queso azul -->
-        <div class="card-variedad group flex flex-col justify-between gap-3 rounded-2xl border border-slate-200 bg-slate-50/80 px-3 py-3
-                    hover:bg-white hover:shadow-md hover:-translate-y-0.5 transition-all cursor-pointer"
-             data-variedad-card="8">
-          <div class="flex items-center gap-3">
-            <div class="h-10 w-10 rounded-full overflow-hidden bg-slate-200 flex items-center justify-center">
-              <img src="./variedades/queso_azul.png" alt="Queso azul" class="h-full w-full object-cover">
-            </div>
-            <div>
-              <p class="text-sm font-semibold text-slate-800">Queso azul</p>
-              <p class="text-[11px] text-slate-400">Queso azul y muzza</p>
-            </div>
-          </div>
-          <div class="mt-2 flex items-center justify-between">
-            <span class="text-[11px] text-slate-500">Cantidad</span>
-            <div class="inline-flex items-center gap-1">
-              <input type="number"
-                     min="0"
-                     value="0"
-                     data-variedad-id="8"
-                     class="input-cantidad-variedad w-20 text-right border border-slate-200 rounded-md px-2 py-1 text-[12px] bg-white" />
-            </div>
-          </div>
-        </div>
 
-        <!-- 9: Bondiola -->
-        <div class="card-variedad group flex flex-col justify-between gap-3 rounded-2xl border border-slate-200 bg-slate-50/80 px-3 py-3
-                    hover:bg-white hover:shadow-md hover:-translate-y-0.5 transition-all cursor-pointer"
-             data-variedad-card="9">
-          <div class="flex items-center gap-3">
-            <div class="h-10 w-10 rounded-full overflow-hidden bg-slate-200 flex items-center justify-center">
-              <img src="./variedades/bondiola.png" alt="Bondiola" class="h-full w-full object-cover">
-            </div>
-            <div>
-              <p class="text-sm font-semibold text-slate-800">Bondiola</p>
-              <p class="text-[11px] text-slate-400">Bondiola braseada</p>
-            </div>
-          </div>
-          <div class="mt-2 flex items-center justify-between">
-            <span class="text-[11px] text-slate-500">Cantidad</span>
-            <div class="inline-flex items-center gap-1">
-              <input type="number"
-                     min="0"
-                     value="0"
-                     data-variedad-id="9"
-                     class="input-cantidad-variedad w-20 text-right border border-slate-200 rounded-md px-2 py-1 text-[12px] bg-white" />
-            </div>
-          </div>
-        </div>
 
-        <!-- 10: Vacío desmenuzado -->
-        <div class="card-variedad group flex flex-col justify-between gap-3 rounded-2xl border border-slate-200 bg-slate-50/80 px-3 py-3
-                    hover:bg-white hover:shadow-md hover:-translate-y-0.5 transition-all cursor-pointer"
-             data-variedad-card="10">
-          <div class="flex items-center gap-3">
-            <div class="h-10 w-10 rounded-full overflow-hidden bg-slate-200 flex items-center justify-center">
-              <img src="./variedades/vacio.png" alt="Vacío desmenuzado" class="h-full w-full object-cover">
-            </div>
-            <div>
-              <p class="text-sm font-semibold text-slate-800">Vacío desmenuzado</p>
-              <p class="text-[11px] text-slate-400">Cocción lenta</p>
-            </div>
-          </div>
-          <div class="mt-2 flex items-center justify-between">
-            <span class="text-[11px] text-slate-500">Cantidad</span>
-            <div class="inline-flex items-center gap-1">
-              <input type="number"
-                     min="0"
-                     value="0"
-                     data-variedad-id="10"
-                     class="input-cantidad-variedad w-20 text-right border border-slate-200 rounded-md px-2 py-1 text-[12px] bg-white" />
-            </div>
-          </div>
-        </div>
+<!-- 2: Verdura -->
+<div class="card-variedad group flex items-stretch gap-4 rounded-[10px] px-2 py-2 min-h-[120px] div-stock-variedad"
+     data-variedad-card="2">
+  <div class="shrink-0 w-24 h-[116px] overflow-hidden rounded-[10px] bg-slate-100 div-stock-imagen-variedad">
+    <img src="./variedades/verdura.jpeg" alt="Verdura" class="block h-full w-full object-cover rounded-none !rounded-none" />
+  </div>
 
-        <!-- 11: Campo (picante) -->
-        <div class="card-variedad group flex flex-col justify-between gap-3 rounded-2xl border border-slate-200 bg-slate-50/80 px-3 py-3
-                    hover:bg-white hover:shadow-md hover:-translate-y-0.5 transition-all cursor-pointer"
-             data-variedad-card="11">
-          <div class="flex items-center gap-3">
-            <div class="h-10 w-10 rounded-full overflow-hidden bg-slate-200 flex items-center justify-center">
-              <img src="./variedades/campo.png" alt="Campo picante" class="h-full w-full object-cover">
-            </div>
-            <div>
-              <p class="text-sm font-semibold text-slate-800">Campo (picante)</p>
-              <p class="text-[11px] text-slate-400">Versión picante</p>
-            </div>
-          </div>
-          <div class="mt-2 flex items-center justify-between">
-            <span class="text-[11px] text-slate-500">Cantidad</span>
-            <div class="inline-flex items-center gap-1">
-              <input type="number"
-                     min="0"
-                     value="0"
-                     data-variedad-id="11"
-                     class="input-cantidad-variedad w-20 text-right border border-slate-200 rounded-md px-2 py-1 text-[12px] bg-white" />
-            </div>
-          </div>
-        </div>
+  <div class="min-w-0 flex-1 flex flex-col justify-between py-1">
+    <div class="min-w-0">
+      <p class="truncate text-[16px] font-extrabold text-slate-900">Verdura</p>
+      <p class="mt-1 line-clamp-2 text-[12px] text-slate-500">Espinaca fresca con pimiento rojo y verde, cebolla y mozzarella</p>
+    </div>
 
-        <!-- 12: Jamón y queso -->
-        <div class="card-variedad group flex flex-col justify-between gap-3 rounded-2xl border border-slate-200 bg-slate-50/80 px-3 py-3
-                    hover:bg-white hover:shadow-md hover:-translate-y-0.5 transition-all cursor-pointer"
-             data-variedad-card="12">
-          <div class="flex items-center gap-3">
-            <div class="h-10 w-10 rounded-full overflow-hidden bg-slate-200 flex items-center justify-center">
-              <img src="./variedades/jamon.png" alt="Jamón y queso" class="h-full w-full object-cover">
-            </div>
-            <div>
-              <p class="text-sm font-semibold text-slate-800">Jamón y queso</p>
-              <p class="text-[11px] text-slate-400">Clásica</p>
-            </div>
-          </div>
-          <div class="mt-2 flex items-center justify-between">
-            <span class="text-[11px] text-slate-500">Cantidad</span>
-            <div class="inline-flex items-center gap-1">
-              <input type="number"
-                     min="0"
-                     value="0"
-                     data-variedad-id="12"
-                     class="input-cantidad-variedad w-20 text-right border border-slate-200 rounded-md px-2 py-1 text-[12px] bg-white" />
-            </div>
-          </div>
-        </div>
+    <div class="mt-3">
+      <p class="text-[12px] font-bold text-slate-700">Cantidad</p>
+      <input type="number" min="0" value="0" data-variedad-id="2"
+             class="input-cantidad-variedad mt-2 w-40 h-8 rounded-full border-2 border-slate-300 bg-white
+                    px-4 py-2 text-center text-[14px] font-extrabold text-slate-900 shadow-sm
+                    focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-300" />
+    </div>
+  </div>
+</div>
+
+<!-- 3: Choclo -->
+<div class="card-variedad group flex items-stretch gap-4 rounded-[10px] px-2 py-2 min-h-[120px] div-stock-variedad"
+     data-variedad-card="3">
+  <div class="shrink-0 w-24 h-[116px] overflow-hidden rounded-[10px] bg-slate-100 div-stock-imagen-variedad">
+    <img src="./variedades/choclo.jpeg" alt="Choclo" class="block h-full w-full object-cover rounded-none !rounded-none" />
+  </div>
+
+  <div class="min-w-0 flex-1 flex flex-col justify-between py-1">
+    <div class="min-w-0">
+      <p class="truncate text-[16px] font-extrabold text-slate-900">Choclo</p>
+      <p class="mt-1 line-clamp-2 text-[12px] text-slate-500">Choclo dulce y cremoso con pimientos y queso mozzarella</p>
+    </div>
+
+    <div class="mt-3">
+      <p class="text-[12px] font-bold text-slate-700">Cantidad</p>
+      <input type="number" min="0" value="0" data-variedad-id="3"
+             class="input-cantidad-variedad mt-2 w-40 h-8 rounded-full border-2 border-slate-300 bg-white
+                    px-4 py-2 text-center text-[14px] font-extrabold text-slate-900 shadow-sm
+                    focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-300" />
+    </div>
+  </div>
+</div>
+
+<!-- 4: Pollo -->
+<div class="card-variedad group flex items-stretch gap-4 rounded-[10px] px-2 py-2 min-h-[120px] div-stock-variedad"
+     data-variedad-card="4">
+  <div class="shrink-0 w-24 h-[116px] overflow-hidden rounded-[10px] bg-slate-100 div-stock-imagen-variedad">
+    <img src="./variedades/pollo.jpeg" alt="Pollo" class="block h-full w-full object-cover rounded-none !rounded-none" />
+  </div>
+
+  <div class="min-w-0 flex-1 flex flex-col justify-between py-1">
+    <div class="min-w-0">
+      <p class="truncate text-[16px] font-extrabold text-slate-900">Pollo</p>
+      <p class="mt-1 line-clamp-2 text-[12px] text-slate-500">Pollo desmenuzado, salteado con pimientos y cebolla</p>
+    </div>
+
+    <div class="mt-3">
+      <p class="text-[12px] font-bold text-slate-700">Cantidad</p>
+      <input type="number" min="0" value="0" data-variedad-id="4"
+             class="input-cantidad-variedad mt-2 w-40 h-8 rounded-full border-2 border-slate-300 bg-white
+                    px-4 py-2 text-center text-[14px] font-extrabold text-slate-900 shadow-sm
+                    focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-300" />
+    </div>
+  </div>
+</div>
+
+<!-- 5: Atún -->
+<div class="card-variedad group flex items-stretch gap-4 rounded-[10px] px-2 py-2 min-h-[120px] div-stock-variedad"
+     data-variedad-card="5">
+  <div class="shrink-0 w-24 h-[116px] overflow-hidden rounded-[10px] bg-slate-100 div-stock-imagen-variedad">
+    <img src="./variedades/atun.jpeg" alt="Atún" class="block h-full w-full object-cover rounded-none !rounded-none" />
+  </div>
+
+  <div class="min-w-0 flex-1 flex flex-col justify-between py-1">
+    <div class="min-w-0">
+      <p class="truncate text-[16px] font-extrabold text-slate-900">Atún</p>
+      <p class="mt-1 line-clamp-2 text-[12px] text-slate-500">Lomo de atún con cebolla salteada y pimientos</p>
+    </div>
+
+    <div class="mt-3">
+      <p class="text-[12px] font-bold text-slate-700">Cantidad</p>
+      <input type="number" min="0" value="0" data-variedad-id="5"
+             class="input-cantidad-variedad mt-2 w-40 h-8 rounded-full border-2 border-slate-300 bg-white
+                    px-4 py-2 text-center text-[14px] font-extrabold text-slate-900 shadow-sm
+                    focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-300" />
+    </div>
+  </div>
+</div>
+
+<!-- 6: Capresse -->
+<div class="card-variedad group flex items-stretch gap-4 rounded-[10px] px-2 py-2 min-h-[120px] div-stock-variedad"
+     data-variedad-card="6">
+  <div class="shrink-0 w-24 h-[116px] overflow-hidden rounded-[10px] bg-slate-100 div-stock-imagen-variedad">
+    <img src="./variedades/capresse.jpeg" alt="Capresse" class="block h-full w-full object-cover rounded-none !rounded-none" />
+  </div>
+
+  <div class="min-w-0 flex-1 flex flex-col justify-between py-1">
+    <div class="min-w-0">
+      <p class="truncate text-[16px] font-extrabold text-slate-900">Capresse</p>
+      <p class="mt-1 line-clamp-2 text-[12px] text-slate-500">Muzzarella, tomate fresco y hojas de al</p>
+    </div>
+
+    <div class="mt-3">
+      <p class="text-[12px] font-bold text-slate-700">Cantidad</p>
+      <input type="number" min="0" value="0" data-variedad-id="6"
+             class="input-cantidad-variedad mt-2 w-40 h-8 rounded-full border-2 border-slate-300 bg-white
+                    px-4 py-2 text-center text-[14px] font-extrabold text-slate-900 shadow-sm
+                    focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-300" />
+    </div>
+  </div>
+</div>
+
+<!-- 7: Fugazza -->
+<div class="card-variedad group flex items-stretch gap-4 rounded-[10px] px-2 py-2 min-h-[120px] div-stock-variedad"
+     data-variedad-card="7">
+  <div class="shrink-0 w-24 h-[116px] overflow-hidden rounded-[10px] bg-slate-100 div-stock-imagen-variedad">
+    <img src="./variedades/fugazza.jpeg" alt="Fugazza" class="block h-full w-full object-cover rounded-none !rounded-none" />
+  </div>
+
+  <div class="min-w-0 flex-1 flex flex-col justify-between py-1">
+    <div class="min-w-0">
+      <p class="truncate text-[16px] font-extrabold text-slate-900">Fugazza</p>
+      <p class="mt-1 line-clamp-2 text-[12px] text-slate-500">Cebolla blanqueada con mozzarealla y aceitunas negras</p>
+    </div>
+
+    <div class="mt-3">
+      <p class="text-[12px] font-bold text-slate-700">Cantidad</p>
+      <input type="number" min="0" value="0" data-variedad-id="7"
+             class="input-cantidad-variedad mt-2 w-40 h-8 rounded-full border-2 border-slate-300 bg-white
+                    px-4 py-2 text-center text-[14px] font-extrabold text-slate-900 shadow-sm
+                    focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-300" />
+    </div>
+  </div>
+</div>
+
+<!-- 8: Queso azul -->
+<div class="card-variedad group flex items-stretch gap-4 rounded-[10px] px-2 py-2 min-h-[120px] div-stock-variedad"
+     data-variedad-card="8">
+  <div class="shrink-0 w-24 h-[116px] overflow-hidden rounded-[10px] bg-slate-100 div-stock-imagen-variedad">
+    <img src="./variedades/queso_azul.png" alt="Queso azul" class="block h-full w-full object-cover rounded-none !rounded-none" />
+  </div>
+
+  <div class="min-w-0 flex-1 flex flex-col justify-between py-1">
+    <div class="min-w-0">
+      <p class="truncate text-[16px] font-extrabold text-slate-900">Queso azul</p>
+      <p class="mt-1 line-clamp-2 text-[12px] text-slate-500">Muzzarella, queso azul y cebolla caramelizada</p>
+    </div>
+
+    <div class="mt-3">
+      <p class="text-[12px] font-bold text-slate-700">Cantidad</p>
+      <input type="number" min="0" value="0" data-variedad-id="8"
+             class="input-cantidad-variedad mt-2 w-40 h-8 rounded-full border-2 border-slate-300 bg-white
+                    px-4 py-2 text-center text-[14px] font-extrabold text-slate-900 shadow-sm
+                    focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-300" />
+    </div>
+  </div>
+</div>
+
+<!-- 9: Bondiola -->
+<div class="card-variedad group flex items-stretch gap-4 rounded-[10px] px-2 py-2 min-h-[120px] div-stock-variedad"
+     data-variedad-card="9">
+  <div class="shrink-0 w-24 h-[116px] overflow-hidden rounded-[10px] bg-slate-100 div-stock-imagen-variedad">
+    <img src="./variedades/bondi.jpeg" alt="Bondiola" class="block h-full w-full object-cover rounded-none !rounded-none" />
+  </div>
+
+  <div class="min-w-0 flex-1 flex flex-col justify-between py-1">
+    <div class="min-w-0">
+      <p class="truncate text-[16px] font-extrabold text-slate-900">Bondiola</p>
+      <p class="mt-1 line-clamp-2 text-[12px] text-slate-500">Bondiola en cerveza negra, con pimientos y cebolla</p>
+    </div>
+
+    <div class="mt-3">
+      <p class="text-[12px] font-bold text-slate-700">Cantidad</p>
+      <input type="number" min="0" value="0" data-variedad-id="9"
+             class="input-cantidad-variedad mt-2 w-40 h-8 rounded-full border-2 border-slate-300 bg-white
+                    px-4 py-2 text-center text-[14px] font-extrabold text-slate-900 shadow-sm
+                    focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-300" />
+    </div>
+  </div>
+</div>
+
+<!-- 10: Vacío desmenuzado -->
+<div class="card-variedad group flex items-stretch gap-4 rounded-[10px] px-2 py-2 min-h-[120px] div-stock-variedad"
+     data-variedad-card="10">
+  <div class="shrink-0 w-24 h-[116px] overflow-hidden rounded-[10px] bg-slate-100 div-stock-imagen-variedad">
+    <img src="./variedades/vacio.jpeg" alt="Vacío desmenuzado" class="block h-full w-full object-cover rounded-none !rounded-none" />
+  </div>
+
+  <div class="min-w-0 flex-1 flex flex-col justify-between py-1">
+    <div class="min-w-0">
+      <p class="truncate text-[16px] font-extrabold text-slate-900">Vacío desmenuzado</p>
+      <p class="mt-1 line-clamp-2 text-[12px] text-slate-500">Vacio desmenuzado braseado con cebolla, pimientos y cerveza negra</p>
+    </div>
+
+    <div class="mt-3">
+      <p class="text-[12px] font-bold text-slate-700">Cantidad</p>
+      <input type="number" min="0" value="0" data-variedad-id="10"
+             class="input-cantidad-variedad mt-2 w-40 h-8 rounded-full border-2 border-slate-300 bg-white
+                    px-4 py-2 text-center text-[14px] font-extrabold text-slate-900 shadow-sm
+                    focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-300" />
+    </div>
+  </div>
+</div>
+
+<!-- 11: Campo (picante) -->
+<div class="card-variedad group flex items-stretch gap-4 rounded-[10px] px-2 py-2 min-h-[120px] div-stock-variedad"
+     data-variedad-card="11">
+  <div class="shrink-0 w-24 h-[116px] overflow-hidden rounded-[10px] bg-slate-100 div-stock-imagen-variedad">
+    <img src="./variedades/campo.png" alt="Campo (picante)" class="block h-full w-full object-cover rounded-none !rounded-none" />
+  </div>
+
+  <div class="min-w-0 flex-1 flex flex-col justify-between py-1">
+    <div class="min-w-0">
+      <p class="truncate text-[16px] font-extrabold text-slate-900">Campo (picante)</p>
+      <p class="mt-1 line-clamp-2 text-[12px] text-slate-500">Lomo tierno picado a cuchillo, cebolla de verdeo y un toque de ají</p>
+    </div>
+
+    <div class="mt-3">
+      <p class="text-[12px] font-bold text-slate-700">Cantidad</p>
+      <input type="number" min="0" value="0" data-variedad-id="11"
+             class="input-cantidad-variedad mt-2 w-40 h-8 rounded-full border-2 border-slate-300 bg-white
+                    px-4 py-2 text-center text-[14px] font-extrabold text-slate-900 shadow-sm
+                    focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-300" />
+    </div>
+  </div>
+</div>
+
+<!-- 12: Jamón y queso -->
+<div class="card-variedad group flex items-stretch gap-4 rounded-[10px] px-2 py-2 min-h-[120px] div-stock-variedad"
+     data-variedad-card="12">
+  <div class="shrink-0 w-24 h-[116px] overflow-hidden rounded-[10px] bg-slate-100 div-stock-imagen-variedad">
+    <img src="./variedades/jq.jpeg" alt="Jamón y queso" class="block h-full w-full object-cover rounded-none !rounded-none" />
+  </div>
+
+  <div class="min-w-0 flex-1 flex flex-col justify-between py-1">
+    <div class="min-w-0">
+      <p class="truncate text-[16px] font-extrabold text-slate-900">Jamón y queso</p>
+      <p class="mt-1 line-clamp-2 text-[12px] text-slate-500">Cubos de jamon cocido con mozzarella y queso crema</p>
+    </div>
+
+    <div class="mt-3">
+      <p class="text-[12px] font-bold text-slate-700">Cantidad</p>
+      <input type="number" min="0" value="0" data-variedad-id="12"
+             class="input-cantidad-variedad mt-2 w-40 h-8 rounded-full border-2 border-slate-300 bg-white
+                    px-4 py-2 text-center text-[14px] font-extrabold text-slate-900 shadow-sm
+                    focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-300" />
+    </div>
+  </div>
+</div>
+
+
       </div>
 
       <div class="pt-2 flex gap-3 justify-end">
@@ -1420,20 +1429,7 @@
     
   </button>
 
-  <!-- Stock total -->
-  <div
-    class="inline-flex items-center gap-2 px-1 py-1 "
-  >
-    <span class="text-[10px] font-semibold uppercase tracking-wide text-slate-500">
-      STOCK TOTAL
-    </span>
-
-    <span
-      id="stock-total-num"
-      class="text-[15px] font-extrabold bg-gradient-to-r from-emerald-600 to-teal-500
-             text-transparent bg-clip-text  "
-    >0</span>
-  </div>
+  
 </div>
 
   </div>
@@ -1953,40 +1949,55 @@
 
     <div class="flex flex-col md:flex-row md:items-center gap-2 md:gap-3">
 
-      <!-- 👉 Filtro por día -->
-      <div class="flex items-center gap-2">
-        <span class="text-[11px] text-slate-500 hidden md:inline">Ver por día</span>
-        <input type="date" id="estadistica-fecha"
-          class="border border-slate-200 rounded-full px-4 py-1 text-xs text-slate-700
-                 focus:outline-none focus:ring-1 focus:ring-rose-500 focus:border-rose-500" />
+  <!-- 👉 Filtro por día -->
+  <div class="flex items-center gap-2">
+    <span class="text-[11px] text-slate-500 hidden md:inline">Ver por día</span>
 
-        <button id="btn-estadistica-fecha"
-          class="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-rose-600 to-rose-500
-                 px-4 py-2 text-xs font-semibold tracking-tight text-white shadow-sm shadow-rose-500/40
-                 hover:shadow-md hover:shadow-rose-500/60 hover:-translate-y-0.5
-                 active:translate-y-0 active:scale-[0.98]">
-          Ver día
-        </button>
-      </div>
+    <input type="date" id="estadistica-fecha"
+      class="border border-slate-200 rounded-full px-4 py-1 text-xs text-slate-700
+             focus:outline-none focus:ring-1 focus:ring-rose-500 focus:border-rose-500" />
 
-      <!-- 👉 Filtro por mes -->
-      <div class="flex items-center gap-2">
-        <span class="text-[11px] text-slate-500 hidden md:inline">Ver por mes</span>
+    <button id="btn-estadistica-fecha"
+      class="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-rose-600 to-rose-500
+             px-4 py-2 text-xs font-semibold tracking-tight text-white shadow-sm shadow-rose-500/40
+             hover:shadow-md hover:shadow-rose-500/60 hover:-translate-y-0.5
+             active:translate-y-0 active:scale-[0.98]">
+      Ver día
+    </button>
+  </div>
 
-        <input type="month" id="estadistica-mes"
-          class="border border-slate-200 rounded-full px-2 py-1 text-xs text-slate-700
-                 focus:outline-none focus:ring-1 focus:ring-slate-800 focus:border-slate-800" />
+  <!-- 👉 Filtro últimos 7 días -->
+  <div class="flex items-center gap-2">
+    <span class="text-[11px] text-slate-500 hidden md:inline">Rango rápido</span>
 
-        <button id="btn-estadistica-mes"
-          class="inline-flex items-center gap-2 rounded-full bg-slate-800 px-4 py-2
-                 text-xs font-semibold tracking-tight text-white shadow-sm shadow-slate-800/40
-                 hover:shadow-md hover:shadow-slate-900/60 hover:-translate-y-0.5
-                 active:translate-y-0 active:scale-[0.98]">
-          Ver mes
-        </button>
-      </div>
+    <button id="btn-estadistica-7-dias"
+      class="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-rose-600 to-rose-500
+             px-4 py-2 text-xs font-semibold tracking-tight text-white shadow-sm shadow-rose-500/40
+             hover:shadow-md hover:shadow-rose-500/60 hover:-translate-y-0.5
+             active:translate-y-0 active:scale-[0.98]">
+      Últimos 7 días
+    </button>
+  </div>
 
-    </div>
+  <!-- 👉 Filtro por mes -->
+  <div class="flex items-center gap-2">
+    <span class="text-[11px] text-slate-500 hidden md:inline">Ver por mes</span>
+
+    <input type="month" id="estadistica-mes"
+      class="border border-slate-200 rounded-full px-2 py-1 text-xs text-slate-700
+             focus:outline-none focus:ring-1 focus:ring-slate-800 focus:border-slate-800" />
+
+    <button id="btn-estadistica-mes"
+      class="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-rose-600 to-rose-500
+             px-4 py-2 text-xs font-semibold tracking-tight text-white shadow-sm shadow-rose-500/40
+             hover:shadow-md hover:shadow-rose-500/60 hover:-translate-y-0.5
+             active:translate-y-0 active:scale-[0.98]">
+      Ver mes
+    </button>
+  </div>
+
+</div>
+
   </div>
 
  

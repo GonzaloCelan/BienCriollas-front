@@ -1,0 +1,50 @@
+.div-stock-variedad{
+    background-color: rgb(255, 255, 255);
+   box-shadow: rgba(0, 0, 0, 0.15) 0px 2px 8px;
+}
+
+.div-stock-variedad .div-stock-imagen-variedad{
+    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+}
+
+
+/* Card stock variedad: hover premium */
+.div-stock-variedad{
+  position: relative;
+  overflow: hidden;
+  transform: translateZ(0);              /* evita flicker */
+  will-change: transform, box-shadow;    /* performance */
+  transition: transform 280ms cubic-bezier(.16,1,.3,1),
+              box-shadow 280ms cubic-bezier(.16,1,.3,1),
+              background-color 280ms cubic-bezier(.16,1,.3,1),
+              border-color 280ms cubic-bezier(.16,1,.3,1);
+}
+
+.div-stock-variedad:hover{
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset;
+}
+
+/* Glow suave (overlay) */
+.div-stock-variedad::before{
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 10px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 280ms cubic-bezier(.16,1,.3,1);
+  background: linear-gradient(135deg,
+              rgba(255,255,255,.20),
+              rgba(255,255,255,.06),
+              transparent);
+}
+
+.div-stock-variedad:hover::before{
+  opacity: 1;
+}
+
+/* Click feedback */
+.div-stock-variedad:active{
+  transform: translateY(-1px) scale(1.01);
+}
