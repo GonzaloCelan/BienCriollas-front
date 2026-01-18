@@ -288,6 +288,8 @@ export function initEstadisticas() {
   const inputMes = document.getElementById("estadistica-mes");
   const btnMes = document.getElementById("btn-estadistica-mes");
 
+  const btnUltimos7dias = document.getElementById("btn-estadistica-7-dias");
+
   const hoy = new Date();
   const yyyy = hoy.getFullYear();
   const mm = String(hoy.getMonth() + 1).padStart(2, "0");
@@ -310,6 +312,7 @@ export function initEstadisticas() {
     btnFecha.addEventListener("click", () => {
       const fecha = inputFecha.value;
       if (fecha) cargarEstadisticaDelDia(fecha);
+      console.log("se hizo click en ver dia");
     });
   }
 
@@ -318,6 +321,13 @@ export function initEstadisticas() {
     btnMes.addEventListener("click", () => {
       const periodo = inputMes.value; // "2025-12"
       if (periodo) cargarEstadisticaDelMes(periodo);
+    });
+  }
+
+   if (btnUltimos7dias) {
+    btnUltimos7dias.addEventListener("click", () => {
+      cargarEstadisticaUltimos7Dias();
+      console.log("se hizo click en ultimos 7 dias");
     });
   }
 }
@@ -389,6 +399,38 @@ export async function cargarEstadisticaDelMes(periodoYYYYMM) {
     console.error("❌ Error cargando estadísticas del mes:", e);
     alert("No se pudieron cargar las estadísticas del mes");
     limpiarTablaPedidos("No se pudieron cargar los pedidos (modo mes).");
+  }
+}
+
+// 👉 trae estadísticas ultimos 7 dias 
+export async function cargarEstadisticaUltimos7Dias() {
+  try {
+    
+
+    const res = await fetch(`${window.API_BASE_URL}/estadistica/ultimos-7-dias`);
+
+    if (!res.ok) {
+      throw new Error("Error consultando estadísticas de los ultimos 7 días");
+    }
+
+    const data = await res.json();
+    console.log("📆 Estadísticas de los últimos 7 días:", data);
+
+    // Mismo flujo que el día, pero con datos del mes completo
+    actualizarKpis(data, "ultimos7dias");
+    actualizarTituloModo("ultimos7dias", null);
+    renderizarGraficoVariedades(data.empanadasMasVendidas || []);
+    renderizarGraficoIngresos(Number(data.totalEfectivo || 0), Number(data.totalTransferencia || 0));
+    renderizarGraficosPedidos(Number(data.cantidadPedidosPY || 0), Number(data.cantidadParticular || 0));
+    renderizarGraficoMermas(data.empanadasPerdidas || []);
+
+    // ✅ tabla pedidos: como el endpoint que pasaste filtra por FECHA (día),
+    // en modo mes dejamos un mensaje para no inventar datos.
+    limpiarTablaPedidos("Estás viendo estadísticas del mes. Para ver pedidos, elegí un día.");
+  } catch (e) {
+    console.error("❌ Error cargando estadísticas de ultimos 7 dias:", e);
+    alert("No se pudieron cargar las estadísticas de ultimos 7 dias");
+    limpiarTablaPedidos("No se pudieron cargar los pedidos (modo ultimo 7 dias).");
   }
 }
 
@@ -1070,8 +1112,23 @@ function actualizarTituloModo(tipo, valor) {
   const el = document.getElementById("estadistica-modo");
   if (!el) return;
 
+  const pad2 = (n) => String(n).padStart(2, "0");
+  const fmtDDMMYYYY = (d) =>
+    `${pad2(d.getDate())}/${pad2(d.getMonth() + 1)}/${d.getFullYear()}`;
+
+  // ✅ ÚLTIMOS 7 DÍAS (hoy + 6 atrás)
+  if (tipo === "7dias" || tipo === "ultimos7dias" || tipo === "ultimos-7-dias") {
+    const hoy = new Date();
+    const desde = new Date(hoy);
+    desde.setDate(hoy.getDate() - 6);
+
+    el.textContent = `Estás viendo estadísticas del ${fmtDDMMYYYY(hoy)} al ${fmtDDMMYYYY(desde)}`;
+    return;
+  }
+
+  // ✅ MES
   if (tipo === "mes") {
-    const [anio, mes] = valor.split("-");
+    const [anio, mes] = String(valor).split("-");
     const fecha = new Date(Number(anio), Number(mes) - 1, 1);
 
     const formatoMes = new Intl.DateTimeFormat("es-AR", {
@@ -1079,10 +1136,12 @@ function actualizarTituloModo(tipo, valor) {
       year: "numeric",
     }).format(fecha);
 
-    el.textContent = `Estás viendo: estadísticas del mes (${formatoMes})`;
-  } else {
-    const [anio, mes, dia] = valor.split("-");
-    const formatoDia = `${dia}/${mes}/${anio}`;
-    el.textContent = `Estás viendo: estadísticas del día (${formatoDia})`;
+    el.textContent = `Estás viendo estadísticas del mes ${formatoMes}`;
+    return;
   }
+
+  // ✅ DÍA (default)
+  const [anio, mes, dia] = String(valor).split("-");
+  const formatoDia = `${dia}/${mes}/${anio}`;
+  el.textContent = `Estás viendo estadísticas del día ${formatoDia}`;
 }
