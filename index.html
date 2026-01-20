@@ -3075,11 +3075,8 @@
   <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
 
     <div class="flex items-start gap-3">
-      <div class="h-10 w-10 rounded-2xl bg-slate-900/90 text-white grid place-items-center text-lg shadow-sm">
-        📌
-      </div>
       <div>
-        <h2 class="text-base md:text-lg font-extrabold leading-tight text-slate-950">
+        <h2 class="text-base md:text- font-extrabold leading-tight text-slate-950">
           Historial de egresos por categoría
         </h2>
         <p class="text-xs font-semibold text-slate-500 mt-0.5">
@@ -3105,17 +3102,17 @@
 
 
   <!-- TABLE WRAP (estilo card premium como el ejemplo) -->
-<div class="p-4 md:p-5 border-b border-transparent bg-transparent">
-  <div class="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-[0_18px_55px_-40px_rgba(15,23,42,.35)]">
+<div class="p-4 md:p-5">
+  <div class="overflow-hidden  border border-slate-200 bg-white shadow-[0_18px_55px_-40px_rgba(15,23,42,.35)]">
 
     <table class="w-full text-sm">
       <!-- header minimal -->
-      <thead class="bg-white text-slate-500">
-        <tr class="border-b border-slate-100">
-          <th class="px-5 py-4 text-left text-[12px] font-extrabold tracking-wide uppercase">Fecha</th>
-          <th class="px-5 py-4 text-left text-[12px] font-extrabold tracking-wide uppercase">Tipo</th>
-          <th class="px-5 py-4 text-left text-[12px] font-extrabold tracking-wide uppercase">Detalle</th>
-          <th class="px-5 py-4 text-right text-[12px] font-extrabold tracking-wide uppercase">Monto</th>
+      <thead class="sticky top-0 z-10 bg-red-500/90 text-white backdrop-blur-xl">
+        <tr class="text-[10px] uppercase tracking-[0.18em] font-extrabold text-white">
+          <th class="px-5 py-2.5 text-left  font-extrabold tracking-wide uppercase">Fecha</th>
+          <th class="px-5 py-2.5 text-left  font-extrabold tracking-wide uppercase">Tipo</th>
+          <th class="px-5 py-2.5 text-left font-extrabold tracking-wide uppercase">Detalle</th>
+          <th class="px-5 py-2.5 text-right font-extrabold tracking-wide uppercase">Monto</th>
         </tr>
       </thead>
 
@@ -3135,13 +3132,8 @@
   <div class="mt-4 px-1 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
     <!-- info -->
     <div class="inline-flex items-center gap-2 text-xs font-extrabold text-slate-700">
-      <span class="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1.5 shadow-sm">
-        <span class="h-2 w-2 rounded-full bg-red-600"></span>
-        <span id="egresos-tipo-page-info">Página 1 / 1</span>
-      </span>
 
       <span class="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1.5 shadow-sm">
-        <span class="text-slate-400">•</span>
         <span id="egresos-tipo-total">0 resultados</span>
       </span>
     </div>
@@ -3151,20 +3143,6 @@
       <div id="egresos-tipo-dots" class="flex items-center justify-center gap-2"></div>
     </div>
 
-    <!-- flechas -->
-    <div class="flex items-center justify-end gap-2">
-      <button id="egresos-tipo-prev"
-        class="h-10 w-10 rounded-full border border-slate-200 bg-white grid place-items-center font-black text-slate-800
-               shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md hover:border-red-200 hover:bg-red-50
-               disabled:opacity-40 disabled:cursor-not-allowed"
-        title="Anterior" aria-label="Anterior">←</button>
-
-      <button id="egresos-tipo-next"
-        class="h-10 w-10 rounded-full border border-slate-200 bg-white grid place-items-center font-black text-slate-800
-               shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md hover:border-red-200 hover:bg-red-50
-               disabled:opacity-40 disabled:cursor-not-allowed"
-        title="Siguiente" aria-label="Siguiente">→</button>
-    </div>
   </div>
 </div>
 

@@ -1145,3 +1145,5 @@ function actualizarTituloModo(tipo, valor) {
   const formatoDia = `${dia}/${mes}/${anio}`;
   el.textContent = `Estás viendo estadísticas del día ${formatoDia}`;
 }
+
+
