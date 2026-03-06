@@ -768,7 +768,7 @@ async function registrarPedidosYaInline() {
 
   try {
     const base = window.API_BASE_URL;
-    await fetchJsonOrEmpty(`${base}/api/caja/registrar-py`, {
+    await fetchJsonOrEmpty(`${base}/api/pedidosya/liquidacion`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ fecha, monto })
