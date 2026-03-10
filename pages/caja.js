@@ -435,7 +435,7 @@ function pintarFechaActual() {
 async function cargarIngresos(fecha) {
   try {
     const base = window.API_BASE_URL;
-    const data = await fetchJsonOrEmpty(`${base}/api/caja/ingresos?fecha=${fecha}`);
+    const data = await fetchJsonOrEmpty(`${base}/api/caja/preview/${fecha}`);
     if (!data) return;
 
     const ingresosTotales = Number(data.ingresosTotales ?? 0);
@@ -466,7 +466,7 @@ async function cargarIngresos(fecha) {
 async function cargarEgresos(fecha) {
   try {
     const base = window.API_BASE_URL;
-    const data = await fetchJsonOrEmpty(`${base}/api/caja/egresos?fecha=${fecha}`);
+    const data = await fetchJsonOrEmpty(`${base}/api/caja/preview/${fecha}`);
     const tbody = $("tabla-egresos-body");
     if (!tbody) return;
 
@@ -511,7 +511,7 @@ async function cargarEgresos(fecha) {
 async function cargarBalance(fecha) {
   try {
     const base = window.API_BASE_URL;
-    const data = await fetchJsonOrEmpty(`${base}/api/caja/balance?fecha=${fecha}`);
+    const data = await fetchJsonOrEmpty(`${base}/api/caja/preview/${fecha}`);
     if (!data) return;
 
     const balance = Number(data.balance ?? data.balanceFinal ?? 0);
