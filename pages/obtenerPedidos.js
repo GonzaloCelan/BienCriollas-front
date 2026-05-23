@@ -1689,7 +1689,85 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 
+// ==============================
+// 🔴 WEBSOCKET PEDIDOS EN TIEMPO REAL
+// ==============================
 
+function conectarWebSocketPedidos() {
+  if (window.__PEDIDOS_WS_CONECTADO__) {
+    return;
+  }
+
+  window.__PEDIDOS_WS_CONECTADO__ = true;
+
+  if (typeof SockJS === "undefined") {
+    console.error("❌ SockJS no está cargado. Revisá los scripts del index.html");
+    return;
+  }
+
+  if (typeof StompJs === "undefined") {
+    console.error("❌ StompJs no está cargado. Revisá los scripts del index.html");
+    return;
+  }
+
+  const socket = new SockJS(`${window.API_BASE_URL}/ws`);
+
+  const client = new StompJs.Client({
+    webSocketFactory: () => socket,
+    reconnectDelay: 5000,
+
+    onConnect: () => {
+      console.log("✅ WebSocket conectado a pedidos");
+
+      client.subscribe("/topic/pedidos", async (message) => {
+        try {
+          const evento = JSON.parse(message.body);
+
+          console.log("📦 Cambio detectado en pedidos:", evento);
+
+          const selector = document.getElementById("selector-estado");
+          const estadoFiltro = selector ? selector.value : estadoActual;
+
+          await cargarPedidosPorEstado(estadoFiltro);
+          await cargarStockParaPedidos();
+
+          if (typeof actualizarKPIsPedidos === "function") {
+            actualizarKPIsPedidos();
+          }
+
+          if (evento.tipo === "CREADO") {
+            showToast("Nuevo pedido recibido ✅");
+          } else if (evento.tipo === "CANCELADO") {
+            showToast("Pedido cancelado", true);
+          } else {
+            showToast("Pedidos actualizados ✅");
+          }
+        } catch (error) {
+          console.error("❌ Error procesando evento WebSocket:", error);
+        }
+      });
+    },
+
+    onStompError: (frame) => {
+      console.error("❌ Error STOMP:", frame.headers["message"]);
+      console.error("Detalle:", frame.body);
+    },
+
+    onWebSocketError: (error) => {
+      console.error("❌ Error WebSocket:", error);
+    },
+
+    onDisconnect: () => {
+      console.warn("⚠️ WebSocket desconectado");
+    },
+  });
+
+  client.activate();
+
+  window.__PEDIDOS_STOMP_CLIENT__ = client;
+}
+
+document.addEventListener("DOMContentLoaded", conectarWebSocketPedidos);
 
 
 
