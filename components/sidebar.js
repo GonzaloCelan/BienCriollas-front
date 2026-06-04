@@ -2,7 +2,8 @@
 // 🔒 CONFIG TEMPORAL
 // ==========================
 const EGRESOS_HABILITADO = false;
-
+const CAJA_HABILITADO = false;
+const RESUMEN_HISTORICO_HABILITADO = false;
 // ==========================
 // 🟩 FUNCIÓN GLOBAL EXPORTABLE
 // ==========================
@@ -82,18 +83,14 @@ export function cambiarSeccion(target) {
 // llamada por otros módulos
 // ==========================
 export function cambiarSeccionDesdeJS(target) {
-  if (target === "egreso" && !EGRESOS_HABILITADO) {
-    alert("La sección Egresos está temporalmente desactivada por mantenimiento.");
-    target = "pedidos";
-  }
-  if (target === "caja" && !EGRESOS_HABILITADO) {
-    alert("La sección Caja está temporalmente desactivada por mantenimiento.");
-    target = "pedidos";
-  }
-  if (target === "resumen-historico" && !EGRESOS_HABILITADO) {
-    alert("La sección Resumen Histórico está temporalmente desactivada por mantenimiento.");
-    target = "pedidos";
-  }
+  if (
+  (target === "egreso" && !EGRESOS_HABILITADO) ||
+  (target === "caja" && !CAJA_HABILITADO) ||
+  (target === "resumen-historico" && !RESUMEN_HISTORICO_HABILITADO)
+) {
+  alert("Esta sección está temporalmente desactivada por mantenimiento.");
+  return;
+}
 
   cambiarSeccion(target);
   actualizarPaginacion(target);
