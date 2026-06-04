@@ -1,9 +1,16 @@
-
+// ==========================
+// 🔒 CONFIG TEMPORAL
+// ==========================
+const EGRESOS_HABILITADO = false;
 
 // ==========================
 // 🟩 FUNCIÓN GLOBAL EXPORTABLE
 // ==========================
 export function cambiarSeccion(target) {
+  if (target === "egreso" && !EGRESOS_HABILITADO) {
+    alert("La sección Egresos está temporalmente desactivada por mantenimiento.");
+    target = "pedidos";
+  }
 
   const sections = document.querySelectorAll("[data-section]");
 
@@ -13,6 +20,7 @@ export function cambiarSeccion(target) {
   });
 
   const destino = document.querySelector(`[data-section="${target}"]`);
+
   if (destino) {
     destino.classList.remove("hidden");
 
@@ -45,12 +53,10 @@ export function cambiarSeccion(target) {
       titulo: "Estadísticas",
       sub: "Resumen de ventas y actividad del negocio"
     },
-    
     "resumen-historico": {
-    titulo: "Totales acumulados",
-    sub: "Acumulado general de cajas cerradas: efectivo, transferencias, PedidosYa, egresos y total."
+      titulo: "Totales acumulados",
+      sub: "Acumulado general de cajas cerradas: efectivo, transferencias, PedidosYa, egresos y total."
     },
-
     horarios: {
       titulo: "Horarios del Personal",
       sub: "Turnos, horas trabajadas y cálculo semanal"
@@ -73,34 +79,53 @@ export function cambiarSeccion(target) {
 
 // ==========================
 // 🟩 FUNCIÓN EXPORTABLE DESDE JS
-// (llamada por pedidos.init.js)
+// llamada por otros módulos
 // ==========================
-
 export function cambiarSeccionDesdeJS(target) {
-  cambiarSeccion(target);
+  if (target === "egreso" && !EGRESOS_HABILITADO) {
+    alert("La sección Egresos está temporalmente desactivada por mantenimiento.");
+    target = "pedidos";
+  }
 
-  // 🔧 controlar visibilidad de los puntitos
+  cambiarSeccion(target);
   actualizarPaginacion(target);
 
   const buttons = document.querySelectorAll("[data-section-btn]");
+
   buttons.forEach(b => {
-    if (b.dataset.sectionBtn === target) b.classList.add("activo");
-    else b.classList.remove("activo");
+    if (b.dataset.sectionBtn === target) {
+      b.classList.add("activo");
+    } else {
+      b.classList.remove("activo");
+    }
   });
 }
-
 
 // ==========================
 // 🟩 INICIALIZACIÓN DEL SIDEBAR
 // ==========================
 document.addEventListener("DOMContentLoaded", () => {
-
   const buttons = document.querySelectorAll("[data-section-btn]");
+
+  // Marcar visualmente Egresos como desactivado
+  const egresoBtn = document.querySelector('[data-section-btn="egreso"]');
+
+  if (egresoBtn && !EGRESOS_HABILITADO) {
+    egresoBtn.classList.add("disabled");
+    egresoBtn.title = "Sección temporalmente desactivada";
+  }
 
   buttons.forEach(btn => {
     btn.addEventListener("click", () => {
-
       const target = btn.dataset.sectionBtn;
+
+      // ======================
+      // 🔒 BLOQUEO TEMPORAL EGRESOS
+      // ======================
+      if (target === "egreso" && !EGRESOS_HABILITADO) {
+        alert("La sección Egresos está temporalmente desactivada por mantenimiento.");
+        return;
+      }
 
       // activar visualmente el botón
       buttons.forEach(b => b.classList.remove("activo"));
@@ -110,10 +135,9 @@ document.addEventListener("DOMContentLoaded", () => {
       actualizarPaginacion(target);
 
       // ======================
-      // 📌 SECCION: PEDIDOS
+      // 📌 SECCIÓN: PEDIDOS
       // ======================
       if (target === "pedidos") {
-
         import("../pages/obtenerPedidos.js").then(mod => {
           mod.cargarPedidosPorEstado("PENDIENTE");
         });
@@ -124,7 +148,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       // ======================
-      // 📌 SECCION: STOCK
+      // 📌 SECCIÓN: STOCK
       // ======================
       if (target === "stock") {
         import("../pages/stock.js").then(mod => {
@@ -133,7 +157,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       // ======================
-      // 📌 SECCION: CAJA
+      // 📌 SECCIÓN: CAJA
       // ======================
       if (target === "caja") {
         import("../pages/caja.js").then(mod => {
@@ -142,7 +166,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       // ======================
-      // 📌 SECCION: ESTADÍSTICAS
+      // 📌 SECCIÓN: ESTADÍSTICAS
       // ======================
       if (target === "estadisticas") {
         import("../pages/estadistica.js").then(mod => {
@@ -150,15 +174,17 @@ document.addEventListener("DOMContentLoaded", () => {
         });
       }
 
+      // ======================
+      // 📌 SECCIÓN: RESUMEN HISTÓRICO
+      // ======================
       if (target === "resumen-historico") {
-  import("../pages/resumenHistorico.js").then(mod => {
-    mod.cargarResumenHistorico();
-  });
-}
-
+        import("../pages/resumenHistorico.js").then(mod => {
+          mod.cargarResumenHistorico();
+        });
+      }
 
       // ======================
-      // 🆕 📌 SECCION: HORARIOS
+      // 📌 SECCIÓN: HORARIOS
       // ======================
       if (target === "horarios") {
         import("../pages/horarios.js").then(mod => {
@@ -167,36 +193,37 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       // ======================
-      // 🆕 📌 SECCION: EGRESOS
+      // 🔒 SECCIÓN: EGRESOS DESACTIVADA
       // ======================
-      if (target === "egreso") {
+      // No importar egresos.js mientras EGRESOS_HABILITADO esté en false.
+      /*
+      if (target === "egreso" && EGRESOS_HABILITADO) {
         import("../pages/egresos.js").then(mod => {
-  if (mod.initEgresos) mod.initEgresos();
-});
+          if (mod.initEgresos) mod.initEgresos();
+        });
       }
+      */
 
-       // ======================
-      // 🆕 📌 SECCION: CONFIG
+      // ======================
+      // 📌 SECCIÓN: CONFIGURACIÓN
       // ======================
       if (target === "configuracion") {
         import("../pages/configuracion.js").then(mod => {
           if (mod.initSeccionConfiguracion) mod.initSeccionConfiguracion();
         });
       }
-
     });
   });
 
   // sección por defecto → PEDIDOS
   cambiarSeccion("pedidos");
+  actualizarPaginacion("pedidos");
 
   // cargar pedidos al iniciar
   import("../pages/obtenerPedidos.js").then(mod => {
     mod.cargarPedidosPorEstado("PENDIENTE");
   });
-
 });
-
 
 // ==========================
 // 🔧 MOSTRAR / OCULTAR PAGINACIÓN DE PEDIDOS
@@ -206,7 +233,6 @@ function actualizarPaginacion(target) {
 
   if (!paginacion) return;
 
-  // Solo se muestra en la sección de pedidos
   if (target === "pedidos") {
     paginacion.classList.remove("hidden");
   } else {
