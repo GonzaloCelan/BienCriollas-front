@@ -86,6 +86,14 @@ export function cambiarSeccionDesdeJS(target) {
     alert("La sección Egresos está temporalmente desactivada por mantenimiento.");
     target = "pedidos";
   }
+  if (target === "caja" && !EGRESOS_HABILITADO) {
+    alert("La sección Caja está temporalmente desactivada por mantenimiento.");
+    target = "pedidos";
+  }
+  if (target === "resumen-historico" && !EGRESOS_HABILITADO) {
+    alert("La sección Resumen Histórico está temporalmente desactivada por mantenimiento.");
+    target = "pedidos";
+  }
 
   cambiarSeccion(target);
   actualizarPaginacion(target);
@@ -159,11 +167,12 @@ document.addEventListener("DOMContentLoaded", () => {
       // ======================
       // 📌 SECCIÓN: CAJA
       // ======================
-      if (target === "caja") {
+      /* if (target === "caja") {
         import("../pages/caja.js").then(mod => {
           mod.initCaja();
         });
       }
+ */
 
       // ======================
       // 📌 SECCIÓN: ESTADÍSTICAS
@@ -177,11 +186,11 @@ document.addEventListener("DOMContentLoaded", () => {
       // ======================
       // 📌 SECCIÓN: RESUMEN HISTÓRICO
       // ======================
-      if (target === "resumen-historico") {
+       /*if (target === "resumen-historico") {
         import("../pages/resumenHistorico.js").then(mod => {
           mod.cargarResumenHistorico();
         });
-      }
+      }*/
 
       // ======================
       // 📌 SECCIÓN: HORARIOS
