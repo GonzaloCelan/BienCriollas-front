@@ -4,12 +4,38 @@
 const EGRESOS_HABILITADO = false;
 const CAJA_HABILITADO = false;
 const RESUMEN_HISTORICO_HABILITADO = false;
+
+function seccionBloqueada(target) {
+  return (
+    (target === "egreso" && !EGRESOS_HABILITADO) ||
+    (target === "caja" && !CAJA_HABILITADO) ||
+    (target === "resumen-historico" && !RESUMEN_HISTORICO_HABILITADO)
+  );
+}
+
+function marcarBotonesDeshabilitados() {
+  const secciones = [
+    { target: "egreso", habilitado: EGRESOS_HABILITADO },
+    { target: "caja", habilitado: CAJA_HABILITADO },
+    { target: "resumen-historico", habilitado: RESUMEN_HISTORICO_HABILITADO },
+  ];
+
+  secciones.forEach(({ target, habilitado }) => {
+    const btn = document.querySelector(`[data-section-btn="${target}"]`);
+
+    if (btn && !habilitado) {
+      btn.classList.add("disabled");
+      btn.title = "Sección temporalmente desactivada";
+    }
+  });
+}
+
 // ==========================
 // 🟩 FUNCIÓN GLOBAL EXPORTABLE
 // ==========================
 export function cambiarSeccion(target) {
-  if (target === "egreso" && !EGRESOS_HABILITADO) {
-    alert("La sección Egresos está temporalmente desactivada por mantenimiento.");
+  if (seccionBloqueada(target)) {
+    alert("Esta sección está temporalmente desactivada por mantenimiento.");
     target = "pedidos";
   }
 
@@ -24,12 +50,9 @@ export function cambiarSeccion(target) {
 
   if (destino) {
     destino.classList.remove("hidden");
-
-    // animación fade-in
     setTimeout(() => destino.classList.add("visible"), 10);
   }
 
-  // actualizar títulos si existen
   const titulo = document.getElementById("titulo-seccion");
   const subtitulo = document.getElementById("subtitulo-seccion");
 
@@ -80,17 +103,12 @@ export function cambiarSeccion(target) {
 
 // ==========================
 // 🟩 FUNCIÓN EXPORTABLE DESDE JS
-// llamada por otros módulos
 // ==========================
 export function cambiarSeccionDesdeJS(target) {
-  if (
-  (target === "egreso" && !EGRESOS_HABILITADO) ||
-  (target === "caja" && !CAJA_HABILITADO) ||
-  (target === "resumen-historico" && !RESUMEN_HISTORICO_HABILITADO)
-) {
-  alert("Esta sección está temporalmente desactivada por mantenimiento.");
-  return;
-}
+  if (seccionBloqueada(target)) {
+    alert("Esta sección está temporalmente desactivada por mantenimiento.");
+    target = "pedidos";
+  }
 
   cambiarSeccion(target);
   actualizarPaginacion(target);
@@ -112,27 +130,20 @@ export function cambiarSeccionDesdeJS(target) {
 document.addEventListener("DOMContentLoaded", () => {
   const buttons = document.querySelectorAll("[data-section-btn]");
 
-  // Marcar visualmente Egresos como desactivado
-  const egresoBtn = document.querySelector('[data-section-btn="egreso"]');
-
-  if (egresoBtn && !EGRESOS_HABILITADO) {
-    egresoBtn.classList.add("disabled");
-    egresoBtn.title = "Sección temporalmente desactivada";
-  }
+  marcarBotonesDeshabilitados();
 
   buttons.forEach(btn => {
     btn.addEventListener("click", () => {
       const target = btn.dataset.sectionBtn;
 
       // ======================
-      // 🔒 BLOQUEO TEMPORAL EGRESOS
+      // 🔒 BLOQUEO TEMPORAL
       // ======================
-      if (target === "egreso" && !EGRESOS_HABILITADO) {
-        alert("La sección Egresos está temporalmente desactivada por mantenimiento.");
+      if (seccionBloqueada(target)) {
+        alert("Esta sección está temporalmente desactivada por mantenimiento.");
         return;
       }
 
-      // activar visualmente el botón
       buttons.forEach(b => b.classList.remove("activo"));
       btn.classList.add("activo");
 
@@ -162,14 +173,15 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       // ======================
-      // 📌 SECCIÓN: CAJA
+      // 🔒 SECCIÓN: CAJA DESACTIVADA
       // ======================
-      /* if (target === "caja") {
+      /*
+      if (target === "caja" && CAJA_HABILITADO) {
         import("../pages/caja.js").then(mod => {
           mod.initCaja();
         });
       }
- */
+      */
 
       // ======================
       // 📌 SECCIÓN: ESTADÍSTICAS
@@ -181,13 +193,15 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       // ======================
-      // 📌 SECCIÓN: RESUMEN HISTÓRICO
+      // 🔒 SECCIÓN: RESUMEN HISTÓRICO DESACTIVADA
       // ======================
-       /*if (target === "resumen-historico") {
+      /*
+      if (target === "resumen-historico" && RESUMEN_HISTORICO_HABILITADO) {
         import("../pages/resumenHistorico.js").then(mod => {
           mod.cargarResumenHistorico();
         });
-      }*/
+      }
+      */
 
       // ======================
       // 📌 SECCIÓN: HORARIOS
@@ -201,7 +215,6 @@ document.addEventListener("DOMContentLoaded", () => {
       // ======================
       // 🔒 SECCIÓN: EGRESOS DESACTIVADA
       // ======================
-      // No importar egresos.js mientras EGRESOS_HABILITADO esté en false.
       /*
       if (target === "egreso" && EGRESOS_HABILITADO) {
         import("../pages/egresos.js").then(mod => {
@@ -221,11 +234,9 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  // sección por defecto → PEDIDOS
   cambiarSeccion("pedidos");
   actualizarPaginacion("pedidos");
 
-  // cargar pedidos al iniciar
   import("../pages/obtenerPedidos.js").then(mod => {
     mod.cargarPedidosPorEstado("PENDIENTE");
   });
